@@ -1,0 +1,17 @@
+; ═══════════════════════════════════════════════════════════════
+; Peddleflash — Quirky IDE project configuration
+; This file marks the folder as a project and tells the IDE
+; how it should be served.
+; ═══════════════════════════════════════════════════════════════
+
+[project]
+name = Peddleflash
+stack = php
+
+[server]
+document_root = /
+router = index.php
+htaccess = true
+
+[preview]
+entry = index.php
