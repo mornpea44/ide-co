@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+<defs>
+<linearGradient id="qsMetal" gradientUnits="userSpaceOnUse" x1="10" y1="10" x2="38" y2="38">
+<stop offset="0" stop-color="#d2dae4"/>
+<stop offset="0.5" stop-color="#8a94a6"/>
+<stop offset="1" stop-color="#556070"/>
+</linearGradient>
+</defs>
+<!-- Blueprint background + grid -->
+<rect x="2" y="2" width="44" height="44" rx="10" fill="#0d1420"/>
+<g stroke="#60a5fa" stroke-opacity="0.10" stroke-width="0.5">
+<line x1="2" y1="13" x2="46" y2="13"/>
+<line x1="2" y1="24" x2="46" y2="24"/>
+<line x1="2" y1="35" x2="46" y2="35"/>
+<line x1="13" y1="2" x2="13" y2="46"/>
+<line x1="24" y1="2" x2="24" y2="46"/>
+<line x1="35" y1="2" x2="35" y2="46"/>
+</g>
+<!-- Corner brackets (Quirky blueprint signature) -->
+<g stroke="#2dd4bf" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.85">
+<path d="M7 12 V7 H12"/>
+<path d="M36 7 H41 V12"/>
+<path d="M41 36 V41 H36"/>
+<path d="M12 41 H7 V36"/>
+</g>
+<!-- Metal gear (8 teeth + body) -->
+<g fill="url(#qsMetal)" stroke="#33445f" stroke-width="1">
+<rect x="21.6" y="8.5" width="4.8" height="7" rx="1.4"/>
+<rect x="21.6" y="8.5" width="4.8" height="7" rx="1.4" transform="rotate(45 24 24)"/>
+<rect x="21.6" y="8.5" width="4.8" height="7" rx="1.4" transform="rotate(90 24 24)"/>
+<rect x="21.6" y="8.5" width="4.8" height="7" rx="1.4" transform="rotate(135 24 24)"/>
+<rect x="21.6" y="8.5" width="4.8" height="7" rx="1.4" transform="rotate(180 24 24)"/>
+<rect x="21.6" y="8.5" width="4.8" height="7" rx="1.4" transform="rotate(225 24 24)"/>
+<rect x="21.6" y="8.5" width="4.8" height="7" rx="1.4" transform="rotate(270 24 24)"/>
+<rect x="21.6" y="8.5" width="4.8" height="7" rx="1.4" transform="rotate(315 24 24)"/>
+<circle cx="24" cy="24" r="11.5"/>
+</g>
+<!-- Gear window -->
+<circle cx="24" cy="24" r="8.6" fill="#0d1420" stroke="#33445f" stroke-width="1"/>
+<!-- Quirky lightning bolt -->
+<path d="M26.5 17.5 L19.5 25.5 H23.5 L21.5 30.5 L28.5 22.5 H24.5 Z" fill="#f5a524" stroke="#ffb748" stroke-width="0.8" stroke-linejoin="round"/>
+</svg>

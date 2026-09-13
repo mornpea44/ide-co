@@ -1,0 +1,833 @@
+/* File: mobile-preview.css */
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — MOBILE PREVIEW STYLES
+═══════════════════════════════════════════════════════════════════════════
+Preview bar/body, device mode overrides (phone/tablet/desktop),
+zoom controls, action buttons, preview skeleton.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+1. PREVIEW BAR & BODY
+═══════════════════════════════════════════════════════════════════════════ */
+.m-preview-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 4px 6px;
+  background: var(--surface-2, #1a2537);
+  border-bottom: 1px solid var(--border, #263450);
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.m-preview-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.m-preview-bar .pv-devices {
+  flex-shrink: 0;
+  display: flex;
+}
+
+.m-preview-bar .pv-device {
+  flex: 1 1 0;
+  justify-content: center;
+  min-height: 36px;
+}
+
+.m-preview-bar .pv-size {
+  flex-shrink: 0;
+}
+
+.m-preview-bar .mpv-zoom-controls {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.m-preview-body {
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.m-preview-body .device-stage {
+  position: absolute;
+  inset: 0;
+}
+
+.m-preview-body .m-panel-placeholder {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  background: var(--bg, #0d1420);
+  z-index: 2;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+2. DEVICE MODE OVERRIDES
+═══════════════════════════════════════════════════════════════════════════ */
+/* Phone: true fullscreen. The shell AND the screen are pinned to the
+   stage with absolute positioning, so no flex / margin / centering math
+   (and no Android font-boosting) can create gaps on real phones. */
+.m-preview-body .device-stage:not(.framed) {
+  padding: 0;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.m-preview-body .m-device-wrap[data-device="phone"] {
+  display: contents;
+}
+
+.m-preview-body .device-shell[data-device="phone"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Fallback size — mobile-preview.js sets the exact scaled size */
+  width: 390px;
+  height: 100%;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  animation: none;
+  overflow: hidden;
+  display: block;
+}
+
+.m-preview-body .device-shell[data-device="phone"]::before,
+.m-preview-body .device-shell[data-device="phone"]::after {
+  display: none !important;
+  content: none !important;
+}
+
+.m-preview-body .device-shell[data-device="phone"] .device-sensor,
+.m-preview-body .device-shell[data-device="phone"] .device-home {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.m-preview-body .device-shell[data-device="phone"]>iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* TRUE mobile viewport: the page always lays out at 390px wide,
+then the whole frame is scaled by JS to fit the screen.        */
+  width: 390px;
+  height: 844px;
+  transform-origin: top left;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  display: block;
+  background: #ffffff;
+}
+
+/* Desktop: monitor chassis */
+.m-preview-body .m-device-wrap {
+  display: contents;
+}
+
+.m-preview-body .m-device-wrap[data-device="desktop"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+}
+
+.m-preview-body .device-shell[data-device="desktop"] {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+  margin: 0;
+  background: linear-gradient(160deg, #11192a, #080d16);
+  border: 1px solid #2c3d5c;
+  border-radius: 8px;
+  padding: 8px 8px 18px;
+  box-shadow:
+    0 0 0 3px #0d1420,
+    0 0 0 4px rgba(255, 255, 255, 0.03),
+    0 26px 60px -18px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: deviceIn 0.35s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+.m-preview-body .device-shell[data-device="desktop"]::after {
+  content: '';
+  position: absolute;
+  bottom: 7px;
+  right: 10px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent, #f5a524);
+  box-shadow: 0 0 4px rgba(245, 165, 36, 0.7);
+}
+
+.m-preview-body .device-shell[data-device="desktop"]>iframe {
+  width: 1024px;
+  height: 768px;
+  flex: 0 0 auto;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+  transform-origin: top left;
+}
+
+.m-preview-body .device-shell[data-device="desktop"] .device-sensor,
+.m-preview-body .device-shell[data-device="desktop"] .device-home {
+  display: none;
+}
+
+/* Desktop stand — ★ FIX: scales together with the monitor bezel
+(--pv-scale is published by mobile-preview.js on every layout). */
+.m-preview-body .m-device-wrap[data-device="desktop"]::after {
+  content: '';
+  order: 2;
+  flex: 0 0 auto;
+  width: calc(46px * var(--pv-scale, 1));
+  height: calc(26px * var(--pv-scale, 1));
+  background: linear-gradient(#2c3d5c, #1a2537);
+  border-radius: 0 0 calc(6px * var(--pv-scale, 1)) calc(6px * var(--pv-scale, 1));
+}
+
+.m-preview-body .m-device-wrap[data-device="desktop"]::before {
+  content: '';
+  order: 3;
+  flex: 0 0 auto;
+  width: calc(170px * var(--pv-scale, 1));
+  height: calc(10px * var(--pv-scale, 1));
+  border-radius: 99px;
+  background: linear-gradient(#2b3a55, #1f2c44);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+3. ZOOM CONTROLS
+═══════════════════════════════════════════════════════════════════════════ */
+.mpv-zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.mpv-zoom-btn {
+  flex-shrink: 0;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, color 0.12s ease, transform 0.1s ease;
+  padding: 0 6px;
+}
+
+.mpv-zoom-btn:active {
+  background: var(--surface-3, #223049);
+  color: var(--accent, #f5a524);
+  transform: scale(0.92);
+}
+
+.mpv-zoom-btn:disabled {
+  pointer-events: none;
+}
+
+.mpv-zoom-btn.mpv-zoom-chip {
+  min-width: 48px;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent, #f5a524);
+}
+
+@keyframes mpvZoomPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  30% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.mpv-zoom-btn.mpv-zoom-pulse {
+  animation: mpvZoomPulse 0.25s ease;
+}
+
+#m-device-shell {
+  transition: zoom 0.2s ease;
+}
+
+#m-preview-frame {
+  transition: transform 0.2s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+4. ACTION BUTTONS (Task 4.4)
+═══════════════════════════════════════════════════════════════════════════ */
+.mpv-action-btn {
+  flex-shrink: 0;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  background: var(--surface-3, #223049);
+  color: var(--text-2, #9db1cc);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, color 0.12s ease, transform 0.1s ease;
+  padding: 0 8px;
+}
+
+.mpv-action-btn:active {
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+  transform: scale(0.92);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+5. PREVIEW SKELETON (Task 6.3)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-preview-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: var(--bg, #0d1420);
+}
+
+.m-preview-skeleton.hidden {
+  display: none;
+}
+
+.m-preview-skeleton-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border, #263450);
+  border-top-color: var(--accent, #f5a524);
+  border-radius: 50%;
+  animation: mPreviewSpin 0.8s linear infinite;
+}
+
+@keyframes mPreviewSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.m-preview-skeleton-text {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: var(--muted, #7186a5);
+  letter-spacing: 0.04em;
+}
+
+.m-preview-skeleton-bars {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 60%;
+  max-width: 280px;
+}
+
+.m-preview-skeleton-bar {
+  height: 10px;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.m-preview-skeleton-bar:nth-child(1) {
+  width: 80%;
+}
+
+.m-preview-skeleton-bar:nth-child(2) {
+  width: 100%;
+}
+
+.m-preview-skeleton-bar:nth-child(3) {
+  width: 65%;
+}
+
+.m-preview-skeleton-bar:nth-child(4) {
+  width: 90%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+6. TABLET OVERRIDES
+═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .mpv-zoom-btn {
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 20px;
+  }
+
+  .mpv-zoom-btn.mpv-zoom-chip {
+    min-width: 52px;
+    font-size: 13px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+7. REDUCED MOTION
+═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .mpv-zoom-btn.mpv-zoom-pulse {
+    animation: none;
+  }
+
+  .mpv-action-btn:active {
+    transform: none;
+  }
+
+  #m-device-shell {
+    transition: none;
+  }
+
+  #m-preview-frame {
+    transition: none;
+  }
+
+  .m-preview-skeleton-spinner {
+    animation: none;
+    border-top-color: var(--border, #263450);
+  }
+
+  .m-preview-skeleton-bar {
+    animation: none;
+    background: var(--surface-2, #1a2537);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+8. NARROW PHONES — keep the preview bar on one line so the
+   Refresh / Open buttons are never cut off on real devices.
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .m-preview-bar .pv-size {
+    display: none;
+  }
+
+  .m-preview-bar .pv-device {
+    min-height: 36px;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .m-preview-bar .mpv-action-btn {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0 6px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+9. CLEAN PREVIEW SURFACE (phone mode + image/markdown)
+Hides the outer scrollbars and the white scrollbar-corner square.
+The previewed page scrolls inside its own iframe instead, so
+there is nothing to "snap back" on the outside.
+═══════════════════════════════════════════════════════════════ */
+.m-preview-body.mpv-clean,
+.m-preview-body.mpv-clean .device-stage {
+  overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.m-preview-body.mpv-clean::-webkit-scrollbar,
+.m-preview-body.mpv-clean .device-stage::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.m-preview-body.mpv-clean::-webkit-scrollbar-corner,
+.m-preview-body.mpv-clean .device-stage::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+★ PHASE 4: APACHE SERVER BADGE
+Shows in the preview bar when Apache is serving the preview.
+═══════════════════════════════════════════════════════════════ */
+.mpv-server-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--success-dim, rgba(74, 222, 128, 0.10));
+  color: var(--success, #4ade80);
+  border: 1px solid var(--success-border, rgba(74, 222, 128, 0.30));
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mpv-server-badge.hidden {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+10. v4 — ERROR STRIP (truthful failure overlay)
+Sits over the top of the preview body; the last good render below it
+is never blanked. Retry re-runs the render; × dismisses.
+═══════════════════════════════════════════════════════════════ */
+#mp-preview {
+  position: relative;
+}
+
+.mpv-error-strip {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  z-index: 30;
+  background: var(--surface-2, #1a2537);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  padding: 8px 10px;
+  max-width: calc(100% - 12px);
+}
+
+.mpv-err-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mpv-err-title {
+  flex: 1 1 auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fca5a5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mpv-err-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.mpv-err-retry,
+.mpv-err-close {
+  border: 1px solid var(--border, #263450);
+  border-radius: 7px;
+  background: var(--surface-3, #223049);
+  color: var(--text-1, #e8eef7);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mpv-err-retry {
+  color: var(--accent, #f5a524);
+  border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+}
+
+.mpv-err-detail {
+  margin: 8px 0 0;
+  padding: 8px;
+  max-height: 96px;
+  overflow: auto;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--muted, #9db1cc);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+11. v4 — LIVE/SAVE REFRESH-MODE CHIP
+═══════════════════════════════════════════════════════════════ */
+.mpv-mode-chip {
+  flex-shrink: 0;
+  border: 1px solid var(--success-border, rgba(74, 222, 128, 0.3));
+  border-radius: 99px;
+  background: var(--success-dim, rgba(74, 222, 128, 0.1));
+  color: var(--success, #4ade80);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mpv-mode-chip.mpv-mode-save {
+  border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+12. v4 — CONSOLE CAPTURE CHIP + DRAWER
+Chip shows the entry count and lights red/amber on errors/warnings.
+The drawer overlays the bottom of the preview panel.
+═══════════════════════════════════════════════════════════════ */
+.mpv-console-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border, #263450);
+  border-radius: 99px;
+  background: var(--surface-3, #223049);
+  color: var(--text-2, #9db1cc);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mpv-console-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted, #7186a5);
+}
+
+.mpv-console-chip.mpv-console-has-warn .mpv-console-dot {
+  background: var(--warning, #facc15);
+}
+
+.mpv-console-chip.mpv-console-has-error .mpv-console-dot {
+  background: var(--danger, #ef4444);
+  box-shadow: 0 0 5px rgba(239, 68, 68, 0.7);
+}
+
+.mpv-console-chip.hidden {
+  display: none;
+}
+
+.mpv-console-drawer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  max-height: 46%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg, #0d1420);
+  border-top: 1px solid var(--border, #263450);
+  box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.5);
+}
+
+.mpv-console-drawer.hidden {
+  display: none;
+}
+
+.mpv-console-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border, #263450);
+  background: var(--surface-2, #1a2537);
+}
+
+.mpv-console-title {
+  flex: 1 1 auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-1, #e8eef7);
+}
+
+.mpv-console-clear,
+.mpv-console-close {
+  flex-shrink: 0;
+  border: 1px solid var(--border, #263450);
+  border-radius: 7px;
+  background: var(--surface-3, #223049);
+  color: var(--text-2, #9db1cc);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.64rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mpv-console-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px 8px;
+}
+
+.mpv-console-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 3px 2px;
+  border-bottom: 1px dashed rgba(38, 52, 80, 0.5);
+}
+
+.mpv-console-lvl {
+  flex-shrink: 0;
+  width: 42px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted, #7186a5);
+}
+
+.mpv-console-text {
+  flex: 1 1 auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.64rem;
+  line-height: 1.5;
+  color: var(--text-2, #9db1cc);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mpv-console-row.mpv-console-warn .mpv-console-lvl,
+.mpv-console-row.mpv-console-warn .mpv-console-text {
+  color: var(--warning, #facc15);
+}
+
+.mpv-console-row.mpv-console-error .mpv-console-lvl,
+.mpv-console-row.mpv-console-error .mpv-console-text {
+  color: #f87171;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+13. v5 — UPDATING PROGRESS LINE
+Thin indeterminate accent line at the top of the preview panel.
+The last good render stays fully visible underneath it.
+═══════════════════════════════════════════════════════════════ */
+.mpv-updating-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 25;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mpv-updating-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: var(--accent, #f5a524);
+  border-radius: 2px;
+  animation: mpvUpdatingSlide 1s linear infinite;
+}
+
+.mpv-updating-bar.hidden {
+  display: none;
+}
+
+@keyframes mpvUpdatingSlide {
+  to {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mpv-updating-bar::after {
+    animation: none;
+    left: 0;
+    width: 100%;
+    opacity: 0.65;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+14. v5.3 — REAL-BROWSER SCROLLBAR ILLUSION (web pages)
+The previewed page draws its OWN scrollbar (its CSS styles it,
+exactly like a real browser tab). The iframe's native scrollbar
+is hidden so there is never a second, "painted" scrollbar.
+Markdown keeps .mpv-clean (its own invisible-scroll surface).
+═══════════════════════════════════════════════════════════════ */
+.m-preview-body.mpv-noscroll #m-preview-frame,
+.m-preview-body.mpv-noscroll .device-stage {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.m-preview-body.mpv-noscroll #m-preview-frame::-webkit-scrollbar,
+.m-preview-body.mpv-noscroll .device-stage::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.m-preview-body.mpv-noscroll #m-preview-frame::-webkit-scrollbar-corner,
+.m-preview-body.mpv-noscroll .device-stage::-webkit-scrollbar-corner {
+  background: transparent;
+}

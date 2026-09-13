@@ -1,0 +1,2158 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — SETTINGS PANEL (Mobile-native revamp)
+═══════════════════════════════════════════════════════════════════════════
+Full-screen, touch-first settings screen:
+fixed header · sticky search · collapsible section cards · big toggles ·
+feature tile grid · bottom action bar.
+Only the mobile bundle loads this file, so it is mobile-first by design.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Overlay: fills the whole screen like a native page ── */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-overlay, 100);
+  display: flex;
+  background: var(--bg);
+}
+
+.settings-overlay.hidden {
+  display: none;
+}
+
+.settings-panel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+  animation: settingsIn 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+@keyframes settingsIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Header ── */
+.settings-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 0.9rem;
+  padding-top: calc(0.8rem + env(safe-area-inset-top, 0px));
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.settings-header-sub {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
+
+.settings-close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.settings-close:active {
+  color: var(--text);
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+}
+
+/* ── Sticky search ── */
+.settings-search-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-search-ico {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+
+.settings-search-wrap input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 16px;
+  /* prevents iOS auto-zoom */
+  padding: 0.65rem 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.settings-search-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.settings-search-wrap input::placeholder {
+  color: var(--faint);
+}
+
+.settings-search-clear {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.settings-search-clear:active {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.settings-search-clear.hidden {
+  display: none;
+}
+
+/* ── Scrolling body: a column of cards ── */
+.settings-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.9rem;
+  padding-bottom: calc(0.9rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* ── Section cards ── */
+.settings-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  /* ★ NEVER let the flex layout squish a card to fit the screen.
+   Cards keep their natural height (full head when collapsed,
+   full content when open) and .settings-body scrolls instead. */
+  flex: 0 0 auto;
+  /* Keeps a little breathing room when the panel auto-scrolls a card into view */
+  scroll-margin-top: 0.6rem;
+  scroll-margin-bottom: 0.6rem;
+}
+
+.settings-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.85rem 0.9rem;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.settings-card-head:active {
+  background: var(--surface-2);
+}
+
+.settings-card-ico {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.settings-card-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.settings-card-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.settings-card-sub {
+  font-size: 0.66rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.settings-card-chev {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+
+.settings-card.open .settings-card-chev {
+  transform: rotate(180deg);
+}
+
+/* The body is a one-row CSS grid. Collapsed = the row is 0fr tall,
+   expanded = 1fr (the row grows to EXACTLY fit the content, so an open
+   card always stretches down to its last row — never clipped).
+   The clip wrapper simply hides the content while the row animates. */
+.settings-card-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  border-top: 0 solid var(--border-subtle);
+  transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-top-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-card-clip {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.settings-card.open .settings-card-body {
+  grid-template-rows: 1fr;
+  border-top-width: 1px;
+}
+
+.settings-card-inner {
+  padding: 0.9rem;
+}
+
+/* ── Setting rows ── */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.settings-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.settings-desc {
+  font-size: 0.66rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.settings-control {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+}
+
+/* ── Stacked row (feature ranges like Workspace Watch Interval) ──
+Label + description on top, slider and custom input below at
+full width — no more one-word-per-line squeezing.            */
+.settings-row-stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.6rem;
+}
+
+.settings-row-stacked .settings-control {
+  width: 100%;
+  align-items: stretch;
+}
+
+.settings-row-stacked .settings-range-wrap {
+  width: 100%;
+}
+
+.settings-row-stacked .settings-range-wrap input[type="range"] {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+.settings-row-stacked .settings-custom-wrap {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* ── Inline "Read more" button inside truncated descriptions ──
+(min-width/min-height 0 override the global 44px button rule) */
+.settings-readmore {
+  display: inline;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  font-family: inherit;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.settings-readmore:active {
+  opacity: 0.7;
+}
+
+/* ── Toggle switch (big, thumb-friendly) ── */
+.settings-toggle {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.settings-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings-toggle-track {
+  display: block;
+  width: 52px;
+  height: 30px;
+  border-radius: 99px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.settings-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: all 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.settings-toggle input:checked+.settings-toggle-track {
+  background: var(--accent-dim);
+  border-color: var(--accent-border);
+}
+
+.settings-toggle input:checked+.settings-toggle-track .settings-toggle-thumb {
+  left: 25px;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(245, 165, 36, 0.4);
+}
+
+/* ── Range slider ── */
+.settings-range-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.settings-range-wrap input[type="range"] {
+  width: 130px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.settings-range-val {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 5ch;
+  text-align: right;
+}
+
+/* ── Select ── */
+.settings-select {
+  padding: 0.5rem 0.7rem;
+  font-size: 0.8rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+
+.settings-select:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* ── Custom numeric input (feature ranges) ── */
+.settings-custom-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.settings-custom-label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.settings-custom-input {
+  width: 100px;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+}
+
+.settings-custom-input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.settings-custom-range {
+  font-size: 0.62rem;
+  color: var(--faint);
+  font-family: var(--font-mono);
+}
+
+/* ── Feature tile grid ── */
+.settings-feat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  padding: 0.8rem 0.9rem 0.4rem;
+}
+
+.settings-feat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.85rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-deep);
+  color: var(--muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.settings-feat-card:active {
+  transform: scale(0.97);
+}
+
+.settings-feat-card .sf-ico {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.settings-feat-card .sf-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-2);
+  text-align: center;
+}
+
+.settings-feat-card .sf-state {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 99px;
+  background: var(--danger-dim);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+.settings-feat-card.on {
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+}
+
+.settings-feat-card.on .sf-label {
+  color: var(--text);
+}
+
+.settings-feat-card.on .sf-state {
+  background: var(--success-dim);
+  color: var(--success);
+  border-color: var(--success-border);
+}
+
+.settings-feat-note {
+  padding: 0.3rem 0.9rem 0.8rem;
+  font-size: 0.64rem;
+  color: var(--faint);
+  font-family: var(--font-mono);
+}
+
+/* ── Readonly badge ── */
+.settings-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+}
+
+.settings-badge.on {
+  background: var(--success-dim);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+.settings-badge.off {
+  background: var(--danger-dim);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+/* ── Empty search result ── */
+.settings-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ── Footer action bar ── */
+.settings-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 0.9rem;
+  padding-bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.settings-reset {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--danger-border);
+  border-radius: 10px;
+  background: var(--danger-dim);
+  color: var(--danger);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.settings-reset:active {
+  background: var(--danger);
+  color: #fff;
+}
+
+.settings-foot-hint {
+  flex-basis: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--faint);
+}
+
+/* ── About section ── */
+.settings-about {
+  text-align: center;
+}
+
+.settings-about-logo {
+  font-size: 2.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.settings-about h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  margin-bottom: 0.3rem;
+  color: var(--text);
+}
+
+.settings-about h3 .accent {
+  color: var(--accent);
+}
+
+.settings-about-sub {
+  color: var(--text-2);
+  font-size: 0.8rem;
+  margin-bottom: 1.1rem;
+}
+
+.settings-about-sub code {
+  font-family: var(--font-mono);
+  background: var(--accent-dim);
+  color: var(--accent);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.settings-about-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 auto 1.3rem;
+}
+
+.about-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: min(100%, 280px);
+}
+
+.about-chip b {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.about-chip em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.settings-sc-group {
+  margin: 0 auto 1.2rem;
+  text-align: left;
+}
+
+.settings-sc-group h4 {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.settings-sc-group h4::after {
+  content: '';
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--border);
+}
+
+.settings-sc-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 1rem;
+  font-size: 0.78rem;
+  color: var(--text-2);
+  align-items: center;
+}
+
+.settings-sc-grid .kbd-combo {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  white-space: nowrap;
+}
+
+.settings-about-warn {
+  margin-top: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--warning);
+}
+
+/* ── Small centered dialog variant (unsaved feature changes) ── */
+.settings-overlay.settings-modal {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 260;
+}
+
+.settings-modal .settings-panel {
+  height: auto;
+  max-height: 80vh;
+  max-width: 440px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+.settings-modal-body {
+  overflow-y: auto;
+  padding: 1.1rem;
+}
+
+.settings-modal-text {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.settings-modal-footer {
+  justify-content: flex-end;
+}
+
+/* ── Tablet & up: float the panel as a centered card ── */
+@media (min-width: 768px) {
+  .settings-overlay:not(.settings-modal) {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .settings-overlay:not(.settings-modal) .settings-panel {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    max-height: 90vh;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .settings-body {
+    padding: 1.1rem;
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+
+  .settings-panel,
+  .settings-card.open .settings-card-body,
+  .settings-card-chev {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+v10 SETTINGS EXTENSIONS — Terminal · Backup & Restore · Privacy & Data
+Free-text setting rows, action buttons, note rows, live font sample.
+Appended only; nothing above was modified.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Free-text setting input (UI font family) ──
+Lives in a stacked row, so it gets the full width. 16px font keeps
+Android WebView from auto-zooming on focus.                        */
+.settings-text-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 16px;
+  font-family: var(--font-mono);
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  outline: none;
+}
+
+.settings-text-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.settings-text-input::placeholder {
+  color: var(--faint);
+}
+
+/* ── Action buttons (Export / Import / Clear…) ── */
+.settings-action-btn {
+  padding: 0.55rem 1rem;
+  min-height: 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--surface-3);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.settings-action-btn:active {
+  transform: scale(0.96);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.settings-action-btn.danger {
+  border-color: var(--danger-border);
+  background: var(--danger-dim);
+  color: var(--danger);
+}
+
+.settings-action-btn.danger:active {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* ── Note row (status hints under custom cards) ── */
+.settings-note-row {
+  margin-top: 0.7rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+/* ── Live font sample (Appearance card) ── */
+.settings-font-sample-wrap {
+  padding: 0.85rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.settings-font-sample-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-family: var(--font-mono);
+}
+
+/* Colors follow the theme automatically via the CSS variables; the
+   inline font-family/font-size come from updateFontSample() live.  */
+.settings-font-sample {
+  min-height: 2.4em;
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-deep);
+  color: var(--text);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+★ v12 EXPLORER CARD — Change detection · Workspace directory · Export path
+Bordered "current" labels, radio-style choice rows, compact copy
+checkbox, and a custom-path editor (input + Browse). Applying happens
+through the general 💾 Save Changes button — no per-row apply buttons.
+═══════════════════════════════════════════════════════════════════════════ */
+/* Bordered label showing the CURRENT path */
+.settings-current-path {
+  margin: 0.55rem 0.7rem 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  line-height: 1.5;
+  color: var(--text-2);
+  word-break: break-all;
+}
+
+.settings-current-path .scp-label {
+  display: block;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 0.15rem;
+}
+
+/* Radio-style choice rows */
+.settings-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0 0.7rem 0.6rem;
+}
+
+.settings-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 40px;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-deep);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.settings-choice:active {
+  background: var(--surface-3);
+}
+
+.settings-choice.selected {
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+}
+
+.settings-choice-dot {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--muted);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.settings-choice.selected .settings-choice-dot {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 3px var(--accent);
+}
+
+.settings-choice-label {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.settings-choice.selected .settings-choice-label {
+  color: var(--accent);
+}
+
+.settings-choice-sub {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  color: var(--faint);
+  text-align: right;
+  word-break: break-all;
+}
+
+/* Custom-path editor (input + Browse + compact checkbox) */
+.settings-custom-path-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 0.7rem 0.65rem;
+}
+
+.settings-btn-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Compact checkbox — deliberately small (the old one felt oversized) */
+.settings-check-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.1rem 0.15rem 0;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: var(--text-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.settings-check-row input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+★ v12 BOXED SUB-SECTIONS — Editor & Appearance group boxes
+Each group (TYPING / DISPLAY / … / UI / FONT) is its own bordered box
+with a CENTERED uppercase title bar, nested inside the section card.
+Row layout rules live in renderSettingRow(): toggles & dropdowns stay
+inline; sliders ("radio based") and text inputs stack Upper/Lower.
+The full-width slider rules already exist under .settings-row-stacked,
+so stacked sliders get their width for free.
+═══════════════════════════════════════════════════════════════════════════ */
+.settings-group-box {
+  margin: 0 0 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-deep);
+  /* ★ v15.2: overflow:hidden removed — it clipped dropdown lists that
+  open downward. The title bar gets its own top radius below so the
+  box corners still look clean. */
+}
+
+.settings-group-box:last-child {
+  margin-bottom: 0;
+}
+
+/* Centered title bar (TYPING, DISPLAY, UI, FONT…) */
+.settings-group-title {
+  border-radius: 11px 11px 0 0;
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Rows sit inside a box — slightly tighter padding than free rows */
+.settings-group-box .settings-row {
+  padding: 0.7rem 0.8rem;
+}
+
+/* Live sample (Appearance → FONT box) inherits the box padding */
+.settings-group-box .settings-font-sample-wrap {
+  padding: 0.7rem 0.8rem 0.8rem;
+}
+
+/* ★ v12: feature tile grids inside group boxes need tighter padding
+than the flat-card version defined above */
+.settings-group-box .settings-feat-grid {
+  padding: 0.6rem 0.6rem 0.55rem;
+}
+
+/* ═══ ★ v12 DYNAMIC SELECT LAYOUT ═══
+When a select row stacks Upper/Lower, the dropdown takes the full
+lower area, exactly like the text input and the sliders do. */
+.settings-row-stacked .settings-select {
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ★ v13: IDE CONSOLE LOGS viewer (Settings → Logs → IDE → Console Logs)
+   Full-screen overlay built by mobile-logs.js. Sits ABOVE the settings
+   overlay (z 190 > settings' 100) but below the generic confirm modal.
+═══════════════════════════════════════════════════════════════════════════ */
+.m-logs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  animation: settingsIn 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.m-logs-overlay.hidden {
+  display: none;
+}
+
+.m-logs-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 0.9rem;
+  padding-top: calc(0.8rem + env(safe-area-inset-top, 0px));
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.m-logs-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.m-logs-count {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--faint);
+}
+
+.m-logs-close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.m-logs-close:active {
+  color: var(--text);
+  background: var(--surface-3);
+}
+
+/* Toolbar: filter chips + actions */
+.m-logs-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 0.9rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.m-logs-filters {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.m-logs-filters button {
+  padding: 0.3rem 0.7rem;
+  min-height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: var(--bg-deep);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-logs-filters button.active {
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.m-logs-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.m-logs-btn {
+  padding: 0.4rem 0.8rem;
+  min-height: 36px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface-3);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.m-logs-btn:active {
+  transform: scale(0.96);
+}
+
+.m-logs-btn.danger {
+  border-color: var(--danger-border);
+  background: var(--danger-dim);
+  color: var(--danger);
+}
+
+/* Entry list */
+.m-logs-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.6rem 0.9rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.m-logs-capnote {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--faint);
+  text-align: center;
+  padding: 0.2rem 0;
+}
+
+.m-logs-empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.m-logs-empty span {
+  font-size: 2rem;
+}
+
+.m-logs-empty p {
+  font-size: 0.8rem;
+}
+
+.mlog-entry {
+  border: 1px solid var(--border-subtle);
+  border-left-width: 3px;
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 0.45rem 0.6rem;
+}
+
+.mlog-line1 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.mlog-time {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--faint);
+}
+
+.mlog-lvl {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.1rem 0.45rem;
+  border-radius: 99px;
+}
+
+.mlog-src {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--faint);
+}
+
+.mlog-msg {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: var(--text-2);
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Level colors */
+.mlog-entry.lvl-log {
+  border-left-color: var(--muted);
+}
+
+.mlog-entry.lvl-debug {
+  border-left-color: var(--faint);
+}
+
+.mlog-entry.lvl-info {
+  border-left-color: var(--accent);
+}
+
+.mlog-entry.lvl-warn {
+  border-left-color: var(--warning);
+}
+
+.mlog-entry.lvl-error {
+  border-left-color: var(--danger);
+}
+
+.mlog-entry.lvl-log .mlog-lvl {
+  background: var(--surface-3);
+  color: var(--muted);
+}
+
+.mlog-entry.lvl-debug .mlog-lvl {
+  background: var(--surface-3);
+  color: var(--faint);
+}
+
+.mlog-entry.lvl-info .mlog-lvl {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.mlog-entry.lvl-warn .mlog-lvl {
+  background: var(--warning-dim, rgba(245, 165, 36, .12));
+  color: var(--warning);
+}
+
+.mlog-entry.lvl-error .mlog-lvl {
+  background: var(--danger-dim);
+  color: var(--danger);
+}
+
+.mlog-entry.lvl-error .mlog-msg {
+  color: var(--text);
+}
+
+/* ═══ ★ v13: STORAGE & CACHE CARD ═══
+   Only one new rule needed — the card reuses group boxes, rows and
+   badges. Disabled state for Clear / Clean All when there is 0 B. */
+.settings-action-btn:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+★ SNIPPET STUDIO — Coverage grid, snippet list, editor overlay
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Coverage grid ── */
+.snip-cov-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.snip-cov-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.78rem;
+}
+
+.snip-cov-row:last-child {
+  border-bottom: none;
+}
+
+.snip-cov-icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.snip-cov-name {
+  flex: 1 1 auto;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.snip-cov-count {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.snip-cov-count b {
+  color: var(--accent);
+}
+
+.snip-cov-custom {
+  color: var(--success);
+  font-style: normal;
+}
+
+/* ── Snippet list ── */
+.snip-lang-group {
+  margin-bottom: 0.4rem;
+}
+
+.snip-lang-head {
+  padding: 0.5rem 0.8rem 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+}
+
+.snip-lang-count {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.snip-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.78rem;
+}
+
+.snip-item:last-child {
+  border-bottom: none;
+}
+
+.snip-item-icon {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+.snip-item-label {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.snip-item-detail {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.snip-item-edit,
+.snip-item-export,
+.snip-item-del {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.snip-item-edit:active {
+  background: var(--surface-3);
+}
+
+.snip-item-del:active {
+  background: var(--danger-dim);
+}
+
+/* ── Snippet Editor Overlay ── */
+.snip-editor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+
+.snip-editor-panel {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.snip-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.snip-editor-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.snip-editor-close {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.snip-editor-close:active {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.snip-editor-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+}
+
+.snip-editor-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Snippet Editor Form Fields ── */
+.snip-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.snip-field-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: -0.3rem;
+}
+
+.snip-body-hint {
+  font-size: 0.62rem;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  margin-top: -0.3rem;
+}
+
+.snip-editor-textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: 0.7rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  resize: vertical;
+  outline: none;
+  tab-size: 2;
+}
+
+.snip-editor-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* ── Responsive: full-screen on small phones ── */
+@media (max-width: 480px) {
+  .snip-editor-overlay {
+    padding: 0;
+  }
+
+  .snip-editor-panel {
+    max-width: 100%;
+    max-height: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+★ v11 VOICE — Voice Preview & Mic Check overlays + mic button
+Reuses the Settings group boxes, rows and buttons; only the overlay
+shell, textareas, status lines and the big mic button are new.
+═══════════════════════════════════════════════════════════════════════════ */
+/* ── Shared full-screen voice overlay shell (mirrors the Logs overlay) ── */
+.m-voice-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 195;
+  /* above Settings (100), below confirm modals */
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  animation: settingsIn 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.m-voice-overlay.hidden {
+  display: none;
+}
+
+.m-voice-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 0.9rem;
+  padding-top: calc(0.8rem + env(safe-area-inset-top, 0px));
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.m-voice-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.m-voice-close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.m-voice-close:active {
+  color: var(--text);
+  background: var(--surface-3);
+}
+
+.m-voice-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.9rem;
+  padding-bottom: calc(0.9rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* ★ FIX: never let the flex column squish the boxes to fit the screen.
+   Without this, the group boxes (flex items with overflow:hidden) shrink
+   when the content is taller than the overlay, and their inner
+   textareas/buttons get clipped by the box border — the "border closes
+   mid-content" bug in Voice Preview / Mic Check. Same fix .settings-card
+   already uses inside .settings-body. */
+.m-voice-body>* {
+  flex: 0 0 auto;
+}
+
+/* ── Textareas (TTS sample text + Mic Check "Heard") ── */
+.voice-textarea {
+  width: 100%;
+  min-height: 110px;
+  padding: 0.7rem 0.8rem;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  resize: vertical;
+  outline: none;
+}
+
+.voice-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.voice-textarea[readonly] {
+  color: var(--text-2);
+}
+
+.voice-charcount {
+  margin-top: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--faint);
+  text-align: right;
+}
+
+/* ── Action rows + status line inside overlays ── */
+.voice-ctl-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.voice-status {
+  margin-top: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  min-height: 1.2em;
+  text-align: center;
+}
+
+/* ── Mic Check stage: the big mic button ── */
+.voice-mic-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.2rem 0.5rem;
+}
+
+.voice-mic-btn {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  background: var(--surface-3);
+  color: var(--text);
+  font-size: 2rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  /* hold gesture must not scroll the page */
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.voice-mic-btn:active {
+  transform: scale(0.94);
+}
+
+.voice-mic-btn.voice-mic-listening {
+  background: var(--danger-dim);
+  border-color: var(--danger);
+  animation: voiceMicPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes voiceMicPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--danger-dim);
+  }
+
+  50% {
+    box-shadow: 0 0 0 14px rgba(248, 113, 113, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-mic-btn.voice-mic-listening {
+    animation: none;
+  }
+
+  .m-voice-overlay {
+    animation: none;
+  }
+}
+
+/* ═══ ★ v14: SPEECH ENGINE MANAGER ═══ */
+.m-speech-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 196;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg)
+}
+
+.m-speech-overlay.hidden {
+  display: none
+}
+
+.m-speech-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .8rem .9rem;
+  padding-top: calc(.8rem + env(safe-area-inset-top, 0px));
+  background: var(--surface);
+  border-bottom: 1px solid var(--border)
+}
+
+.m-speech-title {
+  font-family: var(--font-display);
+  font-size: .95rem;
+  font-weight: 800;
+  flex: 1 1 auto
+}
+
+.m-speech-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: .9rem;
+  padding-bottom: calc(.9rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: .9rem
+}
+
+.m-speech-body>* {
+  flex: 0 0 auto
+}
+
+.m-speech-row {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .65rem .8rem;
+  border-bottom: 1px solid var(--border-subtle)
+}
+
+.m-speech-row:last-child {
+  border-bottom: none
+}
+
+.m-speech-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .12rem
+}
+
+.m-speech-name {
+  font-size: .84rem;
+  font-weight: 600
+}
+
+.m-speech-name em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: .58rem;
+  color: var(--muted)
+}
+
+.m-speech-desc {
+  font-size: .64rem;
+  color: var(--muted);
+  line-height: 1.4
+}
+
+.m-speech-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: .4rem
+}
+
+.m-speech-del {
+  padding: .4rem .55rem;
+  min-height: 36px
+}
+
+.m-speech-activate.active {
+  border-color: var(--success-border);
+  background: var(--success-dim);
+  color: var(--success)
+}
+
+.m-speech-progress {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  min-width: 130px
+}
+
+.m-speech-progress-bar {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--surface-3);
+  overflow: hidden
+}
+
+.m-speech-progress-bar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width .2s ease
+}
+
+.m-speech-progress-txt {
+  font-family: var(--font-mono);
+  font-size: .58rem;
+  color: var(--muted);
+  text-align: right
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+★ v15: COMPACT DROPDOWN (.vdrop) — provider / voice / engine pickers
+Replaces native <select> inside Voice Preview & Mic Check. The open
+list shows AT MOST two 44px options and scrolls for the rest, so long
+engine/voice lists never stretch the panel. .vdrop-up opens the list
+ABOVE the button (used at the bottom of a box, where the box's
+overflow:hidden would clip a downward list).
+═══════════════════════════════════════════════════════════════════════════ */
+.vdrop {
+  position: relative;
+  width: 100%;
+}
+
+.vdrop-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .55rem .8rem;
+  min-height: 44px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vdrop-btn:active {
+  border-color: var(--accent-border);
+}
+
+.vdrop-val {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vdrop-chev {
+  flex: none;
+  color: var(--muted);
+  transition: transform .15s ease;
+}
+
+.vdrop.open .vdrop-chev {
+  transform: rotate(180deg);
+}
+
+.vdrop-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 60;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  /* 2 × 44px rows + 2px borders */
+  max-height: 90px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vdrop-up .vdrop-list {
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+
+.vdrop-list.hidden {
+  display: none;
+}
+
+.vdrop-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  height: 44px;
+  padding: 0 .8rem;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: .74rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vdrop-item:active {
+  background: var(--surface-3);
+}
+
+.vdrop-item.selected {
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.vdrop-item-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ★ v15.2: download chip on the right edge of downloadable items */
+.vdrop-dl {
+  flex: none;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+.vdrop-dl:active {
+  transform: scale(.92);
+}
+
+.vdrop-dl.busy {
+  color: var(--muted);
+  background: var(--surface-3);
+  border-color: var(--border);
+  font-size: .56rem;
+}
+
+.vdrop-ok {
+  flex: none;
+  color: var(--success);
+  font-size: .7rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+★ v15.3: VOICE LOGS overlay — sits ABOVE Voice Preview / Mic Check (195)
+so you can watch an install live while the tester stays open underneath.
+Reuses the IDE console-log styles; only the z-index and the green
+"OK" level are new.
+═══════════════════════════════════════════════════════════════════════════ */
+.m-voice-logs-overlay {
+  z-index: 197;
+}
+
+.mlog-entry.lvl-ok {
+  border-left-color: var(--success);
+}
+
+.mlog-entry.lvl-ok .mlog-lvl {
+  background: var(--success-dim);
+  color: var(--success);
+}

@@ -1,0 +1,14 @@
+; Quirky IDE Project Configuration
+; This file tells the IDE that this folder is a project.
+
+[project]
+name = Peddleflash S1
+stack = php
+
+[server]
+document_root = /
+router = index.php
+htaccess = true
+
+[preview]
+entry = index.php

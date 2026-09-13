@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- ══ STORAGE ACCESS (Termux-style) ══════════════════════════════
+         Android 6–12: the classic runtime permissions. The
+         maxSdkVersion attributes mean Android simply ignores them on
+         newer versions, where MANAGE_EXTERNAL_STORAGE takes over. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+
+    <!-- Voice dictation (Settings → Voice → Speech-to-Text).
+         The microphone popup appears at runtime the first time the
+         user taps "Allow" in the Voice card — never at install time. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Android 11+: the "All files access" permission. This is what
+         lets the app reach /storage/emulated/0 the same way Termux
+         does after termux-setup-storage. The tools:ignore line stops
+         Android Studio from failing the build with a scary warning
+         about this powerful permission (we genuinely need it). -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+    <application
+        android:extractNativeLibs="true"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/qide_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/qide_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.QuirkyIDE">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

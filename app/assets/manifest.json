@@ -1,0 +1,68 @@
+{
+  "name": "Quirky IDE",
+  "short_name": "Quirky",
+  "description": "Your private web-dev cockpit. Local development only.",
+  "start_url": "index.php?mobile=1",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0d1420",
+  "theme_color": "#0d1420",
+  "categories": [
+    "developer",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "index.php?asset=icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "index.php?asset=icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Open Files",
+      "short_name": "Files",
+      "url": "index.php?mobile=1&tab=files",
+      "icons": [
+        {
+          "src": "index.php?asset=icons/icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Open Editor",
+      "short_name": "Editor",
+      "url": "index.php?mobile=1&tab=editor",
+      "icons": [
+        {
+          "src": "index.php?asset=icons/icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Open Terminal",
+      "short_name": "Terminal",
+      "url": "index.php?mobile=1&tab=terminal",
+      "icons": [
+        {
+          "src": "index.php?asset=icons/icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}

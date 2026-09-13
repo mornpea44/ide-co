@@ -1,0 +1,1 @@
+The following files in this directory are files from android studio, if they were ever to be updated "i" will personally copy the updated files to the android studio myself.

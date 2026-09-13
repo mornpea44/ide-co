@@ -1,0 +1,9 @@
+{
+    "terminal_enabled": true,
+    "preview_enabled": true,
+    "format_enabled": true,
+    "minify_enabled": true,
+    "autocomplete_enabled": true,
+    "git_enabled": true,
+    "watch_interval_ms": 10000
+}

@@ -1,0 +1,2756 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — MOBILE PANEL/OVERLAY STYLES
+═══════════════════════════════════════════════════════════════════════════
+Settings overrides, Git panel, Git diff, AI assistant,
+HTTP client, Command palette.
+═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+1. SETTINGS PANEL (Mobile-native revamp)
+═══════════════════════════════════════════════════════════════════════════
+The old "squeeze the desktop dialog" overrides were removed here.
+Settings now has its own mobile-native design — all styles live in
+app/assets/css/settings.css. Do NOT add body.is-mobile .settings-*
+overrides here; they would fight the native layout.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+2. GIT PANEL (Task 5.3)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-git-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg, #0d1420);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.m-git-overlay.show {
+  transform: translateY(0);
+}
+
+.m-git-overlay.hidden {
+  display: none;
+}
+
+.m-git-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-git-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.m-git-close:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-git-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted, #7186a5);
+  flex-shrink: 0;
+}
+
+.m-git-branch {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-2, #2dd4bf);
+  background: rgba(45, 212, 191, 0.10);
+  border: 1px solid rgba(45, 212, 191, 0.30);
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.m-git-refresh {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.m-git-refresh:active {
+  background: var(--surface-2, #1a2537);
+  color: var(--accent, #f5a524);
+}
+
+.m-git-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.m-git-section {
+  background: var(--surface, #131c2b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.m-git-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 1rem;
+  background: var(--surface-2, #1a2537);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-git-section-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--muted, #7186a5);
+}
+
+.m-git-count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 99px;
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.m-git-count.zero {
+  background: var(--surface-3, #223049);
+  color: var(--muted, #7186a5);
+}
+
+.m-git-list {
+  padding: 0.25rem;
+}
+
+.m-git-empty {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: var(--muted, #7186a5);
+  font-size: 0.82rem;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.m-git-empty-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.6;
+}
+
+.m-git-file {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.m-git-file:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-git-file-icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.m-git-file-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  color: var(--text, #e8eef7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-git-file-dir {
+  flex-shrink: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  color: var(--faint, #55688a);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-git-badge {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.m-git-badge.mod {
+  background: var(--warning-dim, rgba(251, 191, 36, .10));
+  color: var(--warning, #fbbf24);
+  border: 1px solid var(--warning-border, rgba(251, 191, 36, .30));
+}
+
+.m-git-badge.add {
+  background: var(--success-dim, rgba(74, 222, 128, .10));
+  color: var(--success, #4ade80);
+  border: 1px solid var(--success-border, rgba(74, 222, 128, .30));
+}
+
+.m-git-badge.del {
+  background: var(--danger-dim, rgba(248, 113, 113, .10));
+  color: var(--danger, #f87171);
+  border: 1px solid var(--danger-border, rgba(248, 113, 113, .30));
+}
+
+.m-git-badge.ren {
+  background: var(--info-dim, rgba(96, 165, 250, .10));
+  color: var(--info, #60a5fa);
+  border: 1px solid var(--info-border, rgba(96, 165, 250, .30));
+}
+
+.m-git-badge.unt {
+  background: var(--success-dim, rgba(74, 222, 128, .10));
+  color: var(--success, #4ade80);
+  border: 1px dashed var(--success-border, rgba(74, 222, 128, .30));
+}
+
+.m-git-commit {
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.m-git-commit:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-git-commit-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.m-git-hash {
+  flex-shrink: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--accent-2, #2dd4bf);
+  background: rgba(45, 212, 191, 0.10);
+  border: 1px solid rgba(45, 212, 191, 0.30);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+}
+
+.m-git-subject {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.8rem;
+  color: var(--text, #e8eef7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-git-commit-meta {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  color: var(--faint, #55688a);
+}
+
+.m-git-norepo {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: var(--text-2, #9db1cc);
+  line-height: 1.7;
+  font-size: 0.85rem;
+}
+
+.m-git-norepo b {
+  display: block;
+  color: var(--text, #e8eef7);
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.m-git-norepo code {
+  font-family: var(--font-mono, monospace);
+  background: var(--accent-dim, rgba(245, 165, 36, .12));
+  color: var(--accent, #f5a524);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+3. GIT DIFF OVERLAY
+═══════════════════════════════════════════════════════════════════════════ */
+.m-git-diff-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  background: var(--bg, #0d1420);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.m-git-diff-overlay.show {
+  transform: translateY(0);
+}
+
+.m-git-diff-overlay.hidden {
+  display: none;
+}
+
+.m-git-diff-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-git-diff-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text, #e8eef7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-git-diff-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  padding: 0.75rem;
+  background: var(--editor-bg, #0b111c);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--text, #e8eef7);
+  white-space: pre;
+  tab-size: 4;
+}
+
+.mgd-add {
+  background: var(--success-dim, rgba(74, 222, 128, .10));
+  color: var(--success, #4ade80);
+  display: block;
+}
+
+.mgd-del {
+  background: var(--danger-dim, rgba(248, 113, 113, .10));
+  color: var(--danger, #f87171);
+  display: block;
+}
+
+.mgd-hunk {
+  color: var(--info, #60a5fa);
+  background: var(--info-dim, rgba(96, 165, 250, .10));
+  font-weight: 700;
+  display: block;
+}
+
+.mgd-file {
+  color: var(--accent-2, #2dd4bf);
+  font-weight: 700;
+  display: block;
+  padding-top: 0.5rem;
+}
+
+.mgd-meta {
+  color: var(--faint, #55688a);
+  display: block;
+}
+
+.mgd-empty {
+  color: var(--muted, #7186a5);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+4. AI ASSISTANT (Task 5.1)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-ai-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg, #0d1420);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.m-ai-overlay.show {
+  transform: translateY(0);
+}
+
+.m-ai-overlay.hidden {
+  display: none;
+}
+
+.m-ai-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-ai-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.m-ai-close:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-ai-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted, #7186a5);
+  flex-shrink: 0;
+}
+
+.m-ai-header .ai-head-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.m-ai-overlay .ai-chat-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.7rem !important;
+}
+
+.m-ai-overlay #ai-input-area {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+5. HTTP CLIENT (Task 5.4)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-http-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg, #0d1420);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.m-http-overlay.show {
+  transform: translateY(0);
+}
+
+.m-http-overlay.hidden {
+  display: none;
+}
+
+.m-http-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-http-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.m-http-close:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-http-title {
+  flex: 1 1 auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted, #7186a5);
+}
+
+.m-http-history-btn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.m-http-history-btn:active {
+  background: var(--surface-2, #1a2537);
+  color: var(--accent, #f5a524);
+}
+
+.m-http-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.m-http-body.hidden {
+  display: none;
+}
+
+.m-http-url-row {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.m-http-method {
+  flex-shrink: 0;
+  width: 90px;
+  padding: 0.6rem 0.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  color: var(--accent, #f5a524);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.m-http-url-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.6rem 0.7rem;
+  font-size: 16px;
+  font-family: var(--font-mono, monospace);
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  color: var(--text, #e8eef7);
+  outline: none;
+}
+
+.m-http-url-input:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+.m-http-section-toggles {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.m-http-toggle {
+  flex: 1;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  background: var(--surface, #131c2b);
+  color: var(--text-2, #9db1cc);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.m-http-toggle:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-http-toggle-arrow {
+  color: var(--muted, #7186a5);
+}
+
+.m-http-section {
+  background: var(--surface, #131c2b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.m-http-section.hidden {
+  display: none;
+}
+
+.m-http-headers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.m-http-header-row {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.m-http-header-key,
+.m-http-header-val {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.45rem 0.5rem;
+  font-size: 14px;
+  font-family: var(--font-mono, monospace);
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 6px;
+  color: var(--text, #e8eef7);
+  outline: none;
+}
+
+.m-http-header-key:focus,
+.m-http-header-val:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+.m-http-header-del {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.m-http-header-del:active {
+  background: var(--danger-dim, rgba(248, 113, 113, .10));
+  color: var(--danger, #f87171);
+}
+
+.m-http-add-header {
+  padding: 0.4rem 0.7rem;
+  border: 1px dashed var(--border, #263450);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 0.78rem;
+  font-family: var(--font-mono, monospace);
+  cursor: pointer;
+}
+
+.m-http-add-header:active {
+  color: var(--accent, #f5a524);
+  border-color: var(--accent-border, rgba(245, 165, 36, .32));
+}
+
+.m-http-body-textarea {
+  width: 100%;
+  min-height: 100px;
+  max-height: 200px;
+  resize: vertical;
+  padding: 0.6rem;
+  font-size: 14px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.5;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  color: var(--text, #e8eef7);
+  outline: none;
+}
+
+.m-http-body-textarea:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+.m-http-send {
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, .32));
+  border-radius: 10px;
+  background: var(--accent-dim, rgba(245, 165, 36, .12));
+  color: var(--accent, #f5a524);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.m-http-send:active {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+}
+
+.m-http-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.m-http-response {
+  background: var(--surface, #131c2b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.m-http-response.hidden {
+  display: none;
+}
+
+.m-http-resp-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+}
+
+.m-http-status {
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  font-weight: 700;
+}
+
+.m-http-status.ok {
+  background: var(--success-dim, rgba(74, 222, 128, .10));
+  color: var(--success, #4ade80);
+  border: 1px solid var(--success-border, rgba(74, 222, 128, .30));
+}
+
+.m-http-status.err {
+  background: var(--danger-dim, rgba(248, 113, 113, .10));
+  color: var(--danger, #f87171);
+  border: 1px solid var(--danger-border, rgba(248, 113, 113, .30));
+}
+
+.m-http-status.warn {
+  background: var(--warning-dim, rgba(251, 191, 36, .10));
+  color: var(--warning, #fbbf24);
+  border: 1px solid var(--warning-border, rgba(251, 191, 36, .30));
+}
+
+.m-http-time,
+.m-http-size {
+  color: var(--muted, #7186a5);
+}
+
+.m-http-resp-body {
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  max-height: 300px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text, #e8eef7);
+}
+
+.m-http-resp-headers {
+  margin-top: 0.6rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: var(--text-2, #9db1cc);
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.m-http-resp-headers.hidden {
+  display: none;
+}
+
+.m-http-resp-header-row {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid var(--border-subtle, #1d2940);
+}
+
+.m-http-resp-hkey {
+  color: var(--accent-2, #2dd4bf);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.m-http-resp-hval {
+  color: var(--text-2, #9db1cc);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-http-toggle-resp-headers {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border, #263450);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 0.72rem;
+  font-family: var(--font-mono, monospace);
+  cursor: pointer;
+  width: 100%;
+}
+
+.m-http-toggle-resp-headers:active {
+  color: var(--accent, #f5a524);
+  border-color: var(--accent-border, rgba(245, 165, 36, .32));
+}
+
+.m-http-toggle-resp-headers.hidden {
+  display: none;
+}
+
+.m-http-history {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.m-http-history.hidden {
+  display: none;
+}
+
+.m-http-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.m-http-history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+}
+
+.m-http-history-item:active {
+  background: var(--surface-2, #1a2537);
+  border-color: var(--accent-border, rgba(245, 165, 36, .32));
+}
+
+.m-http-history-method {
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 0.68rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  background: var(--accent-dim, rgba(245, 165, 36, .12));
+  color: var(--accent, #f5a524);
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, .32));
+}
+
+.m-http-history-url {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-2, #9db1cc);
+}
+
+.m-http-history-status {
+  flex-shrink: 0;
+  color: var(--muted, #7186a5);
+  font-size: 0.7rem;
+}
+
+.m-http-history-del {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 0.7rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.m-http-history-del:active {
+  color: var(--danger, #f87171);
+  background: var(--danger-dim, rgba(248, 113, 113, .10));
+}
+
+.m-http-history-clear {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--danger-border, rgba(248, 113, 113, .30));
+  border-radius: 8px;
+  background: var(--danger-dim, rgba(248, 113, 113, .10));
+  color: var(--danger, #f87171);
+  font-size: 0.78rem;
+  font-family: var(--font-mono, monospace);
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.m-http-history-clear:active {
+  background: var(--danger, #f87171);
+  color: #fff;
+}
+
+.m-http-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--muted, #7186a5);
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+6. COMMAND PALETTE (Task 5.5)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-cmd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: var(--bg, #0d1420);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.m-cmd-overlay.show {
+  transform: translateY(0);
+}
+
+.m-cmd-overlay.hidden {
+  display: none;
+}
+
+.m-cmd-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-cmd-close {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.m-cmd-close:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-cmd-modes {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.m-cmd-mode {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.m-cmd-mode.active {
+  background: var(--accent-dim, rgba(245, 165, 36, .12));
+  color: var(--accent, #f5a524);
+}
+
+.m-cmd-input-wrap {
+  flex-shrink: 0;
+  padding: 0.6rem 1rem;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-cmd-input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  font-size: 16px;
+  font-family: var(--font-mono, monospace);
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 10px;
+  color: var(--text, #e8eef7);
+  outline: none;
+}
+
+.m-cmd-input:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+.m-cmd-input::placeholder {
+  color: var(--faint, #55688a);
+}
+
+.m-cmd-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.4rem;
+}
+
+.m-cmd-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.m-cmd-row:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-cmd-row-icon {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.m-cmd-row-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  color: var(--text, #e8eef7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-cmd-row-dir {
+  flex-shrink: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  color: var(--faint, #55688a);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-cmd-hl {
+  color: var(--accent, #f5a524);
+  font-weight: 700;
+}
+
+.m-cmd-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--muted, #7186a5);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+7. REDUCED MOTION
+═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  body.is-mobile .settings-panel {
+    animation: none;
+  }
+
+  .m-git-overlay,
+  .m-git-diff-overlay,
+  .m-ai-overlay,
+  .m-http-overlay,
+  .m-cmd-overlay {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+8. GENERIC MODAL (Phase 3.11 — AI edit/delete confirms + key dialog)
+═══════════════════════════════════════════════════════════════════════════
+The modal markup lives in _overlays.php and is driven by utils.js.
+Its styles used to come from the deleted desktop components.css,
+so mobile needs its own copy. Sits above the AI overlay (z 200). */
+body.is-mobile .modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 260;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+
+body.is-mobile .modal-overlay.hidden {
+  display: none;
+}
+
+body.is-mobile .modal {
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface, #131c2b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg, 0 16px 48px rgba(0, 0, 0, 0.45));
+  overflow: hidden;
+  animation: mobileModalIn 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes mobileModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+body.is-mobile .modal-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface-2, #1a2537);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+body.is-mobile .modal-header h3 {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text, #e8eef7);
+}
+
+body.is-mobile .modal-x {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+body.is-mobile .modal-x:active {
+  background: var(--surface-3, #223049);
+  color: var(--text, #e8eef7);
+}
+
+body.is-mobile .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+}
+
+body.is-mobile .modal-body input,
+body.is-mobile .modal-body textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 16px;
+  font-family: var(--font-mono, monospace);
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  color: var(--text, #e8eef7);
+  outline: none;
+}
+
+body.is-mobile .modal-body input:focus,
+body.is-mobile .modal-body textarea:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+body.is-mobile .modal-footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  padding-bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
+  background: var(--surface-2, #1a2537);
+  border-top: 1px solid var(--border, #263450);
+}
+
+body.is-mobile .modal-btn {
+  padding: 0.55rem 1rem;
+  min-height: 40px;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+body.is-mobile .modal-btn:active {
+  background: var(--surface-3, #223049);
+}
+
+body.is-mobile .modal-btn.primary {
+  border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  font-weight: 700;
+}
+
+body.is-mobile .modal-btn.primary:active {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+}
+
+body.is-mobile .modal-btn.danger {
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  color: var(--danger, #f87171);
+}
+
+/* ── AI footer clear button (was styled by desktop components.css) ── */
+body.is-mobile #ai-clear {
+  flex-shrink: 0;
+  min-width: 40px;
+  min-height: 36px;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+body.is-mobile #ai-clear:active {
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  color: var(--danger, #f87171);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-mobile .modal {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+8. AI PANEL COMPACT CONTROLS + GENERIC MODAL (desktop-styles removal fix)
+═══════════════════════════════════════════════════════════════════════════
+The desktop components.css used to style .pv-btn and the generic modal.
+After its removal, the mobile AI panel fell back to the global 44px
+touch minimums (mobile-only.css) and unstyled modal markup. These
+mobile-native rules restore the compact layout permanently.        */
+
+/* ── Compact AI header ── */
+body.is-mobile .m-ai-header {
+  gap: 0.4rem;
+  padding: 0.6rem 0.6rem;
+  padding-top: calc(0.6rem + env(safe-area-inset-top, 0px));
+}
+
+body.is-mobile .m-ai-close {
+  min-width: 36px;
+  min-height: 36px;
+}
+
+body.is-mobile .m-ai-header .ai-head-right {
+  gap: 0.35rem;
+}
+
+/* Status dot: back to a small LED instead of a 44px ball */
+body.is-mobile .ai-status-dot {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
+}
+
+/* Key button: compact square */
+body.is-mobile .ai-key-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+/* Model dropdown: readable again now that space is freed */
+body.is-mobile .ai-model-select {
+  flex: 1 1 auto;
+  min-width: 70px;
+  max-width: 150px;
+  min-height: 32px;
+}
+
+body.is-mobile .ai-provider-select {
+  min-width: 0;
+  min-height: 32px;
+}
+
+/* ── Compact message action chips (Edit / Delete / Regenerate) ── */
+body.is-mobile .ai-act {
+  min-width: 0;
+  min-height: 34px;
+}
+
+body.is-mobile .ai-approve,
+body.is-mobile .ai-deny {
+  min-width: 0;
+  min-height: 36px;
+}
+
+/* ── Footer: permission select + clear button ── */
+body.is-mobile #ai-footer {
+  gap: 0.4rem;
+}
+
+body.is-mobile #ai-permission-mode {
+  min-height: 40px;
+}
+
+/* The 🧹 button (was .pv-btn in the deleted desktop CSS) */
+body.is-mobile #ai-clear {
+  flex-shrink: 0;
+  width: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  background: var(--surface-3, #223049);
+  color: var(--text-2, #9db1cc);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+body.is-mobile #ai-clear:active {
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+  color: var(--danger, #f87171);
+}
+
+/* ── Generic modal (AI ✏️ Edit / 🗑 Delete dialogs) ──
+This markup (#modal-overlay) also lost its desktop styles, so the
+AI's confirm dialogs would render as a raw unstyled box.        */
+body.is-mobile .modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 260;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+
+body.is-mobile .modal {
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface, #131c2b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg, 0 16px 48px rgba(0, 0, 0, 0.45));
+  overflow: hidden;
+  animation: mobileModalIn 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes mobileModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+body.is-mobile .modal-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface-2, #1a2537);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+body.is-mobile .modal-header h3 {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text, #e8eef7);
+}
+
+body.is-mobile .modal-x {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+body.is-mobile .modal-x:active {
+  background: var(--surface-3, #223049);
+  color: var(--text, #e8eef7);
+}
+
+body.is-mobile .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+}
+
+body.is-mobile .modal-body input,
+body.is-mobile .modal-body textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 16px;
+  font-family: var(--font-mono, monospace);
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  color: var(--text, #e8eef7);
+  outline: none;
+}
+
+body.is-mobile .modal-body input:focus,
+body.is-mobile .modal-body textarea:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+body.is-mobile .modal-footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  padding-bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
+  background: var(--surface-2, #1a2537);
+  border-top: 1px solid var(--border, #263450);
+}
+
+body.is-mobile .modal-btn {
+  min-height: 40px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+body.is-mobile .modal-btn:active {
+  background: var(--surface-3, #223049);
+}
+
+body.is-mobile .modal-btn.primary {
+  border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  font-weight: 700;
+}
+
+body.is-mobile .modal-btn.danger {
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  color: var(--danger, #f87171);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-mobile .modal {
+    animation: none;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   v10 — SOURCE CONTROL REDESIGN (tabs · staging · swipe · commit bar)
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* Branch chip is now a button */
+.m-git-branch {
+  background: color-mix(in srgb, var(--accent, #f5a524) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #f5a524) 32%, transparent);
+  color: var(--text, #e8eef7);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  max-width: 34vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-git-more {
+  background: none;
+  border: none;
+  color: var(--muted, #7186a5);
+  font-size: 18px;
+  padding: 6px;
+  min-width: 36px;
+}
+
+/* Segmented tabs */
+.m-git-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px 0;
+  border-bottom: 1px solid var(--border, #263450);
+  background: var(--bg, #0b0f17);
+}
+
+.m-git-tab {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted, #7186a5);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 4px;
+  cursor: pointer;
+}
+
+.m-git-tab.active {
+  color: var(--accent, #f5a524);
+  border-bottom-color: var(--accent, #f5a524);
+}
+
+.m-git-tabpane {
+  min-height: 0;
+}
+
+/* Merge-conflict banner */
+.m-git-merge-banner {
+  margin: 10px 12px 0;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(245, 165, 36, 0.09);
+  border: 1px solid rgba(245, 165, 36, 0.45);
+  color: var(--text, #e8eef7);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.m-git-merge-banner b {
+  color: var(--accent, #f5a524);
+}
+
+.m-git-merge-hint {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted, #7186a5);
+  font-size: 11px;
+}
+
+.m-git-merge-hint code {
+  font-family: var(--font-mono, monospace);
+  font-size: 10.5px;
+}
+
+/* File rows: swipe affordance */
+.m-git-file {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.m-file-grip {
+  color: var(--muted, #4a6076);
+  font-size: 10px;
+  letter-spacing: -2px;
+  padding-right: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.m-file-swipe-action {
+  position: absolute;
+  inset: 0 auto 0 auto;
+  right: 0;
+  width: 64px;
+  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.16) 55%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  color: #34d399;
+  font-size: 15px;
+  pointer-events: none;
+}
+
+.m-git-file.swiped .m-file-swipe-action::after {
+  content: '⇤';
+}
+
+/* Init button inside empty state */
+.m-git-init-btn {
+  margin-top: 12px;
+  background: var(--accent, #f5a524);
+  color: #0b0f17;
+  border: none;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.m-git-init-btn:active {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
+/* Load older commits */
+.m-git-loadmore {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 8px 12px 14px;
+  background: none;
+  border: 1px dashed var(--border, #263450);
+  color: var(--muted, #7186a5);
+  font-size: 12px;
+  padding: 9px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.m-git-loadmore:disabled {
+  opacity: 0.5;
+}
+
+/* Sticky commit bar */
+.m-git-commitbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border, #263450);
+  background: var(--surface, #131a26);
+}
+
+.m-git-commitbar.hidden {
+  display: none;
+}
+
+.m-git-msg {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--bg, #0b0f17);
+  border: 1px solid var(--border, #263450);
+  color: var(--text, #e8eef7);
+  font-size: 16px;
+  /* Android zoom guard */
+  padding: 9px 12px;
+  border-radius: 10px;
+}
+
+.m-git-msg:focus {
+  outline: none;
+  border-color: var(--accent, #f5a524);
+}
+
+.m-git-amend {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted, #7186a5);
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.m-git-amend.enabled {
+  color: var(--accent, #f5a524);
+  opacity: 1;
+}
+
+.m-git-amend input {
+  accent-color: var(--accent, #f5a524);
+}
+
+.m-git-commit-btn {
+  flex: none;
+  background: var(--accent, #f5a524);
+  color: #0b0f17;
+  border: none;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.m-git-commit-btn:disabled {
+  background: var(--border, #263450);
+  color: var(--muted, #7186a5);
+  cursor: default;
+}
+
+.m-git-commit-btn:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+/* Diff overlay toolbar */
+.m-git-diff-tool {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--muted, #7186a5);
+  font-size: 15px;
+  min-width: 34px;
+  padding: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.m-git-diff-tool.active {
+  color: var(--accent, #f5a524);
+  border-color: color-mix(in srgb, var(--accent, #f5a524) 40%, transparent);
+}
+
+.m-git-diff-body.wrap {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mgd-truncated,
+.mgd-note {
+  margin: 0 0 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+}
+
+.mgd-truncated {
+  background: rgba(245, 165, 36, 0.1);
+  color: var(--accent, #f5a524);
+}
+
+.mgd-note {
+  background: rgba(139, 163, 199, 0.08);
+  color: var(--muted, #8ba3c7);
+}
+
+/* Action-sheet rows used by the git long-press menu (m-sheet base lives in mobile-sheets.css) */
+.m-sheet-title {
+  padding: 14px 16px 6px;
+  color: var(--muted, #7186a5);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.m-sheet-row.danger {
+  color: #f87171;
+}
+
+/* ★ v10 fix: injected git sheets must stack ABOVE the z-200 git overlay
+   (base sheets are z-100 and would render underneath). Same compound
+   selector approach the AI panel uses. */
+.m-sheet.ai-sheet {
+  z-index: 210;
+}
+
+.m-sheet-backdrop.ai-sheet-backdrop {
+  z-index: 205;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   v10 HTTP REDESIGN (sticky builder bar · body modes · auth · history)
+   ═════════════════════════════════════════════════════════════════════════
+   Appended only — earlier .m-http-* rules above still style the shared
+   pieces this redesign reuses (.m-http-overlay shell, close/title/history
+   buttons, KV rows, status pill colors, response header rows, empty state).
+   NOTE for dedupe pass: leave the duplicated generic-modal blocks and the
+   v10 SOURCE CONTROL section above untouched. */
+
+/* ── Sticky builder bar directly under the header ── */
+.m-http-sendbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-http-sendbar .m-http-method {
+  width: 96px;
+  min-height: 40px;
+  font-size: 12px;
+}
+
+.m-http-sendbar .m-http-send {
+  flex: none;
+  min-width: 64px;
+  min-height: 40px;
+  padding: 8px 14px;
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.m-http-sendbar .m-http-send.inflight {
+  background: rgba(248, 113, 113, 0.14);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
+/* ── Meta row (timeout countdown while sending; hidden when empty) ── */
+.m-http-meta-row {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 3px 12px;
+  background: var(--bg-deep, #0a101b);
+  border-bottom: 1px solid var(--border, #263450);
+  color: var(--muted, #8ba3c7);
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+}
+
+.m-http-meta-row.on {
+  display: flex;
+}
+
+/* History toggle gets an active state when the view is open */
+.m-http-history-btn.active {
+  color: var(--accent, #f5a524);
+  background: rgba(245, 165, 36, 0.10);
+}
+
+/* ── Collapsible request sections ── */
+.m-http-body {
+  gap: 10px;
+}
+
+.m-http-sec {
+  background: var(--surface, #131c2b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.m-http-sec-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  color: var(--text, #e8eef7);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-http-sec-head:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-http-sec-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted, #7186a5);
+}
+
+.m-http-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  font-size: 11px;
+}
+
+.m-http-sec-head.open .m-http-arrow {
+  transform: rotate(90deg);
+}
+
+.m-http-count {
+  min-width: 20px;
+  height: 18px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 99px;
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+  font-family: var(--font-mono, monospace);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.m-http-count.zero {
+  background: var(--surface-3, #223049);
+  color: var(--muted, #7186a5);
+}
+
+.m-http-sec-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid var(--border-subtle, #1d2940);
+}
+
+.m-http-sec-content.hidden {
+  display: none;
+}
+
+/* ── Body mode segmented control ── */
+.m-http-seg {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 9px;
+}
+
+.m-http-seg button {
+  flex: 1 1 0;
+  padding: 7px 4px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-http-seg button.active {
+  background: rgba(245, 165, 36, 0.14);
+  color: var(--accent, #f5a524);
+}
+
+.m-http-bpane {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.m-http-bpane.hidden {
+  display: none;
+}
+
+.m-http-textarea {
+  width: 100%;
+  min-height: 96px;
+  max-height: 220px;
+  resize: vertical;
+  padding: 9px;
+  font-size: 14px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.5;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 9px;
+  color: var(--text, #e8eef7);
+  outline: none;
+}
+
+.m-http-textarea:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+.m-http-btnrow {
+  display: flex;
+  gap: 8px;
+}
+
+.m-http-minibtn {
+  flex: 1 1 0;
+  min-height: 36px;
+  padding: 7px 8px;
+  border: 1px solid var(--border, #263450);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-http-minibtn:active {
+  color: var(--accent, #f5a524);
+  border-color: rgba(245, 165, 36, 0.4);
+}
+
+/* Form fields reuse the .m-http-header-row KV styles from section 5 */
+
+/* ── Auth section ── */
+.m-http-auth-select {
+  padding: 9px 10px;
+  font-size: 13px;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 9px;
+  color: var(--text, #e8eef7);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.m-http-auth-row {
+  display: flex;
+  gap: 8px;
+}
+
+.m-http-auth-row input {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 9px 10px;
+  font-size: 16px;
+  /* Android zoom guard */
+  font-family: var(--font-mono, monospace);
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 9px;
+  color: var(--text, #e8eef7);
+  outline: none;
+}
+
+.m-http-auth-row input:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+.m-http-auth-note {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--faint, #55688a);
+  font-family: var(--font-mono, monospace);
+}
+
+/* ── Response card ── */
+.m-http-resp-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.m-http-chip {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: var(--muted, #8ba3c7);
+  background: var(--surface-3, #223049);
+  border: 1px solid var(--border, #263450);
+  border-radius: 99px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.m-http-chip.hidden {
+  display: none;
+}
+
+.m-http-collapse {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border: 1px dashed var(--border, #263450);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-family: var(--font-mono, monospace);
+  font-size: 11.5px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-http-collapse:active {
+  color: var(--accent, #f5a524);
+  border-color: rgba(245, 165, 36, 0.4);
+}
+
+.m-http-collapse.hidden {
+  display: none;
+}
+
+.m-http-tabs {
+  display: flex;
+  gap: 2px;
+  margin-top: 8px;
+  padding: 2px;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 9px;
+}
+
+.m-http-tabs button {
+  flex: 1 1 0;
+  padding: 6px 4px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-http-tabs button.active {
+  background: rgba(45, 212, 191, 0.12);
+  color: var(--accent-2, #2dd4bf);
+}
+
+.m-http-tabs button.copied,
+.m-http-tabs button:active {
+  color: var(--accent, #f5a524);
+}
+
+.m-http-resp-body {
+  margin-top: 8px;
+  max-height: 320px;
+}
+
+.m-http-resp-img {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+  margin: 0 auto;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.m-http-resp-img.ready {
+  opacity: 1;
+}
+
+.m-http-binary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 18px 12px;
+  border: 1px dashed var(--border, #263450);
+  border-radius: 9px;
+  text-align: center;
+  color: var(--text-2, #9db1cc);
+  font-size: 12px;
+}
+
+.m-http-binary-card b {
+  font-family: var(--font-mono, monospace);
+  font-size: 12.5px;
+  color: var(--text, #e8eef7);
+  word-break: break-all;
+}
+
+.m-http-binary-card p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted, #7186a5);
+  word-break: break-word;
+}
+
+.m-http-binary-card.fail b {
+  color: #f87171;
+}
+
+.m-http-binary-warn {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--warning, #fbbf24);
+  text-align: center;
+}
+
+/* ── History view ── */
+.m-http-history-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.m-http-filter {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 9px 11px;
+  font-size: 16px;
+  /* Android zoom guard */
+  font-family: var(--font-mono, monospace);
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 10px;
+  color: var(--text, #e8eef7);
+  outline: none;
+}
+
+.m-http-filter:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+.m-http-history-clear {
+  flex: none;
+  min-width: 42px;
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(248, 113, 113, 0.30);
+  border-radius: 10px;
+  background: rgba(248, 113, 113, 0.10);
+  color: #f87171;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.m-http-history-clear:active {
+  background: rgba(248, 113, 113, 0.28);
+}
+
+.m-http-history-list {
+  gap: 8px;
+}
+
+/* Rows tinted by status class + swipe-to-delete affordance */
+.m-http-hitem {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px 10px 12px;
+  border: 1px solid var(--border, #263450);
+  border-left-width: 3px;
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: pan-y;
+  font-family: var(--font-mono, monospace);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-http-hitem.ok {
+  border-left-color: #34d399;
+}
+
+.m-http-hitem.warn {
+  border-left-color: #fbbf24;
+}
+
+.m-http-hitem.err {
+  border-left-color: #f87171;
+}
+
+.m-http-hitem.na {
+  border-left-color: var(--border-strong, #33456b);
+}
+
+.m-http-hitem:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-http-hmethod {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: rgba(245, 165, 36, 0.12);
+  color: var(--accent, #f5a524);
+  border: 1px solid rgba(245, 165, 36, 0.32);
+}
+
+.m-http-hmain {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m-http-hurl {
+  font-size: 12px;
+  color: var(--text, #e8eef7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-http-hmeta {
+  font-size: 10.5px;
+  color: var(--faint, #55688a);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-http-hstatus {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.m-http-hstatus.ok {
+  color: #34d399;
+}
+
+.m-http-hstatus.warn {
+  color: #fbbf24;
+}
+
+.m-http-hstatus.err {
+  color: #f87171;
+}
+
+.m-http-hstatus.na {
+  color: var(--muted, #7186a5);
+}
+
+.m-http-hdel {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.m-http-hdel:active {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.m-http-hswipe {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  background: linear-gradient(90deg, transparent, rgba(248, 113, 113, 0.16) 55%);
+  color: #f87171;
+  font-size: 15px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.m-http-hitem.swiped .m-http-hswipe {
+  opacity: 1;
+}
+
+.m-http-empty-icon {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+v14 HEADER UNIFICATION — Settings-style headers for AI · Git · HTTP · Workshop
+Every full-screen panel now shares the Settings header anatomy:
+[ bordered ✕ ] [ icon + name in display font ] … right side empty.
+Functional header controls live in a secondary bar ("subhead") below.
+═══════════════════════════════════════════════════════════════════════════ */
+/* ── Header geometry = .settings-header ── */
+body.is-mobile .m-ai-header,
+body.is-mobile .m-git-header,
+body.is-mobile .m-http-header,
+body.is-mobile .m-workshop-header {
+  gap: 0.7rem;
+  padding: 0.8rem 0.9rem;
+  padding-top: calc(0.8rem + env(safe-area-inset-top, 0px));
+}
+
+/* ── Bordered ✕ button = .settings-close ── */
+body.is-mobile .m-ai-close,
+body.is-mobile .m-git-close,
+body.is-mobile .m-http-close,
+body.is-mobile .m-workshop-close {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border, #263450);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 1.05rem;
+}
+
+body.is-mobile .m-ai-close:active,
+body.is-mobile .m-git-close:active,
+body.is-mobile .m-http-close:active,
+body.is-mobile .m-workshop-close:active {
+  color: var(--text, #e8eef7);
+  background: var(--surface-3, #223049);
+  border-color: var(--border-strong, #33456b);
+}
+
+/* ── Title typography = .settings-title ── */
+body.is-mobile .m-ai-title,
+body.is-mobile .m-git-title,
+body.is-mobile .m-http-title,
+body.is-mobile .m-workshop-title {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: normal;
+  color: var(--text, #e8eef7);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Secondary top head (the moved controls) ── */
+body.is-mobile .m-ai-subhead,
+body.is-mobile .m-git-subhead,
+body.is-mobile .m-http-subhead {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+/* AI row: provider chip + model dropdown share the bar */
+body.is-mobile .m-ai-subhead .ai-model-select {
+  flex: 1 1 auto;
+  max-width: none;
+  min-height: 36px;
+}
+
+/* Git row: branch chip grows, refresh/more become bordered squares */
+body.is-mobile .m-git-subhead .m-git-branch {
+  flex: 1 1 auto;
+  max-width: none;
+  text-align: left;
+  min-height: 36px;
+}
+
+body.is-mobile .m-git-subhead .m-git-refresh,
+body.is-mobile .m-git-subhead .m-git-more {
+  flex-shrink: 0;
+  min-width: 36px;
+  min-height: 36px;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+}
+
+/* HTTP row: history as a labelled pill */
+body.is-mobile .m-http-subhead .m-http-history-btn {
+  width: auto;
+  min-height: 36px;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+body.is-mobile .m-http-subhead .m-http-history-btn.active {
+  color: var(--accent, #f5a524);
+  border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+}
+
+/* Workshop toolbars now carry the counter on their right side */
+body.is-mobile .m-workshop-logs-toolbar .m-workshop-subtitle {
+  margin-left: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+v14.1 — COMMAND PALETTE joins the Settings-style headers + AI title fix
+═══════════════════════════════════════════════════════════════════════════ */
+/* ── Palette header geometry = .settings-header ── */
+body.is-mobile .m-cmd-header {
+  gap: 0.7rem;
+  padding: 0.8rem 0.9rem;
+  padding-top: calc(0.8rem + env(safe-area-inset-top, 0px));
+}
+
+/* ── Bordered ✕ = .settings-close ── */
+body.is-mobile .m-cmd-close {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border, #263450);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 1.05rem;
+}
+
+body.is-mobile .m-cmd-close:active {
+  color: var(--text, #e8eef7);
+  background: var(--surface-3, #223049);
+  border-color: var(--border-strong, #33456b);
+}
+
+/* ── Title typography = .settings-title ── */
+body.is-mobile .m-cmd-title {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text, #e8eef7);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Secondary top head: the Files / Commands switch ── */
+body.is-mobile .m-cmd-subhead {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+body.is-mobile .m-cmd-subhead .m-cmd-modes {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 2px;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+body.is-mobile .m-cmd-subhead .m-cmd-mode {
+  flex: 1 1 0;
+  min-height: 36px;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+body.is-mobile .m-cmd-subhead .m-cmd-mode.active {
+  background: var(--accent-dim, rgba(245, 165, 36, .12));
+  color: var(--accent, #f5a524);
+}
+
+/* ── ★ FIX: the AI panel name must NEVER be hidden.
+The old crowded-header design hid it on screens ≤ 380px
+(ai-panel.css media query); it is now the panel name. ── */
+body.is-mobile .m-ai-header .m-ai-title {
+  display: block;
+}

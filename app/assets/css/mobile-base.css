@@ -1,0 +1,723 @@
+/* File: mobile-base.css */
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — MOBILE BASE STYLES
+═══════════════════════════════════════════════════════════════════════════
+Core mobile foundation: resets, root layout, header, content area,
+bottom tab bar, FAB, offline banner, safe-area fixes, skeletons,
+swipe-between-tabs animations, and global reduced-motion rules.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+1. MOBILE RESET & GLOBAL TWEAKS
+═══════════════════════════════════════════════════════════════════════════ */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body.is-mobile {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+body.is-mobile input,
+body.is-mobile textarea,
+body.is-mobile select {
+  font-size: 16px;
+}
+
+body.is-mobile button {
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+2. THE ROOT LAYOUT
+═══════════════════════════════════════════════════════════════════════════ */
+#mobile-root {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+3. TOP HEADER
+═══════════════════════════════════════════════════════════════════════════ */
+#mobile-header {
+  flex-shrink: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.5rem;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+#mobile-header .mh-logo {
+  font-size: 1.15rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+#mobile-header .mh-title {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+#mobile-header .mh-title .accent {
+  color: var(--accent, #f5a524);
+}
+
+#mobile-header .mh-file {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text, #e8eef7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#mobile-header .mh-spacer {
+  flex: 0 0 auto;
+  width: 0.25rem;
+}
+
+#mobile-header .mh-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 1.1rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+#mobile-header .mh-btn:active,
+#mobile-header .mh-btn.active {
+  background: var(--surface-3, #223049);
+  color: var(--accent, #f5a524);
+}
+
+#mobile-header .mh-save {
+  background: transparent;
+  border: none;
+  color: var(--text-2, #9db1cc);
+  font-size: 1.1rem;
+}
+
+#mobile-header .mh-save:active {
+  background: var(--surface-3, #223049);
+  color: var(--accent, #f5a524);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+4. CONTENT AREA & PANEL SYSTEM
+═══════════════════════════════════════════════════════════════════════════ */
+#mobile-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg, #0d1420);
+  overflow: hidden;
+}
+
+.m-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.m-panel.hidden {
+  display: none;
+}
+
+.m-panel-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.mph-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--muted, #7186a5);
+}
+
+.mph-sub {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.66rem;
+  color: var(--faint, #55688a);
+}
+
+.m-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.m-panel-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60%;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: var(--muted, #7186a5);
+}
+
+.mpp-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.mpp-text {
+  font-size: 0.85rem;
+  color: var(--text-2, #9db1cc);
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+.mpp-badge {
+  display: inline-block;
+  margin-top: 1rem;
+  background: rgba(245, 165, 36, 0.08);
+  border: 1px solid rgba(245, 165, 36, 0.25);
+  color: var(--accent, #f5a524);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 99px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+5. BOTTOM TAB BAR
+═══════════════════════════════════════════════════════════════════════════ */
+#mobile-tabbar {
+  flex-shrink: 0;
+  height: 56px;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  background: var(--surface, #131c2b);
+  border-top: 1px solid var(--border, #263450);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+#mobile-tabbar .mt-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  border: none;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  padding: 0.25rem 0;
+  position: relative;
+  transition: color 0.15s ease;
+}
+
+#mobile-tabbar .mt-btn .mt-ico {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+#mobile-tabbar .mt-btn .mt-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+#mobile-tabbar .mt-btn:active,
+#mobile-tabbar .mt-btn.active {
+  color: var(--accent, #f5a524);
+}
+
+#mobile-tabbar .mt-btn.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--accent, #f5a524);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+6. FLOATING ACTION BUTTON
+═══════════════════════════════════════════════════════════════════════════ */
+.m-fab {
+  position: absolute;
+  right: 1rem;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  color: var(--accent-contrast, #0d1420);
+  background: var(--accent, #f5a524);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 40;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.m-fab:active {
+  transform: scale(0.94);
+}
+
+.m-fab.hidden {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+7. OFFLINE INDICATOR (Task 6.4)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-offline-banner {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--warning-dim, rgba(251, 191, 36, 0.12));
+  border-bottom: 1px solid var(--warning-border, rgba(251, 191, 36, 0.30));
+  color: var(--warning, #fbbf24);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+  transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease, border-bottom-width 0.3s ease;
+  max-height: 60px;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.m-offline-banner.hidden {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  border-bottom-width: 0;
+}
+
+.m-offline-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+8. SAFE AREA AUDIT FIXES (Task 6.8)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-git-header {
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+}
+
+.m-http-header {
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+}
+
+.m-ai-header {
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+}
+
+.m-git-diff-header {
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+9. SWIPE BETWEEN TABS (Task 6.1)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-panel.swipe-reset {
+  transition: transform 0.2s ease-out;
+}
+
+.m-panel.swipe-in-left {
+  animation: mSwipeInLeft 0.25s ease-out;
+}
+
+.m-panel.swipe-in-right {
+  animation: mSwipeInRight 0.25s ease-out;
+}
+
+@keyframes mSwipeInLeft {
+  from {
+    transform: translateX(40px);
+    opacity: 0.6;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes mSwipeInRight {
+  from {
+    transform: translateX(-40px);
+    opacity: 0.6;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+10. LOADING STATES + SKELETONS (Task 6.3)
+═══════════════════════════════════════════════════════════════════════════ */
+@keyframes mSkeletonShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.m-skeleton {
+  background: linear-gradient(90deg,
+      var(--surface-2, #1a2537) 25%,
+      var(--surface-3, #223049) 50%,
+      var(--surface-2, #1a2537) 75%);
+  background-size: 200% 100%;
+  animation: mSkeletonShimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+11. TABLET LAYOUT (768px+)
+═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  #mobile-header {
+    padding: 0 1rem;
+  }
+
+  #mobile-tabbar .mt-btn .mt-label {
+    font-size: 0.65rem;
+  }
+
+  #mobile-tabbar .mt-btn .mt-ico {
+    font-size: 1.35rem;
+  }
+
+  .m-fab {
+    right: 1.5rem;
+  }
+
+  .m-sheet {
+    max-width: 480px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) translateY(100%);
+  }
+
+  .m-sheet.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .m-tree-row {
+    min-height: 44px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+12. ACCESSIBILITY — REDUCED MOTION
+═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+
+  body.is-mobile *,
+  body.is-mobile *::before,
+  body.is-mobile *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .m-panel.swipe-in-left,
+  .m-panel.swipe-in-right {
+    animation: none;
+  }
+
+  .m-panel.swipe-reset {
+    transition: none;
+  }
+
+  .m-offline-banner {
+    transition: none;
+  }
+
+  .m-skeleton {
+    animation: none;
+    background: var(--surface-2, #1a2537);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   13. TOAST NOTIFICATIONS (mobile)
+   ═══════════════════════════════════════════════════════════════════════════
+   IMPORTANT: components.css is NOT loaded in the mobile bundle, so the
+   desktop .toast styles don't exist here. We must define ALL base toast
+   styles for mobile, then add the action-toast variant on top.          */
+
+/* ── Base toast (replaces the missing components.css .toast rules) ── */
+body.is-mobile .toast {
+  position: fixed;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translate(-50%, 18px);
+  background: var(--surface-2, #1a2537);
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  color: var(--accent, #f5a524);
+  padding: 0.75rem 1.2rem;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  z-index: var(--z-toast, 120);
+  max-width: calc(100vw - 2rem);
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.is-mobile .toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ── Toast type colours ── */
+body.is-mobile .toast.toast-success {
+  border-color: var(--success-border, rgba(74, 222, 128, 0.30));
+  color: var(--success, #4ade80);
+}
+
+body.is-mobile .toast.toast-error {
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+  color: var(--danger, #f87171);
+}
+
+body.is-mobile .toast.toast-warning {
+  border-color: var(--warning-border, rgba(251, 191, 36, 0.30));
+  color: var(--warning, #fbbf24);
+}
+
+/* ── Action Toast variant (Task 8.1 — Undo/Redo with action button) ── */
+body.is-mobile .toast.m-toast-has-action {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem 0.65rem 1.1rem;
+  pointer-events: auto;
+  text-align: left;
+  white-space: normal;
+}
+
+body.is-mobile .toast .m-toast-msg {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+body.is-mobile .toast .m-toast-action {
+  flex-shrink: 0;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  border-radius: 8px;
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, transform 0.1s ease;
+}
+
+body.is-mobile .toast .m-toast-action:active {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+  transform: scale(0.94);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  body.is-mobile .toast {
+    transition: opacity 0.15s ease;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+14. ERROR TOAST ACTION BUTTON (Task 8.6)
+═══════════════════════════════════════════════════════════════════════════
+The .m-toast-action button style is already defined in section 13
+(from Task 8.1). Task 8.6 reuses it for retry buttons.
+No additional CSS needed — the existing .m-toast-has-action and
+.m-toast-action styles cover the retry button pattern.
+
+The toast-error colour override ensures error toasts are red. */
+body.is-mobile .toast.toast-error.m-toast-has-action {
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+}
+
+body.is-mobile .toast.toast-error.m-toast-has-action .m-toast-action {
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  color: var(--danger, #f87171);
+}
+
+body.is-mobile .toast.toast-error.m-toast-has-action .m-toast-action:active {
+  background: var(--danger, #f87171);
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+15. OVERLAY DRAG-TO-DISMISS (Task 8.7)
+═══════════════════════════════════════════════════════════════════════════
+A small pill-shaped handle at the top of full-screen overlays signals
+that they can be swiped down to close, matching the bottom-sheet pattern. */
+.m-overlay-drag-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-strong, #3a4d70);
+  margin: 0 auto 6px;
+  flex-shrink: 0;
+}
+
+/* Reduced motion: no transform animations on dismiss */
+@media (prefers-reduced-motion: reduce) {
+
+  .m-cmd-overlay,
+  .m-git-overlay,
+  .m-git-diff-overlay,
+  .m-ai-overlay,
+  .m-http-overlay {
+    transition: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+TOGGLEABLE TREE TOOLS CONTAINER
+═══════════════════════════════════════════════════════════════ */
+.m-tree-tools {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+  max-height: 400px;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.m-tree-tools.hidden {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* Active state for the tree-tools header button */
+#mobile-header .mh-btn.active {
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  color: var(--accent, #f5a524);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+16. KEYBOARD-OPEN MODE (HOTFIX B-2)
+═══════════════════════════════════════════════════════════════
+While the virtual keyboard + helper toolbar are visible, the
+bottom navigation yields its space (Termux-style). The helper
+keys (Ctrl/Esc/arrows/...) take over that strip.            */
+body.m-kb-open #mobile-tabbar,
+body.m-kb-open .m-fab,
+body.m-kb-open .m-selection-bar {
+  display: none !important;
+}
+
+/* HOTFIX C-1 + D-3: reserve space for BOTH the virtual keyboard and
+   the floating helper strip.
+     --mkb-kb    = keyboard height (measured by mobile-keyboard.js)
+     --mkb-h     = helper strip height
+     --mkb-total = keyboard + strip added together
+   The terminal input line now sits ABOVE the helper strip, and the
+   helper strip sits ABOVE the keyboard. */
+body.m-kb-open #mobile-root {
+  padding-bottom: var(--mkb-total, var(--mkb-h, 54px));
+}
+
+/* HOTFIX D-3: full-screen overlays are position:fixed, so they ignore
+   the #mobile-root padding above. Give each one the same bottom inset,
+   or their input rows hide behind the keyboard + helper strip.
+   (AI chat input, command palette, HTTP client body.) */
+body.m-kb-open .m-ai-overlay,
+body.m-kb-open .m-cmd-overlay,
+body.m-kb-open .m-http-overlay {
+  padding-bottom: var(--mkb-total, var(--mkb-h, 54px));
+}
+
+/* HOTFIX D-3 (bonus): bottom sheets with text inputs (Rename, New File,
+   New Folder) get lifted above the keyboard too. */
+body.m-kb-open .m-sheet {
+  bottom: var(--mkb-total, var(--mkb-h, 54px));
+}
+
+/* ── HOTFIX: AI Assistant input must sit ABOVE the helper-key strip ──
+   The AI overlay (#m-ai-overlay) lives OUTSIDE #mobile-root, so it does
+   NOT inherit the root's keyboard padding. Give it its own bottom space
+   equal to the helper-strip height so the message box and the permission
+   selector are visible above the helper keys.                          */
+body.m-kb-open .m-ai-overlay {
+  padding-bottom: var(--mkb-h, 54px);
+}

@@ -1,0 +1,150 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — MOBILE-ONLY CSS (Phase 2 · Separation)
+═══════════════════════════════════════════════════════════════════════════
+Styles that ONLY apply to the mobile platform.
+This file is loaded in the mobile CSS bundle but NEVER on desktop.
+Purpose:
+• Enforce minimum touch target sizes (Apple HIG: 44×44px)
+• Prevent unwanted text selection on UI chrome
+• Enable smooth momentum scrolling on iOS
+• Hide desktop-only UI affordances (hover states, resize handles)
+═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+1. TOUCH TARGET MINIMUMS (Apple HIG: 44×44px)
+═══════════════════════════════════════════════════════════════ */
+button,
+[role="button"],
+a,
+input[type="checkbox"],
+input[type="radio"],
+select {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+2. PREVENT TEXT SELECTION ON UI CHROME
+Users shouldn't accidentally select button text or labels
+when tapping quickly.                                      */
+.chrome-ui,
+.mh-btn,
+.mt-btn,
+.mab-btn,
+.mkb-btn,
+.mterm-btn,
+.m-sheet-row,
+.m-cmd-row,
+.m-tree-row,
+.m-tab-item {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+3. SMOOTH iOS MOMENTUM SCROLLING
+Gives that native "flick" feel to scrollable areas.       */
+.m-panel-body,
+.m-term-output,
+.m-cmd-list,
+.m-git-body,
+.m-http-body,
+.m-tree-children {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+4. HIDE DESKTOP-ONLY AFFORDANCES
+Things that make no sense on a touch screen.               */
+/* No resize handles on mobile */
+.resizable-pane,
+.editor-split-divider,
+#sidebar-divider,
+#preview-divider {
+  display: none !important;
+}
+
+/* No hover states — use :active instead */
+@media (hover: none) {
+
+  .tb-btn:hover,
+  .big-btn:hover,
+  .side-action:hover,
+  .et-btn:hover,
+  .sb-btn:hover,
+  .pv-btn:hover {
+    background: inherit;
+    color: inherit;
+    border-color: inherit;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+5. SAFE AREA PADDING
+Accounts for notches and home indicator on modern phones. */
+#mobile-header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+#mobile-tabbar {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.m-sheet {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+.m-term-input-line {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+6. LARGER DEFAULT FONT SIZE ON MOBILE
+16px is the minimum to prevent iOS from zooming the page
+when an input is focused.                                */
+body.is-mobile {
+  font-size: 16px;
+}
+
+body.is-mobile input,
+body.is-mobile textarea,
+body.is-mobile select {
+  font-size: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+7. REDUCED MOTION
+Respect users who prefer less animation.                  */
+@media (prefers-reduced-motion: reduce) {
+
+  body.is-mobile *,
+  body.is-mobile *::before,
+  body.is-mobile *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+LOW-END DEVICE STABILIZATION
+Disables all CSS transitions and animations to prevent compositor
+lag and UI freezing on devices with weak GPUs/CPUs.
+═══════════════════════════════════════════════════════════════ */
+.disable-animations *,
+.disable-animations *::before,
+.disable-animations *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}
+
+/* Disable the heavy backdrop-filter blur on sheets for low-end */
+.disable-animations .m-sheet-backdrop,
+.disable-animations .modal-overlay {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+}

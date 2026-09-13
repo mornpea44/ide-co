@@ -1,0 +1,143 @@
+{
+  "catalogVersion": 2,
+  "updated": "2026-09-02",
+  "entries": [
+    {
+      "id": "sherpa-onnx",
+      "kind": "runtime",
+      "contract": "sherpa-onnx-tts-v1",
+      "name": "sherpa-onnx runtime",
+      "description": "Unified offline engine: Piper + Kokoro voices AND Whisper speech-to-text. ~25 MB.",
+      "size": 25000000,
+      "files": [
+        {
+          "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.10.26/sherpa-onnx-v1.10.26-android.tar.bz2",
+          "sha256": "",
+          "dest": "runtimes/sherpa-onnx.tar.bz2",
+          "extract": true,
+          "stripComponents": 1
+        }
+      ],
+      "binary": "runtimes/bin/sherpa-onnx-offline-tts"
+    },
+    {
+      "id": "tts-piper-en_US-amy-low",
+      "kind": "tts-model",
+      "runtime": "sherpa-onnx",
+      "name": "English (US) — Amy (Piper)",
+      "description": "Lightweight Piper voice via sherpa-onnx. Good on 2 GB RAM phones.",
+      "lang": "en_US",
+      "size": 65000000,
+      "minRamMb": 1500,
+      "capabilities": ["offline"],
+      "files": [
+        {
+          "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-amy-low.tar.bz2",
+          "sha256": "",
+          "dest": "models/tts/amy-low.tar.bz2",
+          "extract": true,
+          "stripComponents": 1
+        }
+      ],
+      "entry": "models/tts/en_US-amy-low/en_US-amy-low.onnx",
+      "tokens": "models/tts/en_US-amy-low/tokens.txt",
+      "dataDir": "models/tts/en_US-amy-low/espeak-ng-data"
+    },
+    {
+      "id": "tts-piper-en_US-lessac-medium",
+      "kind": "tts-model",
+      "runtime": "sherpa-onnx",
+      "name": "English (US) — Lessac (Piper)",
+      "description": "Higher-quality Piper voice via sherpa-onnx. Needs ~3 GB RAM.",
+      "lang": "en_US",
+      "size": 130000000,
+      "minRamMb": 2500,
+      "capabilities": ["offline"],
+      "files": [
+        {
+          "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-lessac-medium.tar.bz2",
+          "sha256": "",
+          "dest": "models/tts/lessac-medium.tar.bz2",
+          "extract": true,
+          "stripComponents": 1
+        }
+      ],
+      "entry": "models/tts/en_US-lessac-medium/en_US-lessac-medium.onnx",
+      "tokens": "models/tts/en_US-lessac-medium/tokens.txt",
+      "dataDir": "models/tts/en_US-lessac-medium/espeak-ng-data"
+    },
+    {
+      "id": "tts-kokoro-en-v0_19",
+      "kind": "tts-model",
+      "runtime": "sherpa-onnx",
+      "name": "Kokoro v0.19 (English)",
+      "description": "High-quality Kokoro voice via sherpa-onnx. ~82M params. Needs ~3 GB RAM.",
+      "lang": "en",
+      "size": 330000000,
+      "minRamMb": 3000,
+      "capabilities": ["offline"],
+      "files": [
+        {
+          "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-en-v0_19.tar.bz2",
+          "sha256": "",
+          "dest": "models/tts/kokoro.tar.bz2",
+          "extract": true,
+          "stripComponents": 1
+        }
+      ],
+      "entry": "models/tts/kokoro-v0_19/kokoro-en-v0_19.onnx",
+      "tokens": "models/tts/kokoro-v0_19/tokens.txt",
+      "dataDir": "models/tts/kokoro-v0_19/espeak-ng-data"
+    },
+    {
+      "id": "stt-whisper-tiny",
+      "kind": "stt-model",
+      "runtime": "sherpa-onnx",
+      "contract": "sherpa-onnx-asr-v1",
+      "name": "Whisper Tiny (multilingual)",
+      "description": "Fastest offline dictation, run by the sherpa-onnx engine. Works on 2 GB RAM phones.",
+      "langs": ["auto"],
+      "size": 40000000,
+      "minRamMb": 1500,
+      "capabilities": ["offline", "batch"],
+      "files": [
+        {
+          "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2",
+          "sha256": "",
+          "dest": "models/stt/whisper-tiny.tar.bz2",
+          "extract": true,
+          "stripComponents": 1
+        }
+      ],
+      "entry": "models/stt/tiny.encoder.int8.onnx",
+      "encoder": "models/stt/tiny.encoder.int8.onnx",
+      "decoder": "models/stt/tiny.decoder.int8.onnx",
+      "tokens": "models/stt/tiny.tokens.txt"
+    },
+    {
+      "id": "stt-whisper-base",
+      "kind": "stt-model",
+      "runtime": "sherpa-onnx",
+      "contract": "sherpa-onnx-asr-v1",
+      "name": "Whisper Base (multilingual)",
+      "description": "Better accuracy, still phone-friendly, run by the sherpa-onnx engine.",
+      "langs": ["auto"],
+      "size": 90000000,
+      "minRamMb": 2500,
+      "capabilities": ["offline", "batch"],
+      "files": [
+        {
+          "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-base.tar.bz2",
+          "sha256": "",
+          "dest": "models/stt/whisper-base.tar.bz2",
+          "extract": true,
+          "stripComponents": 1
+        }
+      ],
+      "entry": "models/stt/base.encoder.int8.onnx",
+      "encoder": "models/stt/base.encoder.int8.onnx",
+      "decoder": "models/stt/base.decoder.int8.onnx",
+      "tokens": "models/stt/base.tokens.txt"
+    }
+  ]
+}

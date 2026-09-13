@@ -1,0 +1,10 @@
+# Quirky IDE — deny direct HTTP access to private app data when served by
+# Apache/Laragon. Under `php -S` (the Android app) every request funnels
+# through index.php which never exposes these paths anyway.
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

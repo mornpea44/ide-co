@@ -1,0 +1,3075 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — MOBILE TERMINAL STYLES
+═══════════════════════════════════════════════════════════════════════════
+Terminal toolbar, output area, input line, CWD badge,
+and terminal-specific keyboard keys.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+1. TOOLBAR
+═══════════════════════════════════════════════════════════════════════════ */
+.m-term-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--surface-2, #1a2537);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.mterm-btn {
+  /* ★ LAYOUT POLISH: ≥40px square thumb targets (was 36px) */
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.mterm-btn:active {
+  background: var(--surface-3, #223049);
+  color: var(--accent, #f5a524);
+}
+
+.mterm-cancel {
+  color: var(--danger, #f87171);
+  animation: mtermCancelPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes mtermCancelPulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.mterm-spacer {
+  flex: 1 1 auto;
+}
+
+.mterm-status {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.66rem;
+  color: var(--muted, #7186a5);
+  min-width: 0;
+  flex: 0 1 auto;
+  max-width: 42vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+2. OUTPUT AREA
+═══════════════════════════════════════════════════════════════════════════ */
+.m-term-output {
+  /* ★ VISUAL FIX: vertical flex box so short sessions stick to the
+       bottom (like a real terminal) instead of floating at the top
+       with a dead zone above the input line. */
+  display: flex;
+  flex-direction: column;
+  padding: 0.7rem 0.9rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  /* Terminal zoom: the JS sets --m-term-zoom (0.5 – 2.0). */
+  font-size: calc(var(--m-term-base, 0.82rem) * var(--m-term-zoom, 1));
+  line-height: 1.6;
+  color: var(--term-text, #c8d6e8);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-variant-ligatures: none;
+  /* ★ FIX: render every character separately */
+}
+
+/* ★ TOP-DOWN FLOW (was bottom-glue): the empty space now sits BELOW
+the text. Prints start at the top edge and stack downward in the
+exact order they were emitted; once output overflows the pane,
+normal scrolling + the existing stick-to-bottom autoscroll take
+over exactly like before. */
+.m-term-output> :first-child {
+  margin-top: 0;
+}
+
+.m-term-welcome {
+  color: var(--muted, #7186a5);
+  font-style: italic;
+  font-size: 0.95em;
+}
+
+.m-term-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.m-term-line {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.3rem 0;
+}
+
+.m-term-echo-prompt {
+  color: var(--term-prompt, #f5a524);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.m-term-echo-cmd {
+  color: var(--term-cmd, #e8eef7);
+  font-weight: 500;
+}
+
+.m-term-info {
+  color: var(--term-info, #60a5fa);
+  font-size: 0.9em;
+  margin: 0.2rem 0;
+}
+
+.m-term-error {
+  color: var(--term-error, #f87171);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+3. INPUT LINE
+═══════════════════════════════════════════════════════════════════════════ */
+.m-term-input-line {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border, #263450);
+  background: var(--bg-deep, #0a101b);
+}
+
+.m-term-prompt {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--term-prompt, #f5a524);
+  flex-shrink: 0;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#m-term-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--term-cmd, #e8eef7);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  /* ★ LAYOUT POLISH: the input now follows the terminal zoom variable so
+     prompt and typed text match the output size at every zoom step
+     (0.7x–2x). maximum-scale=1 in the boot viewport prevents iOS from
+     auto-zooming the smaller sizes, so no layout jump on focus. */
+  font-size: calc(var(--m-term-base, 0.82rem) * var(--m-term-zoom, 1));
+  min-height: 40px;
+  /* comfortable thumb target */
+  padding: 0.25rem 0;
+  font-variant-ligatures: none;
+  /* ★ FIX: never merge "--" into one glyph */
+}
+
+#m-term-input::placeholder {
+  color: var(--faint, #55688a);
+}
+
+#m-term-input:disabled {
+  opacity: 0.5;
+}
+
+.mterm-send {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  border-radius: 8px;
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  font-size: 18px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.12s ease;
+}
+
+.mterm-send:active {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+}
+
+.mterm-send:disabled {
+  opacity: 0.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+4. CWD BADGE
+═══════════════════════════════════════════════════════════════════════════ */
+.m-term-cwd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-2, #2dd4bf);
+  background: rgba(45, 212, 191, 0.10);
+  border: 1px solid rgba(45, 212, 191, 0.30);
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+5. TERMINAL KEYBOARD KEYS (Task 4.3)
+═══════════════════════════════════════════════════════════════════════════ */
+.mkb-btn.mkb-terminal {
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  color: var(--accent-2, #2dd4bf);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.mkb-btn.mkb-terminal:active {
+  background: var(--accent-2-dim, rgba(45, 212, 191, 0.10));
+  border-color: var(--accent-2, #2dd4bf);
+  color: var(--accent-2, #2dd4bf);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+6. TABLET OVERRIDES
+═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .mkb-btn.mkb-terminal {
+    min-width: 52px;
+    min-height: 48px;
+    font-size: 13px;
+  }
+
+  .mterm-zoom-btn {
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 18px;
+  }
+
+  .mterm-zoom-btn.mterm-zoom-chip {
+    min-width: 52px;
+    font-size: 0.72rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+7. REDUCED MOTION
+═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .mterm-cancel {
+    animation: none;
+  }
+
+  .m-term-banner {
+    animation: none;
+  }
+
+  .mterm-zoom-btn.mterm-zoom-pulse {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+8. STARTUP BANNER (Termux-style welcome)
+═══════════════════════════════════════════════════════════════ */
+.m-term-banner {
+  padding: 0.8rem 0;
+  animation: bannerFadeIn 0.4s ease-out;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@keyframes bannerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The bordered box around the title */
+.m-term-banner-box {
+  border: 1px solid var(--border, #263450);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.7rem;
+  background: var(--surface, #131c2b);
+  text-align: center;
+}
+
+.m-term-banner-title {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--accent, #f5a524);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.2rem;
+}
+
+.m-term-banner-meta {
+  font-size: 0.85em;
+  color: var(--muted, #7186a5);
+  letter-spacing: 0.04em;
+}
+
+/* Section headings inside the banner */
+.m-term-banner-heading {
+  font-size: 0.9em;
+  font-weight: 700;
+  color: var(--accent-2, #2dd4bf);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0.65rem 0 0.3rem;
+}
+
+/* Command rows: name on left, description on right */
+.m-term-banner-row {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.15rem 0;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+.m-term-banner-cmd {
+  color: var(--text, #e8eef7);
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 16ch;
+}
+
+.m-term-banner-desc {
+  color: var(--muted, #7186a5);
+}
+
+/* The dim footer line */
+.m-term-banner-footer {
+  margin-top: 0.7rem;
+  font-size: 0.85em;
+  color: var(--faint, #55688a);
+  letter-spacing: 0.03em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+8b. PLAIN-TEXT WELCOME (Termux-style) — no box, no card: just
+coloured text that word-wraps naturally, so nothing is ever
+truncated at any zoom or pane width. The hint list is a SOFT
+two-column layout (not a rigid grid): the command span has a
+fixed min-width so every explanation starts at the same x,
+while each explanation wraps inside its own space on narrow
+screens or high zoom.
+═══════════════════════════════════════════════════════════ */
+.m-term-banner-plain {
+  padding: 0.45rem 0;
+}
+
+.m-term-banner-plain,
+.m-term-banner-plain .m-term-banner-title,
+.m-term-banner-plain .m-term-banner-list,
+.m-term-banner-plain .m-term-banner-row,
+.m-term-banner-plain .m-term-banner-footer {
+  display: block;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.m-term-banner-plain .m-term-banner-title {
+  font-size: 1em;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.m-term-banner-plain .m-term-banner-meta {
+  font-size: 0.85em;
+  font-weight: 400;
+}
+
+/* hint rows: command left (aligned), explanation right (wraps).
+★ DYNAMIC WIDTH: the explanation now has a 20ch flex-basis inside a
+wrapping flex row. On a wide pane nothing changes (soft two-column
+look); on a narrow pane (small phone or high terminal zoom) the
+explanation drops onto its own full-width line under the command
+instead of being squeezed into a 3-character column. */
+.m-term-banner-plain .m-term-banner-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.1rem 1.2ch;
+  padding: 0.06rem 0;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+.m-term-banner-plain .m-term-banner-cmd {
+  flex: 0 0 auto;
+  min-width: 12ch;
+  /* longest cmd ("pkg install") + 1 → explanations align */
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--text, #e8eef7);
+}
+
+.m-term-banner-plain .m-term-banner-desc {
+  flex: 1 1 20ch;
+  min-width: 0;
+  /* allows the explanation to wrap, never truncate */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: var(--muted, #7186a5);
+}
+
+.m-term-banner-plain .m-term-banner-footer {
+  margin-top: 0.3rem;
+  font-size: 0.78em;
+}
+
+/* ── ENTRY STATE: the welcome banner now sits flush against the TOP
+edge of the pane (the vertical-centering rule was removed). The
+lone block cursor stays hidden until the first command echoes
+(.m-term-fresh is removed in submitCommand / hardReset).
+The TUI "ceiling" layout (.m-term-alt) is untouched. */
+.m-term-output.m-term-fresh .m-term-screen {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+9. TRANSIENT PROGRESS LINE (apt-style live status)
+═══════════════════════════════════════════════════════════════ */
+.m-term-prog {
+  color: var(--term-info, #60a5fa);
+  font-size: 0.95em;
+  padding: 0.1rem 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.m-term-prog::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-right: 0.6ch;
+  animation: mtermProgPulse 1s ease-in-out infinite;
+}
+
+@keyframes mtermProgPulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-term-prog::before {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+10. TERMINAL ZOOM CONTROLS (50% – 200%)
+═══════════════════════════════════════════════════════════════
+Explicit min-width/min-height are required here because
+mobile-only.css forces a 44px minimum on every <button>.     */
+.mterm-zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+
+.mterm-zoom-btn {
+  flex-shrink: 0;
+  /* ★ LAYOUT POLISH: ≥40px thumb targets (was 32px) */
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, color 0.12s ease, transform 0.1s ease;
+  padding: 0 4px;
+}
+
+.mterm-zoom-btn:active {
+  background: var(--surface-3, #223049);
+  color: var(--accent, #f5a524);
+  transform: scale(0.92);
+}
+
+.mterm-zoom-btn:disabled {
+  pointer-events: none;
+}
+
+.mterm-zoom-btn.mterm-zoom-chip {
+  min-width: 46px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--accent, #f5a524);
+}
+
+@keyframes mtermZoomPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  30% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.mterm-zoom-btn.mterm-zoom-pulse {
+  animation: mtermZoomPulse 0.25s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+11. INTERACTIVE STDIN ECHO
+═══════════════════════════════════════════════════════════════ */
+.m-term-stdin-prompt {
+  color: var(--success, #4ade80);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.m-term-stdin-text {
+  color: var(--text, #e8eef7);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+12. PHASE T-PTY — REAL TERMINAL EMULATOR SCREEN
+The JS emulator renders a fixed 80×24 grid of rows. Rows never
+wrap (a real terminal doesn't word-wrap); the pane scrolls
+horizontally instead, and the zoom controls shrink the text.
+═══════════════════════════════════════════════════════════════ */
+.m-term-screen {
+  white-space: pre;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  font-variant-ligatures: none;
+}
+
+.m-te-row {
+  min-height: 1.6em;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+/* The emulated block cursor */
+.m-te-cursor {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+  border-radius: 2px;
+}
+
+/* ── ANSI 16-colour palette (fg) ── */
+.ansi-fg-0 {
+  color: #1a1a1a;
+}
+
+.ansi-fg-1 {
+  color: #e05252;
+}
+
+.ansi-fg-2 {
+  color: #4ade80;
+}
+
+.ansi-fg-3 {
+  color: #fbbf24;
+}
+
+.ansi-fg-4 {
+  color: #60a5fa;
+}
+
+.ansi-fg-5 {
+  color: #c084fc;
+}
+
+.ansi-fg-6 {
+  color: #2dd4bf;
+}
+
+.ansi-fg-7 {
+  color: #c8d6e8;
+}
+
+.ansi-fg-b0 {
+  color: #7186a5;
+}
+
+.ansi-fg-b1 {
+  color: #f87171;
+}
+
+.ansi-fg-b2 {
+  color: #86efac;
+}
+
+.ansi-fg-b3 {
+  color: #fde047;
+}
+
+.ansi-fg-b4 {
+  color: #93c5fd;
+}
+
+.ansi-fg-b5 {
+  color: #d8b4fe;
+}
+
+.ansi-fg-b6 {
+  color: #5eead4;
+}
+
+.ansi-fg-b7 {
+  color: #f8fafc;
+}
+
+/* ── ANSI 16-colour palette (bg) ── */
+.ansi-bg-0 {
+  background: #1a1a1a;
+}
+
+.ansi-bg-1 {
+  background: #7f1d1d;
+}
+
+.ansi-bg-2 {
+  background: #14532d;
+}
+
+.ansi-bg-3 {
+  background: #713f12;
+}
+
+.ansi-bg-4 {
+  background: #1e3a8a;
+}
+
+.ansi-bg-5 {
+  background: #581c87;
+}
+
+.ansi-bg-6 {
+  background: #134e4a;
+}
+
+.ansi-bg-7 {
+  background: #334155;
+}
+
+.ansi-bg-b0 {
+  background: #475569;
+}
+
+.ansi-bg-b1 {
+  background: #b91c1c;
+}
+
+.ansi-bg-b2 {
+  background: #15803d;
+}
+
+.ansi-bg-b3 {
+  background: #a16207;
+}
+
+.ansi-bg-b4 {
+  background: #1d4ed8;
+}
+
+.ansi-bg-b5 {
+  background: #7e22ce;
+}
+
+.ansi-bg-b6 {
+  background: #0f766e;
+}
+
+.ansi-bg-b7 {
+  background: #e2e8f0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+13. PHASE T-PTY-2 — SINGLE-SCREEN TERMINAL (visual cleanup)
+One persistent screen + scrollback. Later rules win over §12.
+═══════════════════════════════════════════════════════════════ */
+/* The single flow wrapper sits at the TOP of the pane — prints flow
+top → bottom in emission order (scrollback banner first, then the
+live screen rows below it). */
+.m-term-flow {
+  margin-top: 0;
+  /* sideways swipe for wide lines, but NO visible scrollbar */
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.m-term-flow::-webkit-scrollbar {
+  display: none;
+}
+
+.m-term-sb,
+.m-term-screen {
+  overflow: visible;
+  white-space: pre;
+}
+
+/* Rows: fixed line height, never word-wrap (real terminal look) */
+.m-te-row {
+  min-height: 1.6em;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+/* Thin DARK vertical scrollbar instead of the ugly light thumb */
+.m-term-output {
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border, #263450) transparent;
+}
+
+.m-term-output::-webkit-scrollbar {
+  width: 4px;
+  height: 0;
+  background: transparent;
+}
+
+.m-term-output::-webkit-scrollbar-thumb {
+  background: var(--border, #263450);
+  border-radius: 2px;
+}
+
+/* ── styled spans used inside the emulated screen ── */
+span.m-term-echo-prompt {
+  color: var(--term-prompt, #f5a524);
+  font-weight: 700;
+}
+
+span.m-term-echo-cmd {
+  color: var(--term-cmd, #e8eef7);
+  font-weight: 600;
+}
+
+span.m-term-info-text {
+  color: var(--term-info, #60a5fa);
+}
+
+span.m-term-error-text {
+  color: var(--term-error, #f87171);
+}
+
+span.m-term-stdin-prompt {
+  color: var(--success, #4ade80);
+  font-weight: 700;
+}
+
+span.m-term-stdin-text {
+  color: var(--text, #e8eef7);
+}
+
+/* transient download progress line (blue, pulsing dot) */
+span.m-term-prog {
+  color: var(--term-info, #60a5fa);
+}
+
+span.m-term-prog::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-right: 0.6ch;
+  animation: mtermProgPulse 1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  span.m-term-prog::before {
+    animation: none;
+  }
+}
+
+/* block cursor inside the screen */
+.m-te-cursor {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+14. STABILITY PASS — ONE UNIFIED WRAP POLICY (was T-PTY-3 split)
+The old rules made screen rows `pre` but scrollback rows
+`pre-wrap / anywhere`, so history and live output looked like two
+different terminals stacked. NOW:
+
+• DEFAULT = NOWRAP EVERYWHERE (Termux look). Rows already fit the
+  pane because the PTY is measured/sized to the screen; genuinely
+  long lines escape horizontally by FLICKING the flow container
+  (overflow-x:auto, scrollbar invisible).
+• Opt-in SOFT WRAP via the toolbar ↔ button (.m-term-wrap on
+  #m-term-output / JS setWordWrap(true)): wraps BOTH screen and
+  scrollback identically.
+═══════════════════════════════════════════════════════════════ */
+.m-term-flow {
+  /* horizontal flick = the escape hatch for over-wide rows */
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.m-term-flow::-webkit-scrollbar {
+  display: none;
+}
+
+/* Screen AND scrollback rows share the exact same rendering. */
+.m-term-screen .m-te-row,
+.m-term-sb .m-te-row {
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+/* ── Opt-in soft wrap (toolbar ↔ toggle) ─────────────────────── */
+.m-term-output.m-term-wrap .m-term-flow {
+  overflow-x: hidden;
+}
+
+.m-term-output.m-term-wrap .m-term-screen .m-te-row,
+.m-term-output.m-term-wrap .m-term-sb .m-te-row {
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* ── Raw keystroke mode (PTY program running) ──────────────────
+   The input box becomes an invisible key catcher: typed glyphs
+   are sent to the program instantly, so its own text is hidden
+   and the send button disappears (Enter on the keyboard is the
+   real newline key). */
+.m-term-input-line.m-term-raw #m-term-input {
+  color: transparent;
+  caret-color: transparent;
+  text-shadow: none;
+}
+
+.m-term-input-line.m-term-raw #m-term-input::placeholder {
+  color: var(--faint, #55688a);
+  opacity: 0.8;
+}
+
+.m-term-input-line.m-term-raw .mterm-send {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+15. FULL-SCREEN TUI MODE — "CEILING" LAYOUT (nano / vim / top …)
+When a program switches to the alternate screen, the emulated
+24-row screen stretches to fill the WHOLE terminal pane, like
+Termux: title row pinned to the top, shortcut footer pinned to
+the bottom, body rows evenly distributed between them.
+Scrollback is hidden while active; no scrollbars are shown.
+Streaming tools (pkg, mpacker, AI agents) are NOT affected.
+═══════════════════════════════════════════════════════════════ */
+.m-term-output.m-term-alt {
+  padding: 0.25rem 0.6rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.m-term-output.m-term-alt::-webkit-scrollbar {
+  display: none;
+}
+
+.m-term-output.m-term-alt .m-term-flow {
+  margin-top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.m-term-output.m-term-alt .m-term-sb {
+  display: none !important;
+}
+
+.m-term-output.m-term-alt .m-term-screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Every one of the 24 rows becomes an equal slice of the pane,
+so TOP stays at the top and FOOTER stays at the bottom.
+★ ZOOM REFLOW: flex-basis 0 + min-height 0 lets rows shrink to
+fit the pane at any zoom instead of clipping at min-height:1.6em. */
+.m-term-output.m-term-alt .m-te-row {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   16. PHASE T-PTY-7 — REAL-TIME ZOOM / CLEAN SCREEN
+   Zoom now animates smoothly instead of jumping, and applies live
+   even while a command is running.
+   ═══════════════════════════════════════════════════════════════ */
+/* ★ HOTFIX: font-size transition removed. Animating font-size over a
+   multi-hundred-row terminal forces a FULL re-layout on every animation
+   frame — the single biggest source of zoom lag. Zoom now applies
+   instantly (presentation-only); the zoom chip pulse gives the feedback. */
+.m-term-output {
+  transition: none;
+}
+
+/* ★ ZOOM/RESIZE RACE FIX: while a command runs the animation is OFF.
+   The JS re-measures cols after a ≥260 ms settle; without this class a
+   mid-transition measurement sent the PTY a width belonging to an
+   intermediate font size and TUIs drew for the wrong grid. */
+.m-term-output.m-term-running {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-term-output {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+17. PHASE T-PTY-9 — UNIFORM CELL WIDTHS (font-drift fix)
+Rows that contain box-drawing / block characters are rendered as
+one span per cell. Each cell is forced to exactly 1ch (the width
+of one normal letter), so borders and ASCII logos can never drift
+out of alignment, no matter which glyphs the phone font substitutes.
+═══════════════════════════════════════════════════════════════ */
+.m-te-cell {
+  display: inline-block;
+  width: 1ch;
+  text-align: center;
+  overflow: hidden;
+  vertical-align: top;
+  line-height: inherit;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   18. STABILITY PASS — SGR 256-COLOUR PALETTE (generated table)
+   Matches PALETTE_RGB in mobile-terminal.js exactly (same order:
+   16 base/bright, 6×6×6 cube with levels 0/95/135/175/215/255,
+   24 grayscale steps 8..238). Classes: ansi-fg-c<n> / ansi-bg-c<n>.
+   Truecolor SGR 38;2;r;g;b is quantized in JS to the nearest entry.
+   ═══════════════════════════════════════════════════════════════ */
+.ansi-fg-c0 {
+  color: #1a1a1a
+}
+
+.ansi-bg-c0 {
+  background: #1a1a1a
+}
+
+.ansi-fg-c1 {
+  color: #e05252
+}
+
+.ansi-bg-c1 {
+  background: #e05252
+}
+
+.ansi-fg-c2 {
+  color: #4ade80
+}
+
+.ansi-bg-c2 {
+  background: #4ade80
+}
+
+.ansi-fg-c3 {
+  color: #fbbf24
+}
+
+.ansi-bg-c3 {
+  background: #fbbf24
+}
+
+.ansi-fg-c4 {
+  color: #60a5fa
+}
+
+.ansi-bg-c4 {
+  background: #60a5fa
+}
+
+.ansi-fg-c5 {
+  color: #c084fc
+}
+
+.ansi-bg-c5 {
+  background: #c084fc
+}
+
+.ansi-fg-c6 {
+  color: #2dd4bf
+}
+
+.ansi-bg-c6 {
+  background: #2dd4bf
+}
+
+.ansi-fg-c7 {
+  color: #c8d6e8
+}
+
+.ansi-bg-c7 {
+  background: #c8d6e8
+}
+
+.ansi-fg-c8 {
+  color: #7186a5
+}
+
+.ansi-bg-c8 {
+  background: #7186a5
+}
+
+.ansi-fg-c9 {
+  color: #f87171
+}
+
+.ansi-bg-c9 {
+  background: #f87171
+}
+
+.ansi-fg-c10 {
+  color: #86efac
+}
+
+.ansi-bg-c10 {
+  background: #86efac
+}
+
+.ansi-fg-c11 {
+  color: #fde047
+}
+
+.ansi-bg-c11 {
+  background: #fde047
+}
+
+.ansi-fg-c12 {
+  color: #93c5fd
+}
+
+.ansi-bg-c12 {
+  background: #93c5fd
+}
+
+.ansi-fg-c13 {
+  color: #d8b4fe
+}
+
+.ansi-bg-c13 {
+  background: #d8b4fe
+}
+
+.ansi-fg-c14 {
+  color: #5eead4
+}
+
+.ansi-bg-c14 {
+  background: #5eead4
+}
+
+.ansi-fg-c15 {
+  color: #f8fafc
+}
+
+.ansi-bg-c15 {
+  background: #f8fafc
+}
+
+.ansi-fg-c16 {
+  color: #000000
+}
+
+.ansi-bg-c16 {
+  background: #000000
+}
+
+.ansi-fg-c17 {
+  color: #00005f
+}
+
+.ansi-bg-c17 {
+  background: #00005f
+}
+
+.ansi-fg-c18 {
+  color: #000087
+}
+
+.ansi-bg-c18 {
+  background: #000087
+}
+
+.ansi-fg-c19 {
+  color: #0000af
+}
+
+.ansi-bg-c19 {
+  background: #0000af
+}
+
+.ansi-fg-c20 {
+  color: #0000d7
+}
+
+.ansi-bg-c20 {
+  background: #0000d7
+}
+
+.ansi-fg-c21 {
+  color: #0000ff
+}
+
+.ansi-bg-c21 {
+  background: #0000ff
+}
+
+.ansi-fg-c22 {
+  color: #005f00
+}
+
+.ansi-bg-c22 {
+  background: #005f00
+}
+
+.ansi-fg-c23 {
+  color: #005f5f
+}
+
+.ansi-bg-c23 {
+  background: #005f5f
+}
+
+.ansi-fg-c24 {
+  color: #005f87
+}
+
+.ansi-bg-c24 {
+  background: #005f87
+}
+
+.ansi-fg-c25 {
+  color: #005faf
+}
+
+.ansi-bg-c25 {
+  background: #005faf
+}
+
+.ansi-fg-c26 {
+  color: #005fd7
+}
+
+.ansi-bg-c26 {
+  background: #005fd7
+}
+
+.ansi-fg-c27 {
+  color: #005fff
+}
+
+.ansi-bg-c27 {
+  background: #005fff
+}
+
+.ansi-fg-c28 {
+  color: #008700
+}
+
+.ansi-bg-c28 {
+  background: #008700
+}
+
+.ansi-fg-c29 {
+  color: #00875f
+}
+
+.ansi-bg-c29 {
+  background: #00875f
+}
+
+.ansi-fg-c30 {
+  color: #008787
+}
+
+.ansi-bg-c30 {
+  background: #008787
+}
+
+.ansi-fg-c31 {
+  color: #0087af
+}
+
+.ansi-bg-c31 {
+  background: #0087af
+}
+
+.ansi-fg-c32 {
+  color: #0087d7
+}
+
+.ansi-bg-c32 {
+  background: #0087d7
+}
+
+.ansi-fg-c33 {
+  color: #0087ff
+}
+
+.ansi-bg-c33 {
+  background: #0087ff
+}
+
+.ansi-fg-c34 {
+  color: #00af00
+}
+
+.ansi-bg-c34 {
+  background: #00af00
+}
+
+.ansi-fg-c35 {
+  color: #00af5f
+}
+
+.ansi-bg-c35 {
+  background: #00af5f
+}
+
+.ansi-fg-c36 {
+  color: #00af87
+}
+
+.ansi-bg-c36 {
+  background: #00af87
+}
+
+.ansi-fg-c37 {
+  color: #00afaf
+}
+
+.ansi-bg-c37 {
+  background: #00afaf
+}
+
+.ansi-fg-c38 {
+  color: #00afd7
+}
+
+.ansi-bg-c38 {
+  background: #00afd7
+}
+
+.ansi-fg-c39 {
+  color: #00afff
+}
+
+.ansi-bg-c39 {
+  background: #00afff
+}
+
+.ansi-fg-c40 {
+  color: #00d700
+}
+
+.ansi-bg-c40 {
+  background: #00d700
+}
+
+.ansi-fg-c41 {
+  color: #00d75f
+}
+
+.ansi-bg-c41 {
+  background: #00d75f
+}
+
+.ansi-fg-c42 {
+  color: #00d787
+}
+
+.ansi-bg-c42 {
+  background: #00d787
+}
+
+.ansi-fg-c43 {
+  color: #00d7af
+}
+
+.ansi-bg-c43 {
+  background: #00d7af
+}
+
+.ansi-fg-c44 {
+  color: #00d7d7
+}
+
+.ansi-bg-c44 {
+  background: #00d7d7
+}
+
+.ansi-fg-c45 {
+  color: #00d7ff
+}
+
+.ansi-bg-c45 {
+  background: #00d7ff
+}
+
+.ansi-fg-c46 {
+  color: #00ff00
+}
+
+.ansi-bg-c46 {
+  background: #00ff00
+}
+
+.ansi-fg-c47 {
+  color: #00ff5f
+}
+
+.ansi-bg-c47 {
+  background: #00ff5f
+}
+
+.ansi-fg-c48 {
+  color: #00ff87
+}
+
+.ansi-bg-c48 {
+  background: #00ff87
+}
+
+.ansi-fg-c49 {
+  color: #00ffaf
+}
+
+.ansi-bg-c49 {
+  background: #00ffaf
+}
+
+.ansi-fg-c50 {
+  color: #00ffd7
+}
+
+.ansi-bg-c50 {
+  background: #00ffd7
+}
+
+.ansi-fg-c51 {
+  color: #00ffff
+}
+
+.ansi-bg-c51 {
+  background: #00ffff
+}
+
+.ansi-fg-c52 {
+  color: #5f0000
+}
+
+.ansi-bg-c52 {
+  background: #5f0000
+}
+
+.ansi-fg-c53 {
+  color: #5f005f
+}
+
+.ansi-bg-c53 {
+  background: #5f005f
+}
+
+.ansi-fg-c54 {
+  color: #5f0087
+}
+
+.ansi-bg-c54 {
+  background: #5f0087
+}
+
+.ansi-fg-c55 {
+  color: #5f00af
+}
+
+.ansi-bg-c55 {
+  background: #5f00af
+}
+
+.ansi-fg-c56 {
+  color: #5f00d7
+}
+
+.ansi-bg-c56 {
+  background: #5f00d7
+}
+
+.ansi-fg-c57 {
+  color: #5f00ff
+}
+
+.ansi-bg-c57 {
+  background: #5f00ff
+}
+
+.ansi-fg-c58 {
+  color: #5f5f00
+}
+
+.ansi-bg-c58 {
+  background: #5f5f00
+}
+
+.ansi-fg-c59 {
+  color: #5f5f5f
+}
+
+.ansi-bg-c59 {
+  background: #5f5f5f
+}
+
+.ansi-fg-c60 {
+  color: #5f5f87
+}
+
+.ansi-bg-c60 {
+  background: #5f5f87
+}
+
+.ansi-fg-c61 {
+  color: #5f5faf
+}
+
+.ansi-bg-c61 {
+  background: #5f5faf
+}
+
+.ansi-fg-c62 {
+  color: #5f5fd7
+}
+
+.ansi-bg-c62 {
+  background: #5f5fd7
+}
+
+.ansi-fg-c63 {
+  color: #5f5fff
+}
+
+.ansi-bg-c63 {
+  background: #5f5fff
+}
+
+.ansi-fg-c64 {
+  color: #5f8700
+}
+
+.ansi-bg-c64 {
+  background: #5f8700
+}
+
+.ansi-fg-c65 {
+  color: #5f875f
+}
+
+.ansi-bg-c65 {
+  background: #5f875f
+}
+
+.ansi-fg-c66 {
+  color: #5f8787
+}
+
+.ansi-bg-c66 {
+  background: #5f8787
+}
+
+.ansi-fg-c67 {
+  color: #5f87af
+}
+
+.ansi-bg-c67 {
+  background: #5f87af
+}
+
+.ansi-fg-c68 {
+  color: #5f87d7
+}
+
+.ansi-bg-c68 {
+  background: #5f87d7
+}
+
+.ansi-fg-c69 {
+  color: #5f87ff
+}
+
+.ansi-bg-c69 {
+  background: #5f87ff
+}
+
+.ansi-fg-c70 {
+  color: #5faf00
+}
+
+.ansi-bg-c70 {
+  background: #5faf00
+}
+
+.ansi-fg-c71 {
+  color: #5faf5f
+}
+
+.ansi-bg-c71 {
+  background: #5faf5f
+}
+
+.ansi-fg-c72 {
+  color: #5faf87
+}
+
+.ansi-bg-c72 {
+  background: #5faf87
+}
+
+.ansi-fg-c73 {
+  color: #5fafaf
+}
+
+.ansi-bg-c73 {
+  background: #5fafaf
+}
+
+.ansi-fg-c74 {
+  color: #5fafd7
+}
+
+.ansi-bg-c74 {
+  background: #5fafd7
+}
+
+.ansi-fg-c75 {
+  color: #5fafff
+}
+
+.ansi-bg-c75 {
+  background: #5fafff
+}
+
+.ansi-fg-c76 {
+  color: #5fd700
+}
+
+.ansi-bg-c76 {
+  background: #5fd700
+}
+
+.ansi-fg-c77 {
+  color: #5fd75f
+}
+
+.ansi-bg-c77 {
+  background: #5fd75f
+}
+
+.ansi-fg-c78 {
+  color: #5fd787
+}
+
+.ansi-bg-c78 {
+  background: #5fd787
+}
+
+.ansi-fg-c79 {
+  color: #5fd7af
+}
+
+.ansi-bg-c79 {
+  background: #5fd7af
+}
+
+.ansi-fg-c80 {
+  color: #5fd7d7
+}
+
+.ansi-bg-c80 {
+  background: #5fd7d7
+}
+
+.ansi-fg-c81 {
+  color: #5fd7ff
+}
+
+.ansi-bg-c81 {
+  background: #5fd7ff
+}
+
+.ansi-fg-c82 {
+  color: #5fff00
+}
+
+.ansi-bg-c82 {
+  background: #5fff00
+}
+
+.ansi-fg-c83 {
+  color: #5fff5f
+}
+
+.ansi-bg-c83 {
+  background: #5fff5f
+}
+
+.ansi-fg-c84 {
+  color: #5fff87
+}
+
+.ansi-bg-c84 {
+  background: #5fff87
+}
+
+.ansi-fg-c85 {
+  color: #5fffaf
+}
+
+.ansi-bg-c85 {
+  background: #5fffaf
+}
+
+.ansi-fg-c86 {
+  color: #5fffd7
+}
+
+.ansi-bg-c86 {
+  background: #5fffd7
+}
+
+.ansi-fg-c87 {
+  color: #5fffff
+}
+
+.ansi-bg-c87 {
+  background: #5fffff
+}
+
+.ansi-fg-c88 {
+  color: #870000
+}
+
+.ansi-bg-c88 {
+  background: #870000
+}
+
+.ansi-fg-c89 {
+  color: #87005f
+}
+
+.ansi-bg-c89 {
+  background: #87005f
+}
+
+.ansi-fg-c90 {
+  color: #870087
+}
+
+.ansi-bg-c90 {
+  background: #870087
+}
+
+.ansi-fg-c91 {
+  color: #8700af
+}
+
+.ansi-bg-c91 {
+  background: #8700af
+}
+
+.ansi-fg-c92 {
+  color: #8700d7
+}
+
+.ansi-bg-c92 {
+  background: #8700d7
+}
+
+.ansi-fg-c93 {
+  color: #8700ff
+}
+
+.ansi-bg-c93 {
+  background: #8700ff
+}
+
+.ansi-fg-c94 {
+  color: #875f00
+}
+
+.ansi-bg-c94 {
+  background: #875f00
+}
+
+.ansi-fg-c95 {
+  color: #875f5f
+}
+
+.ansi-bg-c95 {
+  background: #875f5f
+}
+
+.ansi-fg-c96 {
+  color: #875f87
+}
+
+.ansi-bg-c96 {
+  background: #875f87
+}
+
+.ansi-fg-c97 {
+  color: #875faf
+}
+
+.ansi-bg-c97 {
+  background: #875faf
+}
+
+.ansi-fg-c98 {
+  color: #875fd7
+}
+
+.ansi-bg-c98 {
+  background: #875fd7
+}
+
+.ansi-fg-c99 {
+  color: #875fff
+}
+
+.ansi-bg-c99 {
+  background: #875fff
+}
+
+.ansi-fg-c100 {
+  color: #878700
+}
+
+.ansi-bg-c100 {
+  background: #878700
+}
+
+.ansi-fg-c101 {
+  color: #87875f
+}
+
+.ansi-bg-c101 {
+  background: #87875f
+}
+
+.ansi-fg-c102 {
+  color: #878787
+}
+
+.ansi-bg-c102 {
+  background: #878787
+}
+
+.ansi-fg-c103 {
+  color: #8787af
+}
+
+.ansi-bg-c103 {
+  background: #8787af
+}
+
+.ansi-fg-c104 {
+  color: #8787d7
+}
+
+.ansi-bg-c104 {
+  background: #8787d7
+}
+
+.ansi-fg-c105 {
+  color: #8787ff
+}
+
+.ansi-bg-c105 {
+  background: #8787ff
+}
+
+.ansi-fg-c106 {
+  color: #87af00
+}
+
+.ansi-bg-c106 {
+  background: #87af00
+}
+
+.ansi-fg-c107 {
+  color: #87af5f
+}
+
+.ansi-bg-c107 {
+  background: #87af5f
+}
+
+.ansi-fg-c108 {
+  color: #87af87
+}
+
+.ansi-bg-c108 {
+  background: #87af87
+}
+
+.ansi-fg-c109 {
+  color: #87afaf
+}
+
+.ansi-bg-c109 {
+  background: #87afaf
+}
+
+.ansi-fg-c110 {
+  color: #87afd7
+}
+
+.ansi-bg-c110 {
+  background: #87afd7
+}
+
+.ansi-fg-c111 {
+  color: #87afff
+}
+
+.ansi-bg-c111 {
+  background: #87afff
+}
+
+.ansi-fg-c112 {
+  color: #87d700
+}
+
+.ansi-bg-c112 {
+  background: #87d700
+}
+
+.ansi-fg-c113 {
+  color: #87d75f
+}
+
+.ansi-bg-c113 {
+  background: #87d75f
+}
+
+.ansi-fg-c114 {
+  color: #87d787
+}
+
+.ansi-bg-c114 {
+  background: #87d787
+}
+
+.ansi-fg-c115 {
+  color: #87d7af
+}
+
+.ansi-bg-c115 {
+  background: #87d7af
+}
+
+.ansi-fg-c116 {
+  color: #87d7d7
+}
+
+.ansi-bg-c116 {
+  background: #87d7d7
+}
+
+.ansi-fg-c117 {
+  color: #87d7ff
+}
+
+.ansi-bg-c117 {
+  background: #87d7ff
+}
+
+.ansi-fg-c118 {
+  color: #87ff00
+}
+
+.ansi-bg-c118 {
+  background: #87ff00
+}
+
+.ansi-fg-c119 {
+  color: #87ff5f
+}
+
+.ansi-bg-c119 {
+  background: #87ff5f
+}
+
+.ansi-fg-c120 {
+  color: #87ff87
+}
+
+.ansi-bg-c120 {
+  background: #87ff87
+}
+
+.ansi-fg-c121 {
+  color: #87ffaf
+}
+
+.ansi-bg-c121 {
+  background: #87ffaf
+}
+
+.ansi-fg-c122 {
+  color: #87ffd7
+}
+
+.ansi-bg-c122 {
+  background: #87ffd7
+}
+
+.ansi-fg-c123 {
+  color: #87ffff
+}
+
+.ansi-bg-c123 {
+  background: #87ffff
+}
+
+.ansi-fg-c124 {
+  color: #af0000
+}
+
+.ansi-bg-c124 {
+  background: #af0000
+}
+
+.ansi-fg-c125 {
+  color: #af005f
+}
+
+.ansi-bg-c125 {
+  background: #af005f
+}
+
+.ansi-fg-c126 {
+  color: #af0087
+}
+
+.ansi-bg-c126 {
+  background: #af0087
+}
+
+.ansi-fg-c127 {
+  color: #af00af
+}
+
+.ansi-bg-c127 {
+  background: #af00af
+}
+
+.ansi-fg-c128 {
+  color: #af00d7
+}
+
+.ansi-bg-c128 {
+  background: #af00d7
+}
+
+.ansi-fg-c129 {
+  color: #af00ff
+}
+
+.ansi-bg-c129 {
+  background: #af00ff
+}
+
+.ansi-fg-c130 {
+  color: #af5f00
+}
+
+.ansi-bg-c130 {
+  background: #af5f00
+}
+
+.ansi-fg-c131 {
+  color: #af5f5f
+}
+
+.ansi-bg-c131 {
+  background: #af5f5f
+}
+
+.ansi-fg-c132 {
+  color: #af5f87
+}
+
+.ansi-bg-c132 {
+  background: #af5f87
+}
+
+.ansi-fg-c133 {
+  color: #af5faf
+}
+
+.ansi-bg-c133 {
+  background: #af5faf
+}
+
+.ansi-fg-c134 {
+  color: #af5fd7
+}
+
+.ansi-bg-c134 {
+  background: #af5fd7
+}
+
+.ansi-fg-c135 {
+  color: #af5fff
+}
+
+.ansi-bg-c135 {
+  background: #af5fff
+}
+
+.ansi-fg-c136 {
+  color: #af8700
+}
+
+.ansi-bg-c136 {
+  background: #af8700
+}
+
+.ansi-fg-c137 {
+  color: #af875f
+}
+
+.ansi-bg-c137 {
+  background: #af875f
+}
+
+.ansi-fg-c138 {
+  color: #af8787
+}
+
+.ansi-bg-c138 {
+  background: #af8787
+}
+
+.ansi-fg-c139 {
+  color: #af87af
+}
+
+.ansi-bg-c139 {
+  background: #af87af
+}
+
+.ansi-fg-c140 {
+  color: #af87d7
+}
+
+.ansi-bg-c140 {
+  background: #af87d7
+}
+
+.ansi-fg-c141 {
+  color: #af87ff
+}
+
+.ansi-bg-c141 {
+  background: #af87ff
+}
+
+.ansi-fg-c142 {
+  color: #afaf00
+}
+
+.ansi-bg-c142 {
+  background: #afaf00
+}
+
+.ansi-fg-c143 {
+  color: #afaf5f
+}
+
+.ansi-bg-c143 {
+  background: #afaf5f
+}
+
+.ansi-fg-c144 {
+  color: #afaf87
+}
+
+.ansi-bg-c144 {
+  background: #afaf87
+}
+
+.ansi-fg-c145 {
+  color: #afafaf
+}
+
+.ansi-bg-c145 {
+  background: #afafaf
+}
+
+.ansi-fg-c146 {
+  color: #afafd7
+}
+
+.ansi-bg-c146 {
+  background: #afafd7
+}
+
+.ansi-fg-c147 {
+  color: #afafff
+}
+
+.ansi-bg-c147 {
+  background: #afafff
+}
+
+.ansi-fg-c148 {
+  color: #afd700
+}
+
+.ansi-bg-c148 {
+  background: #afd700
+}
+
+.ansi-fg-c149 {
+  color: #afd75f
+}
+
+.ansi-bg-c149 {
+  background: #afd75f
+}
+
+.ansi-fg-c150 {
+  color: #afd787
+}
+
+.ansi-bg-c150 {
+  background: #afd787
+}
+
+.ansi-fg-c151 {
+  color: #afd7af
+}
+
+.ansi-bg-c151 {
+  background: #afd7af
+}
+
+.ansi-fg-c152 {
+  color: #afd7d7
+}
+
+.ansi-bg-c152 {
+  background: #afd7d7
+}
+
+.ansi-fg-c153 {
+  color: #afd7ff
+}
+
+.ansi-bg-c153 {
+  background: #afd7ff
+}
+
+.ansi-fg-c154 {
+  color: #afff00
+}
+
+.ansi-bg-c154 {
+  background: #afff00
+}
+
+.ansi-fg-c155 {
+  color: #afff5f
+}
+
+.ansi-bg-c155 {
+  background: #afff5f
+}
+
+.ansi-fg-c156 {
+  color: #afff87
+}
+
+.ansi-bg-c156 {
+  background: #afff87
+}
+
+.ansi-fg-c157 {
+  color: #afffaf
+}
+
+.ansi-bg-c157 {
+  background: #afffaf
+}
+
+.ansi-fg-c158 {
+  color: #afffd7
+}
+
+.ansi-bg-c158 {
+  background: #afffd7
+}
+
+.ansi-fg-c159 {
+  color: #afffff
+}
+
+.ansi-bg-c159 {
+  background: #afffff
+}
+
+.ansi-fg-c160 {
+  color: #d70000
+}
+
+.ansi-bg-c160 {
+  background: #d70000
+}
+
+.ansi-fg-c161 {
+  color: #d7005f
+}
+
+.ansi-bg-c161 {
+  background: #d7005f
+}
+
+.ansi-fg-c162 {
+  color: #d70087
+}
+
+.ansi-bg-c162 {
+  background: #d70087
+}
+
+.ansi-fg-c163 {
+  color: #d700af
+}
+
+.ansi-bg-c163 {
+  background: #d700af
+}
+
+.ansi-fg-c164 {
+  color: #d700d7
+}
+
+.ansi-bg-c164 {
+  background: #d700d7
+}
+
+.ansi-fg-c165 {
+  color: #d700ff
+}
+
+.ansi-bg-c165 {
+  background: #d700ff
+}
+
+.ansi-fg-c166 {
+  color: #d75f00
+}
+
+.ansi-bg-c166 {
+  background: #d75f00
+}
+
+.ansi-fg-c167 {
+  color: #d75f5f
+}
+
+.ansi-bg-c167 {
+  background: #d75f5f
+}
+
+.ansi-fg-c168 {
+  color: #d75f87
+}
+
+.ansi-bg-c168 {
+  background: #d75f87
+}
+
+.ansi-fg-c169 {
+  color: #d75faf
+}
+
+.ansi-bg-c169 {
+  background: #d75faf
+}
+
+.ansi-fg-c170 {
+  color: #d75fd7
+}
+
+.ansi-bg-c170 {
+  background: #d75fd7
+}
+
+.ansi-fg-c171 {
+  color: #d75fff
+}
+
+.ansi-bg-c171 {
+  background: #d75fff
+}
+
+.ansi-fg-c172 {
+  color: #d78700
+}
+
+.ansi-bg-c172 {
+  background: #d78700
+}
+
+.ansi-fg-c173 {
+  color: #d7875f
+}
+
+.ansi-bg-c173 {
+  background: #d7875f
+}
+
+.ansi-fg-c174 {
+  color: #d78787
+}
+
+.ansi-bg-c174 {
+  background: #d78787
+}
+
+.ansi-fg-c175 {
+  color: #d787af
+}
+
+.ansi-bg-c175 {
+  background: #d787af
+}
+
+.ansi-fg-c176 {
+  color: #d787d7
+}
+
+.ansi-bg-c176 {
+  background: #d787d7
+}
+
+.ansi-fg-c177 {
+  color: #d787ff
+}
+
+.ansi-bg-c177 {
+  background: #d787ff
+}
+
+.ansi-fg-c178 {
+  color: #d7af00
+}
+
+.ansi-bg-c178 {
+  background: #d7af00
+}
+
+.ansi-fg-c179 {
+  color: #d7af5f
+}
+
+.ansi-bg-c179 {
+  background: #d7af5f
+}
+
+.ansi-fg-c180 {
+  color: #d7af87
+}
+
+.ansi-bg-c180 {
+  background: #d7af87
+}
+
+.ansi-fg-c181 {
+  color: #d7afaf
+}
+
+.ansi-bg-c181 {
+  background: #d7afaf
+}
+
+.ansi-fg-c182 {
+  color: #d7afd7
+}
+
+.ansi-bg-c182 {
+  background: #d7afd7
+}
+
+.ansi-fg-c183 {
+  color: #d7afff
+}
+
+.ansi-bg-c183 {
+  background: #d7afff
+}
+
+.ansi-fg-c184 {
+  color: #d7d700
+}
+
+.ansi-bg-c184 {
+  background: #d7d700
+}
+
+.ansi-fg-c185 {
+  color: #d7d75f
+}
+
+.ansi-bg-c185 {
+  background: #d7d75f
+}
+
+.ansi-fg-c186 {
+  color: #d7d787
+}
+
+.ansi-bg-c186 {
+  background: #d7d787
+}
+
+.ansi-fg-c187 {
+  color: #d7d7af
+}
+
+.ansi-bg-c187 {
+  background: #d7d7af
+}
+
+.ansi-fg-c188 {
+  color: #d7d7d7
+}
+
+.ansi-bg-c188 {
+  background: #d7d7d7
+}
+
+.ansi-fg-c189 {
+  color: #d7d7ff
+}
+
+.ansi-bg-c189 {
+  background: #d7d7ff
+}
+
+.ansi-fg-c190 {
+  color: #d7ff00
+}
+
+.ansi-bg-c190 {
+  background: #d7ff00
+}
+
+.ansi-fg-c191 {
+  color: #d7ff5f
+}
+
+.ansi-bg-c191 {
+  background: #d7ff5f
+}
+
+.ansi-fg-c192 {
+  color: #d7ff87
+}
+
+.ansi-bg-c192 {
+  background: #d7ff87
+}
+
+.ansi-fg-c193 {
+  color: #d7ffaf
+}
+
+.ansi-bg-c193 {
+  background: #d7ffaf
+}
+
+.ansi-fg-c194 {
+  color: #d7ffd7
+}
+
+.ansi-bg-c194 {
+  background: #d7ffd7
+}
+
+.ansi-fg-c195 {
+  color: #d7ffff
+}
+
+.ansi-bg-c195 {
+  background: #d7ffff
+}
+
+.ansi-fg-c196 {
+  color: #ff0000
+}
+
+.ansi-bg-c196 {
+  background: #ff0000
+}
+
+.ansi-fg-c197 {
+  color: #ff005f
+}
+
+.ansi-bg-c197 {
+  background: #ff005f
+}
+
+.ansi-fg-c198 {
+  color: #ff0087
+}
+
+.ansi-bg-c198 {
+  background: #ff0087
+}
+
+.ansi-fg-c199 {
+  color: #ff00af
+}
+
+.ansi-bg-c199 {
+  background: #ff00af
+}
+
+.ansi-fg-c200 {
+  color: #ff00d7
+}
+
+.ansi-bg-c200 {
+  background: #ff00d7
+}
+
+.ansi-fg-c201 {
+  color: #ff00ff
+}
+
+.ansi-bg-c201 {
+  background: #ff00ff
+}
+
+.ansi-fg-c202 {
+  color: #ff5f00
+}
+
+.ansi-bg-c202 {
+  background: #ff5f00
+}
+
+.ansi-fg-c203 {
+  color: #ff5f5f
+}
+
+.ansi-bg-c203 {
+  background: #ff5f5f
+}
+
+.ansi-fg-c204 {
+  color: #ff5f87
+}
+
+.ansi-bg-c204 {
+  background: #ff5f87
+}
+
+.ansi-fg-c205 {
+  color: #ff5faf
+}
+
+.ansi-bg-c205 {
+  background: #ff5faf
+}
+
+.ansi-fg-c206 {
+  color: #ff5fd7
+}
+
+.ansi-bg-c206 {
+  background: #ff5fd7
+}
+
+.ansi-fg-c207 {
+  color: #ff5fff
+}
+
+.ansi-bg-c207 {
+  background: #ff5fff
+}
+
+.ansi-fg-c208 {
+  color: #ff8700
+}
+
+.ansi-bg-c208 {
+  background: #ff8700
+}
+
+.ansi-fg-c209 {
+  color: #ff875f
+}
+
+.ansi-bg-c209 {
+  background: #ff875f
+}
+
+.ansi-fg-c210 {
+  color: #ff8787
+}
+
+.ansi-bg-c210 {
+  background: #ff8787
+}
+
+.ansi-fg-c211 {
+  color: #ff87af
+}
+
+.ansi-bg-c211 {
+  background: #ff87af
+}
+
+.ansi-fg-c212 {
+  color: #ff87d7
+}
+
+.ansi-bg-c212 {
+  background: #ff87d7
+}
+
+.ansi-fg-c213 {
+  color: #ff87ff
+}
+
+.ansi-bg-c213 {
+  background: #ff87ff
+}
+
+.ansi-fg-c214 {
+  color: #ffaf00
+}
+
+.ansi-bg-c214 {
+  background: #ffaf00
+}
+
+.ansi-fg-c215 {
+  color: #ffaf5f
+}
+
+.ansi-bg-c215 {
+  background: #ffaf5f
+}
+
+.ansi-fg-c216 {
+  color: #ffaf87
+}
+
+.ansi-bg-c216 {
+  background: #ffaf87
+}
+
+.ansi-fg-c217 {
+  color: #ffafaf
+}
+
+.ansi-bg-c217 {
+  background: #ffafaf
+}
+
+.ansi-fg-c218 {
+  color: #ffafd7
+}
+
+.ansi-bg-c218 {
+  background: #ffafd7
+}
+
+.ansi-fg-c219 {
+  color: #ffafff
+}
+
+.ansi-bg-c219 {
+  background: #ffafff
+}
+
+.ansi-fg-c220 {
+  color: #ffd700
+}
+
+.ansi-bg-c220 {
+  background: #ffd700
+}
+
+.ansi-fg-c221 {
+  color: #ffd75f
+}
+
+.ansi-bg-c221 {
+  background: #ffd75f
+}
+
+.ansi-fg-c222 {
+  color: #ffd787
+}
+
+.ansi-bg-c222 {
+  background: #ffd787
+}
+
+.ansi-fg-c223 {
+  color: #ffd7af
+}
+
+.ansi-bg-c223 {
+  background: #ffd7af
+}
+
+.ansi-fg-c224 {
+  color: #ffd7d7
+}
+
+.ansi-bg-c224 {
+  background: #ffd7d7
+}
+
+.ansi-fg-c225 {
+  color: #ffd7ff
+}
+
+.ansi-bg-c225 {
+  background: #ffd7ff
+}
+
+.ansi-fg-c226 {
+  color: #ffff00
+}
+
+.ansi-bg-c226 {
+  background: #ffff00
+}
+
+.ansi-fg-c227 {
+  color: #ffff5f
+}
+
+.ansi-bg-c227 {
+  background: #ffff5f
+}
+
+.ansi-fg-c228 {
+  color: #ffff87
+}
+
+.ansi-bg-c228 {
+  background: #ffff87
+}
+
+.ansi-fg-c229 {
+  color: #ffffaf
+}
+
+.ansi-bg-c229 {
+  background: #ffffaf
+}
+
+.ansi-fg-c230 {
+  color: #ffffd7
+}
+
+.ansi-bg-c230 {
+  background: #ffffd7
+}
+
+.ansi-fg-c231 {
+  color: #ffffff
+}
+
+.ansi-bg-c231 {
+  background: #ffffff
+}
+
+.ansi-fg-c232 {
+  color: #080808
+}
+
+.ansi-bg-c232 {
+  background: #080808
+}
+
+.ansi-fg-c233 {
+  color: #121212
+}
+
+.ansi-bg-c233 {
+  background: #121212
+}
+
+.ansi-fg-c234 {
+  color: #1c1c1c
+}
+
+.ansi-bg-c234 {
+  background: #1c1c1c
+}
+
+.ansi-fg-c235 {
+  color: #262626
+}
+
+.ansi-bg-c235 {
+  background: #262626
+}
+
+.ansi-fg-c236 {
+  color: #303030
+}
+
+.ansi-bg-c236 {
+  background: #303030
+}
+
+.ansi-fg-c237 {
+  color: #3a3a3a
+}
+
+.ansi-bg-c237 {
+  background: #3a3a3a
+}
+
+.ansi-fg-c238 {
+  color: #444444
+}
+
+.ansi-bg-c238 {
+  background: #444444
+}
+
+.ansi-fg-c239 {
+  color: #4e4e4e
+}
+
+.ansi-bg-c239 {
+  background: #4e4e4e
+}
+
+.ansi-fg-c240 {
+  color: #585858
+}
+
+.ansi-bg-c240 {
+  background: #585858
+}
+
+.ansi-fg-c241 {
+  color: #626262
+}
+
+.ansi-bg-c241 {
+  background: #626262
+}
+
+.ansi-fg-c242 {
+  color: #6c6c6c
+}
+
+.ansi-bg-c242 {
+  background: #6c6c6c
+}
+
+.ansi-fg-c243 {
+  color: #767676
+}
+
+.ansi-bg-c243 {
+  background: #767676
+}
+
+.ansi-fg-c244 {
+  color: #808080
+}
+
+.ansi-bg-c244 {
+  background: #808080
+}
+
+.ansi-fg-c245 {
+  color: #8a8a8a
+}
+
+.ansi-bg-c245 {
+  background: #8a8a8a
+}
+
+.ansi-fg-c246 {
+  color: #949494
+}
+
+.ansi-bg-c246 {
+  background: #949494
+}
+
+.ansi-fg-c247 {
+  color: #9e9e9e
+}
+
+.ansi-bg-c247 {
+  background: #9e9e9e
+}
+
+.ansi-fg-c248 {
+  color: #a8a8a8
+}
+
+.ansi-bg-c248 {
+  background: #a8a8a8
+}
+
+.ansi-fg-c249 {
+  color: #b2b2b2
+}
+
+.ansi-bg-c249 {
+  background: #b2b2b2
+}
+
+.ansi-fg-c250 {
+  color: #bcbcbc
+}
+
+.ansi-bg-c250 {
+  background: #bcbcbc
+}
+
+.ansi-fg-c251 {
+  color: #c6c6c6
+}
+
+.ansi-bg-c251 {
+  background: #c6c6c6
+}
+
+.ansi-fg-c252 {
+  color: #d0d0d0
+}
+
+.ansi-bg-c252 {
+  background: #d0d0d0
+}
+
+.ansi-fg-c253 {
+  color: #dadada
+}
+
+.ansi-bg-c253 {
+  background: #dadada
+}
+
+.ansi-fg-c254 {
+  color: #e4e4e4
+}
+
+.ansi-bg-c254 {
+  background: #e4e4e4
+}
+
+.ansi-fg-c255 {
+  color: #eeeeee
+}
+
+.ansi-bg-c255 {
+  background: #eeeeee
+}

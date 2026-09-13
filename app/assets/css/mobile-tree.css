@@ -1,0 +1,1243 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — MOBILE FILE TREE STYLES
+═══════════════════════════════════════════════════════════════════════════
+File tree rows, loading/empty/error states, chevrons, icons,
+swipe actions on tree rows (Task 2.3), pull-to-refresh (Task 2.4),
+and template selection styles.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+1. LOADING / EMPTY / ERROR STATES
+═══════════════════════════════════════════════════════════════════════════ */
+.m-tree-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--muted, #7186a5);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.m-tree-error {
+  padding: 1.5rem;
+  color: var(--danger, #f87171);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.m-tree-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--muted, #7186a5);
+}
+
+.m-tree-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.8rem;
+  opacity: 0.6;
+}
+
+.m-tree-empty p {
+  font-size: 0.9rem;
+  color: var(--text-2, #9db1cc);
+  margin: 0;
+}
+
+.m-tree-empty-sub {
+  font-size: 0.75rem !important;
+  color: var(--faint, #55688a) !important;
+  margin-top: 0.4rem !important;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+2. TREE ROWS
+═══════════════════════════════════════════════════════════════════════════ */
+.m-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding-right: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background 0.12s ease;
+  border-bottom: 1px solid var(--border-subtle, #1d2940);
+  position: relative;
+  overflow: hidden;
+}
+
+.m-tree-row:active {
+  background: var(--surface-2, #1a2537);
+}
+
+/* ── Selected rows (Gesture Revamp) ───────────────────────────────
+   Amber tint + inset accent bar. Uses box-shadow instead of
+   border-left so the row text never shifts 3px when selected.
+   Both .selected (legacy) and .m-tree-selected (multi-select)
+   share ONE look so they can never drift apart.                 */
+.m-tree-row.selected,
+.m-tree-row.m-tree-selected {
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  box-shadow: inset 3px 0 0 var(--accent, #f5a524);
+}
+
+.m-tree-row.selected:active,
+.m-tree-row.m-tree-selected:active {
+  background: var(--accent-dim, rgba(245, 165, 36, 0.20));
+}
+
+.m-tree-row.selected .m-tree-name,
+.m-tree-row.m-tree-selected .m-tree-name {
+  color: var(--accent, #f5a524);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+3. CHEVRON / ICON / NAME
+═══════════════════════════════════════════════════════════════════════════ */
+.m-tree-chevron {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--muted, #7186a5);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.m-tree-folder.expanded .m-tree-chevron {
+  color: var(--accent, #f5a524);
+}
+
+.m-tree-icon {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.m-tree-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  color: var(--text, #e8eef7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-tree-folder .m-tree-name {
+  font-weight: 600;
+}
+
+.m-tree-children.hidden {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+4. SWIPE GESTURES (Gesture Revamp + follow-finger animation)
+═══════════════════════════════════════════════════════════════
+Swipe left/right on a row = select it. While swiping, the row
+content follows the finger (mobile-swipe.js drives the transform),
+then springs back via this transition when the finger lifts.    */
+.m-tree-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  /* The spring-back bounce after release */
+  transition: transform 0.25s cubic-bezier(0.22, 0.9, 0.3, 1);
+  will-change: transform;
+}
+
+/* Amber glow while the row is being swiped */
+.m-tree-row.m-swiping {
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+}
+
+.m-tree-row.m-swiping .m-tree-name {
+  color: var(--accent, #f5a524);
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  .m-tree-content {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+5. PULL-TO-REFRESH (Task 2.4)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-ptr {
+  flex-shrink: 0;
+  height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: var(--bg-deep, #0a101b);
+  color: var(--muted, #7186a5);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+.m-ptr.refreshing {
+  color: var(--accent, #f5a524);
+}
+
+.m-ptr-spinner {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border, #263450);
+  border-top-color: var(--accent, #f5a524);
+  border-radius: 50%;
+}
+
+.m-ptr.refreshing .m-ptr-spinner {
+  animation: mPtrSpin 0.8s linear infinite;
+}
+
+@keyframes mPtrSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+6. FILE TREE SKELETON (Task 6.3)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-tree-skeleton {
+  padding: 0.5rem 0;
+}
+
+.m-tree-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0 0.75rem;
+  border-bottom: 1px solid var(--border-subtle, #1d2940);
+}
+
+.m-tree-skeleton-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.m-tree-skeleton-name {
+  height: 12px;
+  border-radius: 4px;
+}
+
+.m-tree-skeleton-row:nth-child(1) .m-tree-skeleton-name {
+  width: 65%;
+}
+
+.m-tree-skeleton-row:nth-child(2) .m-tree-skeleton-name {
+  width: 45%;
+}
+
+.m-tree-skeleton-row:nth-child(3) .m-tree-skeleton-name {
+  width: 72%;
+}
+
+.m-tree-skeleton-row:nth-child(4) .m-tree-skeleton-name {
+  width: 38%;
+}
+
+.m-tree-skeleton-row:nth-child(5) .m-tree-skeleton-name {
+  width: 58%;
+}
+
+.m-tree-skeleton-row:nth-child(6) .m-tree-skeleton-name {
+  width: 50%;
+}
+
+.m-tree-skeleton-row:nth-child(7) .m-tree-skeleton-name {
+  width: 68%;
+}
+
+.m-tree-skeleton-row:nth-child(8) .m-tree-skeleton-name {
+  width: 42%;
+}
+
+.m-tree-skeleton-row:nth-child(3),
+.m-tree-skeleton-row:nth-child(4),
+.m-tree-skeleton-row:nth-child(5) {
+  padding-left: calc(0.75rem + 20px);
+}
+
+.m-tree-skeleton-row:nth-child(6),
+.m-tree-skeleton-row:nth-child(7) {
+  padding-left: calc(0.75rem + 40px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+7. TEMPLATE SELECTION (Task 2.5)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-template-list {
+  padding: 0.25rem 0;
+}
+
+.m-template-option {
+  border-left: 3px solid transparent;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.m-template-option.selected {
+  border-left-color: var(--accent, #f5a524);
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+}
+
+.m-template-option.selected .sr-label {
+  color: var(--accent, #f5a524);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+8. FILE TREE SEARCH / FILTER (Task 8.3)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-tree-search-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-tree-search-icon {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.m-tree-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 7px 10px;
+  font-size: 16px;
+  font-family: var(--font-mono, monospace);
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  color: var(--text, #e8eef7);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.m-tree-search-input:focus {
+  border-color: var(--accent, #f5a524);
+}
+
+.m-tree-search-input::placeholder {
+  color: var(--faint, #55688a);
+}
+
+.m-tree-search-clear {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted, #7186a5);
+  font-size: 0.8rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.m-tree-search-clear:active {
+  background: var(--surface-3, #223049);
+  color: var(--text, #e8eef7);
+}
+
+.m-tree-search-clear.hidden {
+  display: none;
+}
+
+/* Highlighted match inside a tree row name */
+.m-tree-name mark {
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* Hidden rows during filtering */
+.m-tree-row.filter-hidden {
+  display: none;
+}
+
+.m-tree-children.filter-hidden {
+  display: none;
+}
+
+/* Empty filter result message */
+.m-tree-filter-empty {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: var(--muted, #7186a5);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.m-tree-filter-empty.hidden {
+  display: none;
+}
+
+.m-tree-filter-empty-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.5;
+}
+
+.m-tree-filter-empty p {
+  margin: 0;
+  color: var(--text-2, #9db1cc);
+}
+
+.m-tree-filter-empty p span {
+  color: var(--accent, #f5a524);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+9. RECENT FILES (Task 8.4)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-recent-wrap {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border, #263450);
+  background: var(--surface, #131c2b);
+}
+
+.m-recent-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem 0.35rem;
+}
+
+.m-recent-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--muted, #7186a5);
+}
+
+.m-recent-count {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.58rem;
+  color: var(--faint, #55688a);
+}
+
+.m-recent-list {
+  padding: 0 0.35rem 0.35rem;
+}
+
+.m-recent-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 48px;
+  padding: 0.3rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease;
+}
+
+.m-recent-row:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-recent-icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.m-recent-name {
+  flex-shrink: 1;
+  min-width: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text, #e8eef7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-recent-path {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  color: var(--faint, #55688a);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+10. REDUCED MOTION
+═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .m-ptr.refreshing .m-ptr-spinner {
+    animation: none;
+  }
+
+  .m-tree-skeleton-icon,
+  .m-tree-skeleton-name {
+    animation: none;
+    background: var(--surface-2, #1a2537);
+  }
+
+  .m-tree-row.m-drag-armed {
+    animation: none;
+  }
+
+  .m-drag-ghost {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+10b. TREE ERROR STATE (Task 8.6)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-tree-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--danger, #f87171);
+  gap: 0.75rem;
+}
+
+.m-tree-error-icon {
+  font-size: 2rem;
+}
+
+.m-tree-error p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-2, #9db1cc);
+  max-width: 260px;
+  margin: 0;
+}
+
+.m-tree-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.2rem;
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  border-radius: 8px;
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, transform 0.1s ease;
+}
+
+.m-tree-retry-btn:active {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+  transform: scale(0.95);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+11. COLLAPSIBLE RECENT FILES
+═══════════════════════════════════════════════════════════════════════════ */
+.m-recent-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem 0.35rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-recent-head:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-recent-toggle {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--muted, #7186a5);
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.m-recent-toggle:active {
+  color: var(--accent, #f5a524);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+12. DRAG-AND-DROP VISUALS
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Armed state: item is "picked up" after long-press */
+.m-tree-row.m-drag-armed {
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  box-shadow: 0 0 0 2px var(--accent-border, rgba(245, 165, 36, 0.32));
+  border-radius: 8px;
+  animation: mDragArmPulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes mDragArmPulse {
+  from {
+    box-shadow: 0 0 0 2px var(--accent-border, rgba(245, 165, 36, 0.32));
+  }
+
+  to {
+    box-shadow: 0 0 8px 2px var(--accent-border, rgba(245, 165, 36, 0.45));
+  }
+}
+
+/* Source: the item being dragged (dimmed) */
+.m-tree-row.m-drag-source {
+  opacity: 0.35;
+}
+
+/* Ghost: floating element that follows your finger */
+.m-drag-ghost {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--surface-3, #223049);
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 12px rgba(245, 165, 36, 0.2);
+  max-width: 200px;
+  transform: scale(1.05);
+  animation: mDragGhostIn 0.15s ease-out;
+}
+
+@keyframes mDragGhostIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+.m-drag-ghost-icon {
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.m-drag-ghost-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text, #e8eef7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Drop target: valid folder highlighted green */
+.m-tree-row.m-drag-over {
+  background: var(--success-dim, rgba(74, 222, 128, 0.10)) !important;
+  box-shadow: 0 0 0 2px var(--success-border, rgba(74, 222, 128, 0.30));
+  border-radius: 8px;
+}
+
+/* Drop target: a FILE row highlighted (means "move to this file's parent") */
+.m-tree-row.m-drag-over-file {
+  background: var(--info-dim, rgba(96, 165, 250, 0.10)) !important;
+  box-shadow: 0 0 0 2px var(--info-border, rgba(96, 165, 250, 0.30));
+  border-radius: 8px;
+}
+
+.m-tree-row.m-drag-over-file .m-tree-name {
+  color: var(--info, #60a5fa);
+  font-weight: 700;
+}
+
+.m-tree-row.m-drag-over-file .m-tree-icon {
+  transform: scale(1.15);
+}
+
+/* ── Root drop target: the tree container itself highlighted ── */
+#m-file-tree.m-drag-over-root {
+  background: var(--success-dim, rgba(74, 222, 128, 0.10));
+  outline: 2px dashed var(--success-border, rgba(74, 222, 128, 0.30));
+  outline-offset: -4px;
+  border-radius: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+13. MULTI-SELECT MODE (Task 8.9)
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Selected row highlight ──
+   The look lives in section 2 (shared with .selected) so both
+   classes always match. Nothing to override here. */
+
+/* ── Selection mode indicator removed — the "EXPLORER / workspace/"
+panel head no longer highlights in multi-select mode. ── */
+
+/* ── Selection Bar (fixed bottom, above tab bar) ── */
+.m-selection-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--surface, #131c2b);
+  border-top: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.3);
+  transform: translateY(0);
+  transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.2s ease;
+  opacity: 1;
+}
+
+.m-selection-bar.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.msel-btn {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 1.2rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.msel-btn:active {
+  background: var(--surface-3, #223049);
+  color: var(--accent, #f5a524);
+}
+
+.msel-btn.msel-cancel {
+  color: var(--muted, #7186a5);
+  font-size: 1rem;
+  min-width: 36px;
+}
+
+.msel-btn.msel-delete {
+  color: var(--danger, #f87171);
+}
+
+.msel-btn.msel-delete:active {
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+}
+
+.msel-btn.msel-more {
+  color: var(--muted, #7186a5);
+}
+
+.msel-count {
+  flex-shrink: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent, #f5a524);
+  white-space: nowrap;
+  margin-left: 4px;
+}
+
+.msel-spacer {
+  flex: 1 1 auto;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .m-selection-bar {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+14. WORKSPACE / PROJECT SWITCHER (Task 8.10)
+═══════════════════════════════════════════════════════════════════════════ */
+.m-workspace-switcher {
+  flex-shrink: 0;
+  padding: 6px 10px 4px;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-workspace-switcher.hidden {
+  display: none;
+}
+
+.m-ws-chips {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.m-ws-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.m-ws-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border, #263450);
+  background: var(--bg-deep, #0a101b);
+  color: var(--text-2, #9db1cc);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.m-ws-chip:active {
+  background: var(--surface-3, #223049);
+}
+
+.m-ws-chip.active {
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+  color: var(--accent, #f5a524);
+}
+
+.m-ws-chip-icon {
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.m-ws-chip-label {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .m-ws-chip {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OPEN IN EDITOR BADGE (Pulsing "E")
+   ═══════════════════════════════════════════════════════════════ */
+.m-tree-open-badge,
+.tree-open-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  margin-left: auto;
+  /* Pushes to the right edge of the flex row */
+  margin-right: 8px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--accent-contrast, #0b0f17);
+  background: var(--accent, #f5a524);
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  animation: quirky-pulse-badge 2s infinite;
+  flex-shrink: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes quirky-pulse-badge {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 165, 36, 0.6);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(245, 165, 36, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 165, 36, 0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+15. RECENT FILES — COMPACT REDESIGN (overrides sections 9 & 11)
+Smaller rows, indented list with a subtle left divider, a "Clear"
+button in the header and a per-row ✕ remove button.
+═══════════════════════════════════════════════════════════════ */
+.m-recent-head {
+  padding: 0.4rem 0.6rem 0.3rem 0.75rem;
+}
+
+.m-recent-toggle {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  font-size: 0.62rem;
+}
+
+.m-recent-title {
+  font-size: 0.56rem;
+}
+
+.m-recent-count {
+  margin-left: auto;
+}
+
+/* "Clear" button on the right of the header */
+.m-recent-clear {
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  border: none;
+  background: transparent;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint, #55688a);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.12s ease, background 0.12s ease;
+}
+
+.m-recent-clear:active {
+  color: var(--danger, #f87171);
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+}
+
+.m-recent-clear.hidden {
+  display: none;
+}
+
+/* Indented list + subtle left divider so recents read as their own
+   group instead of being aligned with the explorer file rows. */
+.m-recent-list {
+  margin: 0 0.6rem 0.45rem 1.15rem;
+  border-left: 1px solid var(--border-subtle, #1d2940);
+  padding: 0.1rem 0.15rem 0.1rem 0.5rem;
+}
+
+/* Compact rows (was 48px tall) */
+.m-recent-row {
+  min-height: 34px;
+  padding: 0.15rem 0.35rem 0.15rem 0.45rem;
+  gap: 0.45rem;
+  border-radius: 8px;
+}
+
+.m-recent-icon {
+  font-size: 0.85rem;
+}
+
+.m-recent-name {
+  font-size: 0.72rem;
+}
+
+.m-recent-path {
+  font-size: 0.56rem;
+}
+
+/* Per-row remove ✕ (overrides the global 44px button minimum) */
+.m-recent-del {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--faint, #55688a);
+  font-size: 0.62rem;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.m-recent-del:active {
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  color: var(--danger, #f87171);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+PROJECT BADGE (Phase 3 — quirky.setup detection)
+═══════════════════════════════════════════════════════════════ */
+.m-tree-project-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  margin-left: auto;
+  margin-right: 4px;
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--accent-2, #2dd4bf);
+  background: var(--accent-2-dim, rgba(45, 212, 191, 0.10));
+  border: 1px solid var(--accent-2-border, rgba(45, 212, 191, 0.30));
+  border-radius: 4px;
+  flex-shrink: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Project folder name gets a subtle teal tint */
+.m-tree-row.m-tree-project .m-tree-name {
+  color: var(--accent-2, #2dd4bf);
+  font-weight: 700;
+}
+
+/* Reduced motion: no special handling needed for a static badge */
+
+/* ═══════════════════════════════════════════════════════════════
+16. SVG FILE ICONS
+Using em units lets each icon scale with its container's font size,
+matching how the old emoji icons behaved.
+═══════════════════════════════════════════════════════════════ */
+img.fi-svg {
+  width: 1.15em;
+  height: 1.15em;
+  display: inline-block;
+  vertical-align: -0.15em;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SORT DROPDOWN BUTTON (icon-only, beside the search input)
+   ═══════════════════════════════════════════════════════════════ */
+.m-tree-sort-btn {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  background: var(--bg-deep, #0a101b);
+  color: var(--text-2, #9db1cc);
+  font-size: 1rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.m-tree-sort-btn:active {
+  border-color: var(--accent, #f5a524);
+  color: var(--accent, #f5a524);
+}
+
+/* ── Dropdown container (absolutely positioned below the button) ── */
+.m-tree-sort-drop {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0.6rem;
+  /* flush with the search row's right padding */
+  z-index: 80;
+  /* above tree rows, badges and the FAB layer */
+  min-width: 160px;
+  background: var(--surface-2, #1a2537);
+  border: 1px solid var(--border-strong, #33456b);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md, 0 8px 24px rgba(0, 0, 0, 0.35));
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m-tree-sort-drop.hidden {
+  display: none;
+}
+
+/* ── Individual sort option rows ── */
+.m-tree-sort-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 40px;
+  padding: 0.45rem 0.7rem;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-tree-sort-item:active {
+  background: var(--surface-3, #223049);
+}
+
+.m-tree-sort-item.active {
+  color: var(--accent, #f5a524);
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+}
+
+.m-tree-sort-item-ico {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  width: 1.2em;
+  text-align: center;
+}
+
+.m-tree-sort-item-label {
+  flex: 1 1 auto;
+  white-space: nowrap;
+}
+
+/* ★ FIX: anchor for the absolutely-positioned sort dropdown */
+.m-tree-search-wrap {
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ FIX v2: NATIVE SORT PICKER — icon-only chip.
+   The visible chip shows just the current sort mode's icon.
+   The real <select> is stretched invisibly over the chip: it is
+   opacity:0 (NOT display:none!) so it still receives the tap and
+   opens Android's own picker popup with the full labels.
+   ═══════════════════════════════════════════════════════════════ */
+.m-tree-sort-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+}
+
+.m-tree-sort-wrap:active {
+  border-color: var(--accent, #f5a524);
+}
+
+.m-tree-sort-ico {
+  font-size: 1rem;
+  line-height: 1;
+  pointer-events: none;
+  /* taps fall through to the select above */
+}
+
+.m-tree-sort-select {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: transparent;
+  opacity: 0;
+  /* invisible but fully tappable */
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}

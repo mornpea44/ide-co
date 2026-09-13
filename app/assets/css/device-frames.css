@@ -1,0 +1,476 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   QUIRKY IDE — DEVICE FRAMES (shared · Phase 2 consolidation)
+   ═══════════════════════════════════════════════════════════════════════════
+   The single source of truth for the preview viewport mockup:
+     • the Desktop / Tablet / Phone segmented switcher
+     • the recessed "workbench" stage the device floats on
+     • the hardware bezel (chassis, speaker, camera, side buttons, home bar)
+     • the true-size screen (768×1024 tablet / 375×667 phone)
+
+   Loaded by BOTH preview surfaces:
+     • views/shell.php          — the in-IDE pane   (uses #device-stage / #device-shell / #preview-frame)
+     • views/live-preview.php   — the live tab      (uses #pv-stage / #pv-device-shell / #pv-frame)
+
+   The class-based rules style both. The ID-based "pane override" rules at the
+   bottom only match the IDE's IDs, so they are harmlessly inert in the live
+   tab. The hardware itself is always dark (it's a physical mockup); only the
+   stage + switcher follow the theme via CSS variables.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── The segmented device switcher ─────────────────────────────────────── */
+.pv-devices {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.pv-device {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.28rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color var(--tr-fast), background var(--tr-fast),
+    border-color var(--tr-fast), box-shadow var(--tr-fast);
+}
+
+.pv-device svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.pv-device:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.pv-device.active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: var(--accent-border);
+  box-shadow: 0 0 10px -2px rgba(245, 165, 36, 0.4);
+}
+
+/* Live viewport readout next to the switcher */
+.pv-size {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--faint);
+  letter-spacing: 0.05em;
+  min-width: 8ch;
+  text-align: right;
+  flex-shrink: 0;
+  transition: color var(--tr-fast);
+}
+
+.device-stage.framed .pv-size,
+#preview-body:has(.device-stage.framed)~* .pv-size {
+  color: var(--accent);
+}
+
+/* ── The stage (scrollable canvas the device floats on) ────────────────── */
+.device-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  overflow: auto;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Recessed "workbench" look when a device is framed */
+.device-stage.framed {
+  background-color: var(--bg-deep);
+  background-image: radial-gradient(rgba(157, 177, 204, 0.07) 1px, transparent 1px);
+  background-size: 18px 18px;
+  box-shadow: inset 0 0 46px rgba(0, 0, 0, 0.45);
+  padding: 26px;
+}
+
+/* ── The device shell (bezel) ──────────────────────────────────────────── */
+.device-shell {
+  position: relative;
+  margin: auto;
+  /* centers when small, scrolls when big */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.35s cubic-bezier(0.34, 1.3, 0.5, 1),
+    height 0.35s cubic-bezier(0.34, 1.3, 0.5, 1),
+    border-radius 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Desktop: invisible shell */
+.device-shell[data-device="desktop"] {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.device-shell[data-device="desktop"] .device-sensor,
+.device-shell[data-device="desktop"] .device-home {
+  display: none;
+}
+
+/* Tablet + Phone: real hardware */
+.device-shell[data-device="tablet"],
+.device-shell[data-device="phone"] {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+  background: #0a0f18;
+  border: 1px solid #2c3d5c;
+  padding: 10px;
+  box-shadow:
+    0 0 0 4px #0d1420,
+    0 26px 60px -18px rgba(0, 0, 0, 0.8),
+    0 6px 16px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  animation: deviceIn 0.35s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+@keyframes deviceIn {
+  from {
+    transform: scale(0.96) translateY(8px);
+    opacity: 0.4;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.device-shell[data-device="tablet"] {
+  border-radius: 20px;
+  padding: 14px;
+}
+
+.device-shell[data-device="phone"] {
+  border-radius: 34px;
+  padding: 12px;
+}
+
+/* Physical side buttons (phone only) */
+.device-shell[data-device="phone"]::before {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 118px;
+  width: 3px;
+  height: 56px;
+  border-radius: 0 3px 3px 0;
+  background: #2c3d5c;
+}
+
+.device-shell[data-device="phone"]::after {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 96px;
+  width: 3px;
+  height: 78px;
+  border-radius: 3px 0 0 3px;
+  background: #2c3d5c;
+}
+
+/* ── The screen (iframe) ───────────────────────────────────────────────── */
+.device-shell>iframe {
+  position: relative;
+  inset: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #ffffff;
+  display: block;
+  transition: border-radius 0.3s ease;
+}
+
+/* Exact device viewports */
+.device-shell[data-device="tablet"]>iframe {
+  width: 768px;
+  height: 1024px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+}
+
+.device-shell[data-device="phone"]>iframe {
+  width: 375px;
+  height: 667px;
+  flex: 0 0 auto;
+  border-radius: 22px;
+}
+
+/* ── Sensor row (speaker + camera) & home indicator ────────────────────── */
+.device-sensor,
+.device-home {
+  display: none;
+  flex: 0 0 auto;
+}
+
+.device-shell[data-device="tablet"] .device-sensor,
+.device-shell[data-device="phone"] .device-sensor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.device-shell[data-device="tablet"] .device-sensor {
+  height: 20px;
+}
+
+.device-shell[data-device="phone"] .device-sensor {
+  height: 26px;
+}
+
+/* Tablet: camera dot only — hide the speaker slit */
+.device-shell[data-device="tablet"] .device-speaker {
+  display: none;
+}
+
+.device-speaker {
+  width: 54px;
+  height: 5px;
+  border-radius: 99px;
+  background: #182640;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.device-cam {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0f1c33;
+  box-shadow: inset 0 0 3px 1px #000, 0 0 0 2px #131f36;
+}
+
+.device-shell[data-device="tablet"] .device-home,
+.device-shell[data-device="phone"] .device-home {
+  display: flex;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+}
+
+.device-home::after {
+  content: '';
+  width: 92px;
+  height: 4px;
+  border-radius: 99px;
+  background: #223049;
+}
+
+.device-shell[data-device="tablet"] .device-home::after {
+  width: 60px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   IDE PANE OVERRIDE — owns the stage, shell AND iframe by ID, per device.
+   These IDs only exist in shell.php, so every rule below is inert in the
+   live tab (which uses #pv-stage / #pv-device-shell / #pv-frame).
+   ═══════════════════════════════════════════════════════════════════════════ */
+#preview-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Base undo of ide.css's absolute-pinned #preview-frame, so the bezel
+   layout controls the screen instead of the pane's fill rule. */
+#preview-frame {
+  position: relative;
+  inset: auto;
+}
+
+/* The recessed workbench the device floats on */
+#device-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  overflow: auto;
+  padding: 0;
+}
+
+#device-stage.framed {
+  padding: 28px;
+  background-color: var(--bg-deep);
+  background-image: radial-gradient(rgba(157, 177, 204, 0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
+  justify-content: safe center;
+  /* centre when it fits…   */
+  align-items: safe center;
+  /* …scroll-origin when it overflows */
+}
+
+/* The shell base */
+#device-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Desktop: invisible shell, screen fills the pane */
+#device-shell[data-device="desktop"] {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  animation: none;
+}
+
+#device-shell[data-device="desktop"] .device-sensor,
+#device-shell[data-device="desktop"] .device-home {
+  display: none;
+}
+
+/* Tablet + Phone: the hardware chassis */
+#device-shell[data-device="tablet"],
+#device-shell[data-device="phone"] {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+  margin: 0;
+  background: linear-gradient(160deg, #11192a, #080d16);
+  border: 1px solid #2c3d5c;
+  box-shadow:
+    0 0 0 4px #0d1420,
+    0 0 0 5px rgba(255, 255, 255, 0.03),
+    0 30px 70px -20px rgba(0, 0, 0, 0.85),
+    0 8px 20px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+  animation: deviceIn 0.4s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+#device-shell[data-device="tablet"] {
+  border-radius: 22px;
+  padding: 14px;
+}
+
+#device-shell[data-device="phone"] {
+  border-radius: 38px;
+  padding: 12px;
+}
+
+/* Physical side buttons (phone only) */
+#device-shell[data-device="phone"]::before {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 120px;
+  width: 3px;
+  height: 58px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(#3a4d70, #243350);
+}
+
+#device-shell[data-device="phone"]::after {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 98px;
+  width: 3px;
+  height: 80px;
+  border-radius: 3px 0 0 3px;
+  background: linear-gradient(#3a4d70, #243350);
+}
+
+/* Sensor row: speaker slit + camera dot */
+#device-shell[data-device="tablet"] .device-sensor,
+#device-shell[data-device="phone"] .device-sensor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#device-shell[data-device="tablet"] .device-sensor {
+  height: 18px;
+}
+
+#device-shell[data-device="phone"] .device-sensor {
+  height: 26px;
+}
+
+#device-shell[data-device="tablet"] .device-speaker {
+  display: none;
+}
+
+/* tablet = camera only */
+/* Home indicator bar */
+#device-shell[data-device="tablet"] .device-home,
+#device-shell[data-device="phone"] .device-home {
+  display: flex;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The actual screen, owned per device (id+attr+id outranks every prior rule).
+   The bezel reads as RECESSED via an inset shadow. */
+#device-shell[data-device="desktop"] #preview-frame {
+  position: relative;
+  inset: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+#device-shell[data-device="tablet"] #preview-frame {
+  position: relative;
+  inset: auto;
+  flex: 0 0 auto;
+  width: 768px;
+  height: 1024px;
+  border: 0;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+    inset 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+#device-shell[data-device="phone"] #preview-frame {
+  position: relative;
+  inset: auto;
+  flex: 0 0 auto;
+  width: 375px;
+  height: 667px;
+  border: 0;
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+    inset 0 2px 6px rgba(0, 0, 0, 0.35);
+}

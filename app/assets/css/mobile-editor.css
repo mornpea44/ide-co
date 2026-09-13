@@ -1,0 +1,1643 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — MOBILE EDITOR STYLES
+═══════════════════════════════════════════════════════════════════════════
+CodeMirror mount, action bar, editor tab bar, find bar,
+autocomplete strip, zoom controls, editor skeleton, save indicator.
+═══════════════════════════════════════════════════════════════════════════*/
+/* ═══════════════════════════════════════════════════════════════════════════
+1. EDITOR PANEL BODY & WRAP
+═══════════════════════════════════════════════════════════════════════════*/
+.m-editor-body {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.m-editor-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+    /* pan-x pan-y allows single-finger scrolling INSIDE CodeMirror. pinch-zoom is intentionally OMITTED so our JS handler (initPinchZoom in mobile-editor.js) owns the two-finger gesture.*/
+    touch-action: pan-x pan-y;
+    /* ★ PERF v2.1: the wrap must NEVER scroll itself — only CodeMirror's internal .CodeMirror-scroll may scroll. If any ancestor scrolls horizontally, CM5's JS gutter compensation never sees the scroll event and the line numbers ride along.*/
+    overflow: hidden;
+    overscroll-behavior: none;
+    /* ★ REMOVED in v2.1: "-webkit-overflow-scrolling: touch". It is a legacy iOS knob;
+    on Android WebViews it can push descendants onto async scroll layers that desync CodeMirror's gutter pinning (field-report video 2026-09-09).*/
+    
+}
+.m-editor-wrap.hidden {
+    display: none;
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+2. CODEMIRROR THEME (mobile overrides)
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-editor-wrap .CodeMirror {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    font-size: var(--m-ed-fs, 16px);
+    line-height: 1.6;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    background: var(--editor-bg, #0b111c);
+    color: var(--text, #e8eef7);
+    transition: font-size 0.15s ease;
+}
+.m-editor-wrap .CodeMirror-gutters {
+    background: var(--gutter-bg, #0b111c);
+    border-right: 1px solid var(--border, #263450);
+}
+.m-editor-wrap .CodeMirror-linenumber {
+    color: var(--line-number, #4a5d7e);
+    font-size: 0.75em;
+    padding: 0 6px 0 10px;
+}
+.m-editor-wrap .CodeMirror-cursor {
+    border-left: 2px solid var(--cursor, #f5a524);
+}
+.m-editor-wrap .CodeMirror-selected {
+    background: var(--selection, rgba(96, 165, 250, 0.18));
+}
+.m-editor-wrap .CodeMirror-focused .CodeMirror-selected {
+    background: var(--selection-strong, rgba(96, 165, 250, 0.28));
+}
+.m-editor-wrap .CodeMirror-activeline-background {
+    background: var(--active-line, rgba(96, 165, 250, 0.05));
+}
+.m-editor-wrap .CodeMirror-activeline-gutter {
+    background: var(--active-line, rgba(96, 165, 250, 0.05));
+}
+.m-editor-wrap .CodeMirror-activeline-gutter .CodeMirror-linenumber {
+    color: var(--accent, #f5a524);
+    font-weight: 700;
+}
+.m-editor-wrap .CodeMirror-matchingbracket {
+    color: var(--match-bracket, #f5a524) !important;
+    font-weight: 700;
+    text-decoration: underline;
+}
+.m-editor-wrap .CodeMirror-foldgutter {
+    width: 14px;
+}
+.m-editor-wrap .CodeMirror-foldgutter-open,
+.m-editor-wrap .CodeMirror-foldgutter-folded {
+    cursor: pointer;
+    color: var(--faint, #55688a);
+    font-size: 0.7em;
+}
+.m-editor-wrap .CodeMirror-foldgutter-open::after {
+    content: '▾';
+}
+.m-editor-wrap .CodeMirror-foldgutter-folded::after {
+    content: '▸';
+    color: var(--accent, #f5a524);
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+3. EDITOR EMPTY STATE
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-editor-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60%;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: var(--muted, #7186a5);
+}
+.m-editor-empty.hidden {
+    display: none;
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+4. SAVE BUTTON UNSAVED INDICATOR
+═══════════════════════════════════════════════════════════════════════════*/
+    #mobile-header .mh-save.unsaved {
+    background: var(--warning-dim, rgba(251, 191, 36, 0.10));
+    border-color: var(--warning-border, rgba(251, 191, 36, 0.30));
+    color: var(--warning, #fbbf24);
+    animation: saveUnsavedPulse 1.5s ease-in-out infinite;
+}
+@keyframes saveUnsavedPulse {
+    0%, 100% {
+    opacity: 1;
+}
+50% {
+    opacity: 0.6;
+}
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+5. ACTION BAR (Task 3.3)
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-action-bar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    padding: 3px 6px;
+    background: var(--surface-2, #1a2537);
+    border-bottom: 1px solid var(--border, #263450);
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.m-action-bar::-webkit-scrollbar {
+    display: none;
+}
+.m-action-bar.hidden {
+    display: none;
+}
+.mab-btn {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-2, #9db1cc);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.12s ease, color 0.12s ease, transform 0.1s ease;
+    padding: 0 8px;
+}
+.mab-btn:active {
+    background: var(--surface-3, #223049);
+    color: var(--accent, #f5a524);
+    transform: scale(0.92);
+}
+.mab-btn.mab-active {
+    background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+    color: var(--accent, #f5a524);
+    border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+}
+/* ★ Auto-suggest toggle (💡): a transparent border while OFF so the
+button never shifts size when the amber "active" border appears.*/
+    .mab-btn.mab-ac-toggle {
+    border: 1px solid transparent;
+    color: var(--muted, #7186a5);
+}
+.mab-btn.mab-ac-toggle.mab-active {
+    color: var(--accent, #f5a524);
+}
+.mab-btn:disabled {
+    pointer-events: none;
+}
+.mab-sep {
+    flex-shrink: 0;
+    width: 1px;
+    align-self: stretch;
+    margin: 6px 4px;
+    background: var(--border-strong, #3a4d70);
+}
+.mab-btn.mab-zoom-chip {
+    min-width: 40px;
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent, #f5a524);
+}
+@keyframes zoomPulse {
+    0% {
+    transform: scale(1);
+}
+30% {
+    transform: scale(1.2);
+}
+100% {
+    transform: scale(1);
+}
+}
+.mab-btn.zoom-pulse {
+    animation: zoomPulse 0.25s ease;
+}
+/* ── Task 8.8: Contextual action bar buttons ──*/
+    .mab-btn.mab-run {
+    color: var(--success, #4ade80);
+}
+.mab-btn.mab-run:active {
+    background: var(--success-dim, rgba(74, 222, 128, 0.10));
+    color: var(--success, #4ade80);
+}
+.mab-btn.mab-preview {
+    color: var(--info, #60a5fa);
+}
+.mab-btn.mab-preview:active {
+    background: var(--info-dim, rgba(96, 165, 250, 0.10));
+    color: var(--info, #60a5fa);
+}
+.mab-btn.hidden {
+    display: none;
+}
+.mab-sep.hidden {
+    display: none;
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+6. EDITOR TAB BAR (Task 3.4)
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-tab-bar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 1px;
+    background: var(--surface, #131c2b);
+    border-bottom: 1px solid var(--border, #263450);
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 4px;
+}
+.m-tab-bar::-webkit-scrollbar {
+    display: none;
+}
+.m-tab-bar.hidden {
+    display: none;
+}
+.m-tab-item {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    min-height: 30px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    /* Task 9.6: use transform for active-state scale instead of layout-triggering properties. background/border-color are paint-only (compositor-friendly).*/
+    transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+    position: relative;
+    will-change: transform;
+}
+.m-tab-item:active {
+    background: var(--surface-2, #1a2537);
+}
+.m-tab-item.active {
+    background: var(--surface-2, #1a2537);
+    border-bottom-color: var(--accent, #f5a524);
+}
+.m-tab-icon {
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+.m-tab-name {
+    flex-shrink: 0;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-family: var(--font-mono, monospace);
+    color: var(--text-2, #9db1cc);
+}
+.m-tab-item.active .m-tab-name {
+    color: var(--text, #e8eef7);
+    font-weight: 600;
+}
+.m-tab-dot {
+    flex-shrink: 0;
+    font-size: 0.55rem;
+    color: var(--warning, #fbbf24);
+    line-height: 1;
+    animation: mTabDirtyPulse 1.5s ease-in-out infinite;
+}
+@keyframes mTabDirtyPulse {
+    0%, 100% {
+    opacity: 1;
+}
+50% {
+    opacity: 0.4;
+}
+}
+/* ── Tab bar wrapper + overflow indicators (Task 8.2) ──*/
+    .m-tab-bar-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+.m-tab-bar-wrap.hidden {
+    display: none;
+}
+.m-tab-overflow {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 0 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--accent, #f5a524);
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.2s ease;
+}
+.m-tab-overflow.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.m-tab-overflow-left {
+    left: 0;
+    background: linear-gradient(90deg, var(--surface, #131c2b) 55%, transparent);
+    padding-left: 4px;
+}
+.m-tab-overflow-right {
+    right: 0;
+    background: linear-gradient(270deg, var(--surface, #131c2b) 55%, transparent);
+    padding-right: 4px;
+}
+.m-tab-overflow-arrow {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+.m-tab-overflow-count {
+    background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+    border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+    border-radius: 99px;
+    padding: 1px 5px;
+    font-size: 0.58rem;
+    line-height: 1.3;
+}
+.m-tab-overflow:active {
+    opacity: 0.7;
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+7. FIND BAR (Task 3.5)
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-find-bar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 6px;
+    background: var(--surface-2, #1a2537);
+    border-bottom: 0 solid var(--border, #263450);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-height 0.2s ease, padding 0.2s ease, border-bottom-width 0.2s ease, opacity 0.15s ease, visibility 0s linear 0.2s;
+}
+.m-find-bar.open {
+    max-height: 64px;
+    padding: 6px;
+    border-bottom-width: 1px;
+    opacity: 1;
+    visibility: visible;
+    transition: max-height 0.2s ease, padding 0.2s ease, border-bottom-width 0.2s ease, opacity 0.15s ease, visibility 0s;
+}
+.m-find-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 8px 10px;
+    font-size: 16px;
+    font-family: var(--font-mono, monospace);
+    background: var(--bg-deep, #0a101b);
+    border: 1px solid var(--border, #263450);
+    border-radius: 8px;
+    color: var(--text, #e8eef7);
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+.m-find-input:focus {
+    border-color: var(--accent, #f5a524);
+}
+.m-find-input::placeholder {
+    color: var(--faint, #55688a);
+}
+.m-find-count {
+    flex-shrink: 0;
+    min-width: 52px;
+    text-align: center;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    color: var(--muted, #7186a5);
+    user-select: none;
+}
+.m-find-count.has-match {
+    color: var(--accent, #f5a524);
+}
+.m-find-btn {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-2, #9db1cc);
+    font-size: 16px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.12s ease, color 0.12s ease;
+}
+.m-find-btn:active {
+    background: var(--surface-3, #223049);
+    color: var(--accent, #f5a524);
+}
+.m-find-btn:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+.m-editor-wrap .cm-m-search-hl {
+    background: var(--search-hl, rgba(45, 212, 191, 0.25));
+    border-radius: 2px;
+}
+.m-editor-wrap .cm-m-search-hl-active {
+    background: var(--search-hl-active, rgba(245, 165, 36, 0.40));
+    border-radius: 2px;
+    outline: 1px solid var(--accent, #f5a524);
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+8. AUTOCOMPLETE STRIP (Task 3.6)
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-ac-strip {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 9998;
+    display: flex;
+    gap: 4px;
+    padding: 4px 6px;
+    background: var(--surface-2, #1a2537);
+    border-top: 1px solid var(--border-strong, #3a4d70);
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.m-ac-strip::-webkit-scrollbar {
+    display: none;
+}
+.m-ac-strip.hidden {
+    display: none;
+}
+.m-ac-item {
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--border, #263450);
+    border-radius: 8px;
+    background: var(--surface-3, #223049);
+    color: var(--text, #e8eef7);
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    -webkit-tap-highlight-color: transparent;
+}
+.m-ac-item:active {
+    background: var(--surface-4, #2b3a55);
+}
+.m-ac-item.m-ac-snip {
+    color: var(--accent, #f5a524);
+    border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+9. EDITOR SKELETON (Task 6.3)
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-editor-skeleton {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 1rem 1rem 1rem 3rem;
+    background: var(--editor-bg, #0b111c);
+    overflow: hidden;
+}
+.m-editor-skeleton.hidden {
+    display: none;
+}
+.m-editor-skeleton-line {
+    height: 14px;
+    border-radius: 3px;
+}
+.m-editor-skeleton-line:nth-child(1) {
+    width: 35%;
+}
+.m-editor-skeleton-line:nth-child(2) {
+    width: 55%;
+    margin-left: 1.5rem;
+}
+.m-editor-skeleton-line:nth-child(3) {
+    width: 70%;
+    margin-left: 1.5rem;
+}
+.m-editor-skeleton-line:nth-child(4) {
+    width: 45%;
+    margin-left: 3rem;
+}
+.m-editor-skeleton-line:nth-child(5) {
+    width: 60%;
+    margin-left: 3rem;
+}
+.m-editor-skeleton-line:nth-child(6) {
+    width: 30%;
+    margin-left: 3rem;
+}
+.m-editor-skeleton-line:nth-child(7) {
+    width: 50%;
+    margin-left: 1.5rem;
+}
+.m-editor-skeleton-line:nth-child(8) {
+    width: 65%;
+    margin-left: 1.5rem;
+}
+.m-editor-skeleton-line:nth-child(9) {
+    width: 40%;
+}
+.m-editor-skeleton-line:nth-child(10) {
+    width: 55%;
+}
+.m-editor-skeleton-line:nth-child(11) {
+    width: 72%;
+    margin-left: 1.5rem;
+}
+.m-editor-skeleton-line:nth-child(12) {
+    width: 48%;
+    margin-left: 1.5rem;
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+10. VIRTUAL KEYBOARD TOOLBAR (Task 3.2)
+═══════════════════════════════════════════════════════════════════════════*/
+    .mkb-toolbar {
+    position: fixed;
+    z-index: 9999;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    background: var(--surface-2, #1a2537);
+    border-top: 1px solid var(--border-strong, #3a4d70);
+    border-bottom: 1px solid var(--border-strong, #3a4d70);
+    padding: 4px 0;
+    white-space: nowrap;
+    box-sizing: border-box;
+    will-change: top, left, width;
+}
+/* Scrollable keys area — takes all available width*/
+    .mkb-keys-scroll {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 1px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 2px;
+}
+.mkb-keys-scroll::-webkit-scrollbar {
+    display: none;
+}
+.mkb-toolbar.hidden {
+    display: none;
+}
+/* ── Combined key style (slightly different look) ──*/
+    .mkb-btn.mkb-combined {
+    background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+    border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+    color: var(--accent, #f5a524);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    min-width: 56px;
+}
+.mkb-btn.mkb-combined:active {
+    background: var(--accent, #f5a524);
+    color: var(--accent-contrast, #0d1420);
+}
+/* ── Mode toggle button (pinned right, never scrolls) ──*/
+    .mkb-mode-toggle {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    border: none;
+    border-left: 1px solid var(--border-strong, #3a4d70);
+    background: var(--bg-deep, #0a101b);
+    color: var(--accent, #f5a524);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    cursor: pointer;
+    padding: 2px 6px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: background 0.12s ease;
+}
+.mkb-mode-toggle:active {
+    background: var(--surface-3, #223049);
+}
+.mkb-toggle-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+.mkb-toggle-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    line-height: 1;
+}
+.mkb-btn {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: var(--surface-3, #223049);
+    color: var(--text, #e8eef7);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.1s ease, transform 0.1s ease;
+    padding: 0 10px;
+}
+.mkb-btn:active {
+    background: var(--surface-4, #2b3a55);
+    transform: scale(0.94);
+}
+.mkb-btn.mkb-modifier {
+    background: var(--bg-deep, #0a101b);
+    border: 1px solid var(--border, #263450);
+    color: var(--muted, #7186a5);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+}
+.mkb-btn.mkb-modifier.active {
+    background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+    border-color: var(--accent, #f5a524);
+    color: var(--accent, #f5a524);
+    box-shadow: 0 0 8px rgba(245, 165, 36, 0.3);
+}
+.mkb-btn[data-action="left"],
+.mkb-btn[data-action="right"],
+.mkb-btn[data-action="up"],
+.mkb-btn[data-action="down"] {
+    min-width: 48px;
+    font-size: 18px;
+}
+.mkb-btn[data-action="tab"],
+.mkb-btn[data-action="escape"] {
+    min-width: 52px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.mkb-btn[data-type="char"] {
+    font-size: 18px;
+    min-width: 44px;
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+11. TABLET OVERRIDES
+═══════════════════════════════════════════════════════════════════════════*/
+    @media (min-width: 768px) {
+    .mab-btn {
+    min-width: 48px;
+    min-height: 44px;
+    font-size: 20px;
+}
+.m-tab-item {
+    padding: 0.6rem 0.9rem;
+    min-height: 40px;
+}
+.m-tab-name {
+    max-width: 160px;
+    font-size: 0.78rem;
+}
+.mkb-btn {
+    min-width: 52px;
+    min-height: 48px;
+    font-size: 16px;
+}
+.mkb-btn[data-type="char"] {
+    font-size: 20px;
+    min-width: 52px;
+}
+.mkb-btn.mkb-combined {
+    min-width: 64px;
+    font-size: 13px;
+}
+.mkb-mode-toggle {
+    min-width: 52px;
+    min-height: 48px;
+}
+.mkb-toggle-icon {
+    font-size: 18px;
+}
+.mkb-toggle-label {
+    font-size: 9px;
+}
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+12. REDUCED MOTION
+═══════════════════════════════════════════════════════════════════════════*/
+    @media (prefers-reduced-motion: reduce) {
+    .mab-btn:active {
+    transform: none;
+}
+.mab-btn.zoom-pulse {
+    animation: none;
+}
+.m-editor-wrap .CodeMirror {
+    transition: none;
+}
+.m-tab-dot {
+    animation: none;
+}
+.m-find-bar {
+    transition: none;
+}
+.mkb-btn:active {
+    transform: none;
+}
+.m-editor-skeleton-line {
+    animation: none;
+    background: var(--surface-2, #1a2537);
+}
+.m-tab-overflow {
+    transition: none;
+}
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+13. EDITOR POSITION INDICATOR (Task 8.5)
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-editor-pos {
+    flex-shrink: 0;
+    margin-left: auto;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.64rem;
+    font-weight: 500;
+    color: var(--muted, #7186a5);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    padding: 0.15rem 0.5rem;
+    background: var(--bg-deep, #0a101b);
+    border: 1px solid var(--border-subtle, #1d2940);
+    border-radius: 6px;
+}
+.m-editor-pos.hidden {
+    display: none;
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+14. TAB CLOSE BUTTON (visible ✕ on every tab)
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-tab-close {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    /* Override the global 44px touch minimum from mobile-only.css — this tiny button must not stretch the whole tab row*/
+    min-width: 22px;
+    min-height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted, #7186a5);
+    font-size: 0.7rem;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    /* Task 9.6: transform for press feedback instead of layout changes*/
+    transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
+    margin-left: 2px;
+}
+.m-tab-close:active {
+    background: var(--surface-3, #223049);
+    color: var(--text, #e8eef7);
+    transform: scale(0.9);
+}
+.m-tab-item.active .m-tab-close {
+    color: var(--text-2, #9db1cc);
+}
+/* On tablets give it a slightly bigger target*/
+    @media (min-width: 768px) {
+    .m-tab-close {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    font-size: 0.75rem;
+}
+}
+/* ═══════════════════════════════════════════════════════════════
+15. PINCH-ZOOM SNAPSHOT OVERLAY (tearing / black-out fix)
+═══════════════════════════════════════════════════════════════
+A static, screen-sized copy of the editor that is scaled during
+the pinch. Scaling this small clipped layer instead of the real
+(very tall) CodeMirror layer is what eliminates the tearing and
+black-out artifacts on phone GPUs.*/
+    .m-ed-pinch-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    overflow: hidden;
+    transform-origin: 0 0;
+    will-change: transform;
+    pointer-events: none;
+    background: var(--editor-bg, #0b111c);
+}
+.m-ed-pinch-overlay .CodeMirror {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+}
+/* ═════════════════════════════════════════════════════════════════════════ v10 — EDITOR INTELLIGENCE STYLES (autocomplete popups · diagnostics squiggles/gutter/problem list · lens) All colors fall back to theme vars so dark/light both work. ═════════════════════════════════════════════════════════════════════════*/
+    /* ── Diagnostics: squiggle underlines (markText overlays) ─────────────*/
+    .m-diag-ul {
+    text-decoration-line: underline;
+    text-decoration-style: wavy;
+    text-decoration-skip-ink: none;
+    text-underline-offset: 3px;
+}
+.m-diag-ul-error {
+    text-decoration-color: #f87171;
+}
+.m-diag-ul-warning {
+    text-decoration-color: #f5a524;
+}
+.m-diag-ul-info {
+    text-decoration-color: #60a5fa;
+}
+/* Whole-line tints. ★ FIX: CM5's addLineClass(line,'background',cls) puts the class on a .CodeMirror-linebackground element — NOT on .CodeMirror-line — so the old selectors never matched and error lines were never visibly tinted. We now target the background element (CM5) and .cm-line (CM6) with a clearly-visible VSCode-style tint, plus a safety variant.*/
+    .CodeMirror-linebackground.m-diag-line-error {
+    background: rgba(248, 113, 113, 0.22);
+}
+.CodeMirror-linebackground.m-diag-line-warning {
+    background: rgba(245, 165, 36, 0.16);
+}
+.CodeMirror-linebackground.m-diag-line-info {
+    background: rgba(96, 165, 250, 0.13);
+}
+/* CM6: Decoration.line adds the class directly to the .cm-line element*/
+    .cm-line.m-diag-line-error {
+    background: rgba(248, 113, 113, 0.22);
+}
+.cm-line.m-diag-line-warning {
+    background: rgba(245, 165, 36, 0.16);
+}
+.cm-line.m-diag-line-info {
+    background: rgba(96, 165, 250, 0.13);
+}
+/* Safety: in case a build applies the class to the text element instead*/
+    .CodeMirror-line.m-diag-line-error {
+    background: rgba(248, 113, 113, 0.22);
+}
+.CodeMirror-line.m-diag-line-warning {
+    background: rgba(245, 165, 36, 0.16);
+}
+.CodeMirror-line.m-diag-line-info {
+    background: rgba(96, 165, 250, 0.13);
+}
+/* ── Diagnostics gutter (dots column) ─────────────────────────────────*/
+    .CodeMirror-gutter.m-diag-gutter {
+    width: 12px;
+}
+.m-diag-gutter-dot,
+.diag-gutter-dot {
+    width: 7px;
+    height: 7px;
+    margin-left: 2.5px;
+    margin-top: calc((var(--m-ed-lh, 21px) - 7px) / 2);
+    border-radius: 50%;
+    pointer-events: auto;
+    cursor: pointer;
+}
+.diag-gutter-dot.error,
+.m-diag-gutter-dot.error {
+    background: #f87171;
+    box-shadow: 0 0 4px rgba(248, 113, 113, .55);
+}
+.diag-gutter-dot.warning,
+.m-diag-gutter-dot.warning {
+    background: #f5a524;
+    box-shadow: 0 0 4px rgba(245, 165, 36, .45);
+}
+.diag-gutter-dot.info,
+.m-diag-gutter-dot.info {
+    background: #60a5fa;
+}
+/* CM6 variant column*/
+    .cm-diagGutter .cm-gutterElement {
+    padding-left: 3px;
+}
+.m-diag-gutter-cm6 {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+/* ── Problem list strip (diagnostics.js) ──────────────────────────────*/
+    .m-diag-list {
+    border-top: 1px solid var(--border, #263450);
+    background: var(--surface, #131a26);
+    max-height: 34vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 12px;
+    z-index: 6;
+}
+.m-diag-head {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    background: var(--surface, #131a26);
+    border-bottom: 1px solid var(--border, #263450);
+    color: var(--muted, #7186a5);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+.m-diag-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-bottom: 1px solid var(--border, #22304a);
+    background: transparent;
+    color: var(--text, #e8eef7);
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+}
+.m-diag-item:active {
+    background: rgba(255, 255, 255, .05);
+}
+.m-diag-item .m-diag-dot {
+    flex: 0 0 7px;
+    height: 7px;
+    margin-top: 5px;
+    border-radius: 50%;
+}
+.m-diag-item.m-diag-item-error .m-diag-dot {
+    background: #f87171;
+}
+.m-diag-item.m-diag-item-warning .m-diag-dot {
+    background: #f5a524;
+}
+.m-diag-item.m-diag-item-info .m-diag-dot {
+    background: #60a5fa;
+}
+.m-diag-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    word-break: break-word;
+}
+.m-diag-line-no {
+    flex: none;
+    color: var(--muted, #7186a5);
+    font-size: 10px;
+    margin-top: 2px;
+}
+.m-diag-badge {
+    flex: none;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    padding: 1px 6px;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+.m-diag-badge-error {
+    color: #f87171;
+    background: rgba(248, 113, 113, .12);
+}
+.m-diag-badge-warning {
+    color: #f5a524;
+    background: rgba(245, 165, 36, .12);
+}
+.m-diag-badge-info {
+    color: #60a5fa;
+    background: rgba(96, 165, 250, .12);
+}
+.m-diag-chevron {
+    transition: transform .15s ease;
+}
+.m-diag-chevron.collapsed {
+    transform: rotate(-90deg);
+}
+/* ── Code lens rows (editor-lens.js) ──────────────────────────────────*/
+    .m-lens-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 20px;
+    overflow: hidden;
+    opacity: .82;
+    font-size: 11px;
+    line-height: 20px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    user-select: none;
+    -webkit-user-select: none;
+}
+.m-lens-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 19px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent, #f5a524) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent, #f5a524) 30%, transparent);
+    color: var(--text, #e8eef7);
+    white-space: nowrap;
+    cursor: pointer;
+}
+.m-lens-pill:active {
+    background: color-mix(in srgb, var(--accent, #f5a524) 30%, transparent);
+}
+.m-lens-icon {
+    font-style: normal;
+    font-weight: 700;
+}
+.m-lens-name {
+    max-width: 30vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.m-lens-args {
+    color: var(--muted, #8ba3c7);
+    max-width: 34vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.m-lens-count {
+    color: var(--muted, #7186a5);
+    font-size: 10px;
+}
+.m-lens-flash {
+    animation: mLensFlash 0.9s ease-out 1;
+}
+@keyframes mLensFlash {
+    0% {
+    background: color-mix(in srgb, var(--accent, #f5a524) 35%, transparent);
+}
+100% {
+    background: transparent;
+}
+}
+/* ── Autocomplete popup (stock show-hint DOM, themed dark) ────────────*/
+    .CodeMirror-hints {
+    position: absolute;
+    z-index: 320;
+    overflow-y: auto;
+    max-height: 42vh !important;
+    min-width: 220px;
+    max-width: 86vw;
+    margin: 0;
+    padding: 3px;
+    list-style: none;
+    background: var(--surface, #131a26);
+    border: 1px solid var(--border, #263450);
+    border-radius: 10px;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.55);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 13px;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+.CodeMirror-hint {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--text, #e8eef7);
+    padding: 7px 9px;
+    border-radius: 7px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+li.CodeMirror-hint-active {
+    background: color-mix(in srgb, var(--accent, #f5a524) 22%, transparent);
+    color: var(--text, #e8eef7);
+}
+.CodeMirror-hint.m-hint-item .m-hint-glyph {
+    flex: none;
+    width: 15px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 11px;
+    opacity: .95;
+}
+.CodeMirror-hint.m-hint-item .m-hint-label {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.CodeMirror-hint.m-hint-item .m-hint-detail {
+    flex: none;
+    max-width: 40vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--muted, #7186a5);
+    font-size: 11px;
+}
+/* Per-type glyph coloring (classes come from editor-adapter normalizeIntelItem)*/
+    .m-hint-glyph-keyword {
+    color: var(--syn-keyword, #c084fc);
+}
+.m-hint-glyph-function {
+    color: #93c5fd;
+}
+.m-hint-glyph-snippet {
+    color: #34d399;
+}
+.m-hint-glyph-property {
+    color: #fbbf24;
+}
+.m-hint-glyph-variable {
+    color: #f472b6;
+}
+.m-hint-glyph-module {
+    color: #7dd3fc;
+}
+.m-hint-glyph-text {
+    color: var(--muted, #7186a5);
+}
+/* Reduced motion: no flash animation*/
+    @media (prefers-reduced-motion: reduce) {
+    .m-lens-flash {
+    animation: none;
+}
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+v12 — DIAGNOSTICS BADGE BUTTON + REPORT OVERLAY
+(The old floating "PROBLEMS" strip was removed.)
+═══════════════════════════════════════════════════════════════════════════*/
+    /* ── Action-bar 📋 button status colours (errors > warnings > clean) ──*/
+    .mab-btn.mab-diag-ok {
+    color: var(--success, #4ade80);
+}
+.mab-btn.mab-diag-ok:active {
+    background: var(--success-dim, rgba(74, 222, 128, 0.10));
+    color: var(--success, #4ade80);
+}
+.mab-btn.mab-diag-warn {
+    color: var(--warning, #fbbf24);
+}
+.mab-btn.mab-diag-warn:active {
+    background: var(--warning-dim, rgba(251, 191, 36, 0.10));
+    color: var(--warning, #fbbf24);
+}
+.mab-btn.mab-diag-error {
+    color: var(--danger, #f87171);
+}
+.mab-btn.mab-diag-error:active {
+    background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+    color: var(--danger, #f87171);
+}
+/* ── Near-fullscreen report overlay ──*/
+    .m-diag-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg, #0d1420);
+    animation: mDiagOvIn 0.22s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+.m-diag-overlay.hidden {
+    display: none;
+}
+@keyframes mDiagOvIn {
+    from {
+    opacity: 0;
+    transform: translateY(18px);
+}
+to {
+    opacity: 1;
+    transform: none;
+}
+}
+.m-diag-ov-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 0.9rem;
+    padding-top: calc(0.8rem + env(safe-area-inset-top, 0px));
+    background: var(--surface, #131c2b);
+    border-bottom: 1px solid var(--border, #263450);
+}
+.m-diag-ov-title {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text, #e8eef7);
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.m-diag-ov-count {
+    flex-shrink: 0;
+    display: flex;
+    gap: 0.3rem;
+}
+.m-diag-ov-btn {
+    flex-shrink: 0;
+    padding: 0.4rem 0.8rem;
+    min-height: 36px;
+    border: 1px solid var(--border-strong, #3a4d70);
+    border-radius: 9px;
+    background: var(--surface-3, #223049);
+    color: var(--text, #e8eef7);
+    font-family: var(--font-body, sans-serif);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.m-diag-ov-btn:active {
+    transform: scale(0.96);
+    color: var(--accent, #f5a524);
+}
+.m-diag-ov-close {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border, #263450);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted, #7186a5);
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.m-diag-ov-close:active {
+    color: var(--text, #e8eef7);
+    background: var(--surface-3, #223049);
+}
+.m-diag-ov-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.6rem 0.9rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+}
+.m-diag-ov-empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--muted, #7186a5);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+.m-diag-ov-note {
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px dashed var(--border, #263450);
+    border-radius: 8px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.66rem;
+    color: var(--faint, #55688a);
+}
+@media (prefers-reduced-motion: reduce) {
+    .m-diag-overlay {
+    animation: none;
+}
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+v15 — SELF-OWNED AUTOCOMPLETE POPUP
+Reuses the .CodeMirror-hints/.CodeMirror-hint theme above;
+    only the
+container behaviour + a tag-name-independent active rule are new.
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-ac-popup {
+    position: fixed;
+    display: none;
+    overflow: hidden;
+}
+.m-ac-popup .m-ac-list {
+    max-height: 42vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+/* old rule was li-only;
+    our items are divs*/
+    .CodeMirror-hint-active {
+    background: color-mix(in srgb, var(--accent, #f5a524) 22%, transparent);
+    color: var(--text, #e8eef7);
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+v16 — ERROR-LENS STATUS RING on the 📋 action-bar button
+green = clean · orange = warnings · red pulsing = errors (errors win)
+═══════════════════════════════════════════════════════════════════════════*/
+    .mab-btn.mab-diag {
+    position: relative;
+    border-radius: 10px;
+    transition: box-shadow 0.25s ease;
+}
+.mab-btn.mab-diag-ok {
+    box-shadow: inset 0 0 0 2px var(--success, #4ade80);
+}
+.mab-btn.mab-diag-warn {
+    box-shadow: inset 0 0 0 2px var(--warning, #fbbf24);
+}
+.mab-btn.mab-diag-error {
+    box-shadow: inset 0 0 0 2px var(--danger, #f87171);
+    animation: mDiagRingPulse 1.6s ease-in-out infinite;
+}
+@keyframes mDiagRingPulse {
+    0%, 100% {
+    box-shadow: inset 0 0 0 2px var(--danger, #f87171);
+}
+50% {
+    box-shadow: inset 0 0 0 3px var(--danger, #f87171), 0 0 10px rgba(248, 113, 113, 0.45);
+}
+}
+/* v16 — report overlay: message / explanation / fix rows*/
+    .m-diag-msg {
+    display: block;
+    font-weight: 600;
+    font-size: 0.78rem;
+    word-break: break-word;
+}
+.m-diag-explain {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: var(--text-2, #9db1cc);
+}
+.m-diag-fix {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.68rem;
+    line-height: 1.5;
+    color: var(--accent, #f5a524);
+}
+.m-diag-fix::before {
+    content: '🛠 ';
+}
+/* v16 — autocomplete: boilerplate glyph + sticky section dividers*/
+    .m-hint-glyph-boilerplate {
+    color: var(--accent, #f5a524);
+}
+.m-ac-divider {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 4px 9px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted, #7186a5);
+    background: var(--surface, #131a26);
+    border-bottom: 1px solid var(--border, #263450);
+}
+@media (prefers-reduced-motion: reduce) {
+    .mab-btn.mab-diag-error {
+    animation: none;
+}
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+v11 — ERROR LENS REPORT OVERLAY EXTENSIONS
+Filter chips (All / Errors / Warnings / Info), source tags and the
+header count badges used by the rewritten diagnostics.js.
+═══════════════════════════════════════════════════════════════════════════*/
+    .m-diag-filters {
+    flex-shrink: 0;
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.5rem 0.9rem;
+    background: var(--surface, #131c2b);
+    border-bottom: 1px solid var(--border, #263450);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.m-diag-filters::-webkit-scrollbar {
+    display: none;
+}
+.m-diag-filters button {
+    flex-shrink: 0;
+    padding: 0.35rem 0.8rem;
+    min-height: 34px;
+    border: 1px solid var(--border, #263450);
+    border-radius: 99px;
+    background: var(--bg-deep, #0a101b);
+    color: var(--muted, #7186a5);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.m-diag-filters button.active {
+    border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+    background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+    color: var(--accent, #f5a524);
+}
+.m-diag-cnt {
+    display: inline-block;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 0.12rem 0.5rem;
+    border-radius: 99px;
+}
+.m-diag-cnt.err {
+    color: var(--danger, #f87171);
+    background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+}
+.m-diag-cnt.warn {
+    color: var(--warning, #fbbf24);
+    background: var(--warning-dim, rgba(251, 191, 36, 0.10));
+}
+.m-diag-cnt.info {
+    color: var(--info, #60a5fa);
+    background: var(--info-dim, rgba(96, 165, 250, 0.10));
+}
+.m-diag-src {
+    flex: none;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.55rem;
+    color: var(--faint, #55688a);
+    border: 1px solid var(--border-subtle, #1d2940);
+    border-radius: 99px;
+    padding: 1px 7px;
+    margin-left: 0.35rem;
+    align-self: flex-start;
+    white-space: nowrap;
+}
+/* explanation + fix rows get a little left structure for scanning*/
+    .m-diag-item .m-diag-explain {
+    display: block;
+}
+.m-diag-item .m-diag-fix {
+    display: block;
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+v11.1 — STRAY UNDERLINE KILL-SWITCH (editor code tokens)
+────────────────────────────────────────────────────────────────────────────
+Symptom: every code token carried a thin straight underline in its own
+colour that never disappeared while typing. A text-decoration was leaking
+onto the token spans CodeMirror paints. This block forces "no decoration"
+on EVERY span inside the editor, then explicitly re-allows ONLY the four
+decorations we actually want: bracket matching, find-in-file hits, real
+diagnostics squiggles, and markdown links. ID-scoped (#m-editor-mount) so
+it outranks any class-based rule elsewhere in the CSS bundle.
+═══════════════════════════════════════════════════════════════════════════*/
+    #m-editor-mount .CodeMirror pre span:not(.CodeMirror-matchingbracket):not(.m-diag-ul):not(.cm-m-search-hl):not(.cm-m-search-hl-active):not(.cm-link) {
+    text-decoration: none !important;
+    border-bottom: none !important;
+}
+#m-editor-mount .CodeMirror pre span.CodeMirror-matchingbracket {
+    text-decoration: underline !important;
+}
+#m-editor-mount .CodeMirror pre span.m-diag-ul {
+    text-decoration: underline !important;
+    text-decoration-style: wavy !important;
+}
+#m-editor-mount .CodeMirror pre span.cm-link {
+    text-decoration: underline !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v17 — CODEMIRROR 6 LAYOUT + CHROME PARITY
+   ─────────────────────────────────────────────────────────────────────────
+   CM6 builds a different DOM (.cm-editor > .cm-scroller > .cm-gutters +
+   .cm-content). Without sizing rules the editor grows to the FULL document
+   height inside .m-editor-wrap (overflow:hidden), which caused:
+     • no vertical scrolling (the scroller never overflows vertically),
+     • line numbers riding away on horizontal scroll (sticky gutter had no
+       real two-axis scroll container),
+     • CM6's light base theme showing through (white gutter, plain text).
+   These rules size CM6 exactly like CM5 and re-point its chrome colours at
+   the existing design tokens. Syntax colours live in themes.css (tok-*).
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* ── 1. Sizing: editor fills the wrap; .cm-scroller is the ONLY scroller ── */
+.m-editor-wrap .cm-editor {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--editor-bg, #0b111c);
+    color: var(--text, #e8eef7);
+    font-size: var(--m-ed-fs, 16px);
+    line-height: 1.6;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    outline: none !important;
+    transition: font-size 0.15s ease;
+}
+.m-editor-wrap .cm-editor .cm-scroller {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto !important;
+    overscroll-behavior: none;
+    scrollbar-width: thin;
+}
+/* ── 2. Gutter: pinned horizontally (sticky), themed like CM5 ── */
+.m-editor-wrap .cm-editor .cm-gutters {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 5;
+    background: var(--gutter-bg, #0b111c);
+    border-right: 1px solid var(--border, #263450);
+    color: var(--line-number, #4a5d7e);
+}
+.m-editor-wrap .cm-editor .cm-gutterElement {
+    font-size: 0.75em;
+    padding: 0 6px 0 10px;
+}
+.m-editor-wrap .cm-editor .cm-foldGutter .cm-gutterElement {
+    cursor: pointer;
+    color: var(--faint, #55688a);
+    font-size: 0.7em;
+}
+/* ── 3. Cursor / selection / active line / brackets / search ── */
+.m-editor-wrap .cm-editor .cm-cursor,
+.m-editor-wrap .cm-editor .cm-dropCursor {
+    border-left: 2px solid var(--cursor, #f5a524);
+}
+.m-editor-wrap .cm-editor .cm-selectionBackground {
+    background: var(--selection, rgba(96, 165, 250, 0.18)) !important;
+}
+.m-editor-wrap .cm-editor.cm-focused .cm-selectionBackground {
+    background: var(--selection-strong, rgba(96, 165, 250, 0.28)) !important;
+}
+.m-editor-wrap .cm-editor .cm-activeLine {
+    background: var(--active-line, rgba(96, 165, 250, 0.05));
+}
+.m-editor-wrap .cm-editor .cm-activeLineGutter {
+    background: var(--active-line, rgba(96, 165, 250, 0.05));
+    color: var(--accent, #f5a524);
+    font-weight: 700;
+}
+.m-editor-wrap .cm-editor .cm-matchingBracket {
+    color: var(--match-bracket, #f5a524);
+    font-weight: 700;
+    text-decoration: underline;
+}
+.m-editor-wrap .cm-editor .cm-nonmatchingBracket {
+    color: var(--danger, #f87171);
+    font-weight: 700;
+}
+.m-editor-wrap .cm-editor .cm-searchMatch {
+    background: var(--search-hl, rgba(45, 212, 191, 0.25));
+}
+.m-editor-wrap .cm-editor .cm-searchMatch-selected {
+    background: var(--search-hl-active, rgba(245, 165, 36, 0.40));
+}
+/* ── 4. Diagnostics parity on CM6 lines/gutter already exist; keep the
+      stray-underline kill-switch effective for CM6 tokens too ── */
+#m-editor-mount .cm-editor .cm-line span:not(.cm-matchingBracket):not(.m-diag-ul):not(.cm-searchMatch) {
+    text-decoration: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .m-editor-wrap .cm-editor {
+        transition: none;
+    }
+}

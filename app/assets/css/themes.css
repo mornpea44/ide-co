@@ -1,0 +1,923 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — THEMES & DESIGN TOKENS
+═══════════════════════════════════════════════════════════════════════════
+The color foundation of the entire IDE. Every other stylesheet reads its
+colors from the CSS custom properties ("tokens") defined here.
+
+★ SYNTAX UPGRADE over the previous version:
+  • New --syn-type token + .cm-type rule — CodeMirror's clike mode (C,
+    C++, Java, C#, Kotlin) emits built-in types as "type"; before this
+    change those tokens had NO color at all (the "C/Java have no colors"
+    bug).
+  • --syn-qualifier gets its own teal color (CSS class selectors etc.).
+  • Per-language palettes: mobile-editor.js now writes a data-lang
+    attribute on the editor mount, so CSS files get their OWN colors
+    (sky-blue properties, orange values, green classes, gold ids) without
+    touching HTML/PHP token colors.
+  • Better --syn-atom warmth for constants and CSS value keywords.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+1. DARK THEME (default)
+═══════════════════════════════════════════════════════════════════════════ */
+:root {
+    color-scheme: dark;
+
+    /* ── Fonts ── */
+    --font-display: 'Syne', 'Arial Black', sans-serif;
+    --font-body: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+
+    /* ── Font sizes ── */
+    --fs-xs: 0.72rem;
+    --fs-sm: 0.82rem;
+    --fs-md: 0.92rem;
+    --fs-lg: 1.05rem;
+
+    /* ── Backgrounds (layered, darkest → lightest) ── */
+    --bg: #0d1420;
+    --bg-deep: #0a101b;
+    --surface: #131c2b;
+    --surface-2: #1a2537;
+    --surface-3: #223049;
+    --surface-4: #2b3a55;
+
+    /* ── Borders ── */
+    --border: #263450;
+    --border-strong: #3a4d70;
+    --border-subtle: #1d2940;
+
+    /* ── Text ── */
+    --text: #e8eef7;
+    --text-2: #9db1cc;
+    --muted: #7186a5;
+    --faint: #55688a;
+
+    /* ── Brand accent (amber) ── */
+    --accent: #f5a524;
+    --accent-strong: #ffb748;
+    --accent-contrast: #0d1420;
+    --accent-dim: rgba(245, 165, 36, 0.12);
+    --accent-border: rgba(245, 165, 36, 0.32);
+
+    /* ── Secondary accent (teal) ── */
+    --accent-2: #2dd4bf;
+    --accent-2-dim: rgba(45, 212, 191, 0.10);
+    --accent-2-border: rgba(45, 212, 191, 0.30);
+
+    /* ── Semantic colors ── */
+    --danger: #f87171;
+    --danger-dim: rgba(248, 113, 113, 0.10);
+    --danger-border: rgba(248, 113, 113, 0.30);
+    --warning: #fbbf24;
+    --warning-dim: rgba(251, 191, 36, 0.10);
+    --warning-border: rgba(251, 191, 36, 0.30);
+    --success: #4ade80;
+    --success-dim: rgba(74, 222, 128, 0.10);
+    --success-border: rgba(74, 222, 128, 0.30);
+    --info: #60a5fa;
+    --info-dim: rgba(96, 165, 250, 0.10);
+    --info-border: rgba(96, 165, 250, 0.30);
+
+    /* ── Code editor ── */
+    --editor-bg: #0b111c;
+    --gutter-bg: #0b111c;
+    --line-number: #4a5d7e;
+    --active-line: rgba(96, 165, 250, 0.05);
+    --selection: rgba(96, 165, 250, 0.18);
+    --selection-strong: rgba(96, 165, 250, 0.28);
+    --cursor: #f5a524;
+    --search-hl: rgba(45, 212, 191, 0.25);
+    --search-hl-active: rgba(245, 165, 36, 0.40);
+    --match-bracket: #f5a524;
+    --editor-font-size: 14px;
+    --editor-line-height: 1.7;
+
+    /* ── Syntax highlighting (dark palette) ── */
+    --syn-keyword: #c084fc;
+    /* function, return, if, class */
+    --syn-atom: #ffa657;
+    /* true, false, null, constants, CSS value words */
+    --syn-number: #f78c6c;
+    /* 42, 3.14 */
+    --syn-def: #82aaff;
+    /* names being defined */
+    --syn-variable: #dbe4f3;
+    /* plain identifiers */
+    --syn-variable-2: #5ccfe6;
+    /* locals / nested */
+    --syn-variable-3: #c3e88d;
+    /* globals / legacy "type" slot */
+    --syn-type: #7fdbca;
+    /* ★ built-in types: int, void, String, vector… */
+    --syn-property: #82aaff;
+    /* object properties, CSS property names */
+    --syn-operator: #89ddff;
+    /* = + - * / => */
+    --syn-comment: #5f7394;
+    /* // comments */
+    --syn-string: #c3e88d;
+    /* 'hello' */
+    --syn-string-2: #f07178;
+    /* template strings, regex */
+    --syn-meta: #89ddff;
+    /* <?php ?>, <!DOCTYPE>, preprocessor #include */
+    --syn-builtin: #ffcb6b;
+    /* console, document, echo */
+    --syn-bracket: #a8b7cf;
+    /* ( ) { } [ ] */
+    --syn-tag: #f07178;
+    /* <div>, <body> */
+    --syn-attribute: #c792ea;
+    /* class=, id= */
+    --syn-qualifier: #2dd4bf;
+    /* .class selectors and friends */
+    --syn-header: #f5a524;
+    /* markdown headings */
+    --syn-quote: #7c8fa8;
+    /* markdown quotes */
+    --syn-hr: #3a4d70;
+    /* horizontal rules */
+    --syn-link: #2dd4bf;
+    /* markdown links */
+    --syn-error: #f87171;
+    /* invalid tokens */
+
+    /* ── CSS-file-only palette (applied via [data-lang="css"]) ── */
+    --syn-css-prop: #7dd3fc;
+    /* property names */
+    --syn-css-value: #ffa657;
+    /* value keywords + at-rules */
+    --syn-css-class: #7ee787;
+    /* .class selectors */
+    --syn-css-id: #ffcb6b;
+    /* #id selectors */
+    --syn-css-pseudo: #5ccfe6;
+    /* :hover, ::before */
+
+    /* ── Terminal ── */
+    --term-bg: #0a0f18;
+    --term-text: #c8d6e8;
+    --term-prompt: #f5a524;
+    --term-cmd: #e8eef7;
+    --term-error: #f87171;
+    --term-success: #4ade80;
+    --term-info: #60a5fa;
+
+    /* ── Live preview ── */
+    --preview-bg: #ffffff;
+    --preview-chrome: #131c2b;
+
+    /* ── Scrollbars ── */
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: #33445f;
+    --scrollbar-thumb-hover: #f5a524;
+
+    /* ── Radii ── */
+    --r-sm: 6px;
+    --r-md: 9px;
+    --r-lg: 12px;
+    --r-xl: 16px;
+    --r-full: 999px;
+
+    /* ── Shadows ── */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.32);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.45);
+
+    /* ── Focus ring (keyboard accessibility) ── */
+    --focus-ring: 0 0 0 3px rgba(245, 165, 36, 0.25);
+
+    /* ── Transitions ── */
+    --tr-fast: 0.15s ease;
+    --tr: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --tr-spring: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* ── Z-index scale ── */
+    --z-base: 1;
+    --z-sidebar: 20;
+    --z-divider: 25;
+    --z-titlebar: 30;
+    --z-dropdown: 60;
+    --z-modal-overlay: 100;
+    --z-modal: 101;
+    --z-context: 110;
+    --z-toast: 999;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+2. LIGHT THEME
+═══════════════════════════════════════════════════════════════════════════ */
+:root[data-theme="light"] {
+    color-scheme: light;
+
+    /* ── Backgrounds ── */
+    --bg: #eef1f5;
+    --bg-deep: #e4e9f0;
+    --surface: #ffffff;
+    --surface-2: #f2f4f8;
+    --surface-3: #e8ecf2;
+    --surface-4: #dde3ec;
+
+    /* ── Borders ── */
+    --border: #d9dfe9;
+    --border-strong: #b9c3d4;
+    --border-subtle: #e5eaf1;
+
+    /* ── Text ── */
+    --text: #1c2430;
+    --text-2: #4a5568;
+    --muted: #7a8699;
+    --faint: #9aa5b5;
+
+    /* ── Brand accent ── */
+    --accent: #d97706;
+    --accent-strong: #b45309;
+    --accent-contrast: #ffffff;
+    --accent-dim: rgba(217, 119, 6, 0.10);
+    --accent-border: rgba(217, 119, 6, 0.30);
+
+    /* ── Secondary accent ── */
+    --accent-2: #0d9488;
+    --accent-2-dim: rgba(13, 148, 136, 0.10);
+    --accent-2-border: rgba(13, 148, 136, 0.30);
+
+    /* ── Semantic colors ── */
+    --danger: #dc2626;
+    --danger-dim: rgba(220, 38, 38, 0.08);
+    --danger-border: rgba(220, 38, 38, 0.28);
+    --warning: #d97706;
+    --warning-dim: rgba(217, 119, 6, 0.10);
+    --warning-border: rgba(217, 119, 6, 0.30);
+    --success: #16a34a;
+    --success-dim: rgba(22, 163, 74, 0.10);
+    --success-border: rgba(22, 163, 74, 0.30);
+    --info: #2563eb;
+    --info-dim: rgba(37, 99, 235, 0.08);
+    --info-border: rgba(37, 99, 235, 0.28);
+
+    /* ── Code editor ── */
+    --editor-bg: #ffffff;
+    --gutter-bg: #fafbfd;
+    --line-number: #a5b0c2;
+    --active-line: rgba(37, 99, 235, 0.04);
+    --selection: rgba(37, 99, 235, 0.14);
+    --selection-strong: rgba(37, 99, 235, 0.22);
+    --cursor: #d97706;
+    --search-hl: rgba(13, 148, 136, 0.20);
+    --search-hl-active: rgba(217, 119, 6, 0.30);
+    --match-bracket: #d97706;
+
+    /* ── Syntax highlighting (light palette) ── */
+    --syn-keyword: #7c3aed;
+    --syn-atom: #b45309;
+    --syn-number: #c2410c;
+    --syn-def: #1d4ed8;
+    --syn-variable: #243040;
+    --syn-variable-2: #0e7490;
+    --syn-variable-3: #4d7c0f;
+    --syn-type: #0f766e;
+    /* ★ built-in types */
+    --syn-property: #1d4ed8;
+    --syn-operator: #0369a1;
+    --syn-comment: #8b95a5;
+    --syn-string: #15803d;
+    --syn-string-2: #b91c1c;
+    --syn-meta: #0369a1;
+    --syn-builtin: #b45309;
+    --syn-bracket: #4a5568;
+    --syn-tag: #b91c1c;
+    --syn-attribute: #7c3aed;
+    --syn-qualifier: #0d9488;
+    --syn-header: #b45309;
+    --syn-quote: #64748b;
+    --syn-hr: #cbd5e1;
+    --syn-link: #0d9488;
+    --syn-error: #dc2626;
+
+    /* ── CSS-file-only palette ── */
+    --syn-css-prop: #0369a1;
+    --syn-css-value: #b45309;
+    --syn-css-class: #15803d;
+    --syn-css-id: #a16207;
+    --syn-css-pseudo: #0e7490;
+
+    /* ── Terminal ── */
+    --term-bg: #f7f9fc;
+    --term-text: #334155;
+    --term-prompt: #b45309;
+    --term-cmd: #1c2430;
+    --term-error: #dc2626;
+    --term-success: #16a34a;
+    --term-info: #2563eb;
+
+    /* ── Live preview ── */
+    --preview-bg: #ffffff;
+    --preview-chrome: #f2f4f8;
+
+    /* ── Scrollbars ── */
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: #c2cad8;
+    --scrollbar-thumb-hover: #d97706;
+
+    /* ── Shadows ── */
+    --shadow-sm: 0 2px 8px rgba(30, 42, 60, 0.10);
+    --shadow-md: 0 6px 20px rgba(30, 42, 60, 0.14);
+    --shadow-lg: 0 16px 48px rgba(30, 42, 60, 0.20);
+
+    /* ── Focus ring ── */
+    --focus-ring: 0 0 0 3px rgba(217, 119, 6, 0.22);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+3. BASE RESET & GLOBAL STYLES
+═══════════════════════════════════════════════════════════════════════════ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: var(--fs-md);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Faint blueprint grid */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        linear-gradient(rgba(96, 165, 250, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96, 165, 250, 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+}
+
+:root[data-theme="light"] body::before {
+    background-image:
+        linear-gradient(rgba(60, 80, 120, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(60, 80, 120, 0.045) 1px, transparent 1px);
+}
+
+::selection {
+    background: var(--accent);
+    color: var(--accent-contrast);
+}
+
+::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 8px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+
+/* ★ v20 FIX: the tiny white square at the bottom-right of BOTH editors
+was the unstyled scrollbar CORNER (where the horizontal and vertical
+native scrollbars meet). WebViews paint that square white unless it is
+explicitly themed, so make it transparent like the track. */
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.mono {
+    font-family: var(--font-mono);
+}
+
+html.theme-anim,
+html.theme-anim *,
+html.theme-anim *::before,
+html.theme-anim *::after {
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+body.no-motions *,
+body.no-motions *::before,
+body.no-motions *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+4. CODEMIRROR THEMING
+═══════════════════════════════════════════════════════════════════════════ */
+.CodeMirror {
+    height: 100%;
+    background: var(--editor-bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: var(--editor-font-size);
+    line-height: var(--editor-line-height);
+}
+
+/* ── Gutter ── */
+.CodeMirror-gutters {
+    background: var(--gutter-bg);
+    border-right: 1px solid var(--border);
+}
+
+.CodeMirror-linenumber {
+    color: var(--line-number);
+    font-size: 0.8em;
+    padding: 0 8px 0 12px;
+}
+
+/* ── Cursor & selection ── */
+.CodeMirror-cursor {
+    border-left: 2px solid var(--cursor);
+    border-right: none;
+    width: 0;
+}
+
+.CodeMirror-selected {
+    background: var(--selection);
+}
+
+.CodeMirror-focused .CodeMirror-selected {
+    background: var(--selection-strong);
+}
+
+.CodeMirror-crosshair {
+    cursor: crosshair;
+}
+
+/* ── Active line highlight ── */
+.CodeMirror-activeline-background {
+    background: var(--active-line);
+}
+
+.CodeMirror-activeline-gutter {
+    background: var(--active-line);
+}
+
+.CodeMirror-activeline-gutter .CodeMirror-linenumber {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+/* ── Bracket matching ── */
+.CodeMirror-matchingbracket {
+    color: var(--match-bracket) !important;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.CodeMirror-nonmatchingbracket {
+    color: var(--danger) !important;
+    font-weight: 700;
+}
+
+/* ── Find-in-file highlight ── */
+.cm-searching {
+    background: var(--search-hl) !important;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px var(--accent-2-border);
+}
+
+.CodeMirror-selected.cm-searching,
+.cm-searching.CodeMirror-selectedtext {
+    background: var(--search-hl-active) !important;
+}
+
+/* ── Code folding ── */
+.CodeMirror-foldmarker {
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--r-sm);
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    padding: 0 5px;
+    cursor: pointer;
+}
+
+.CodeMirror-foldgutter {
+    width: 16px;
+}
+
+.CodeMirror-foldgutter-open,
+.CodeMirror-foldgutter-folded {
+    cursor: pointer;
+    color: var(--faint);
+    font-size: 0.8em;
+    transition: color var(--tr-fast);
+}
+
+.CodeMirror-foldgutter-open:hover,
+.CodeMirror-foldgutter-folded:hover {
+    color: var(--accent);
+}
+
+.CodeMirror-foldgutter-open::after {
+    content: '▾';
+}
+
+.CodeMirror-foldgutter-folded::after {
+    content: '▸';
+    color: var(--accent);
+}
+
+/* ── Search dialog (Ctrl+F bar) ── */
+.CodeMirror-dialog {
+    background: var(--surface-2);
+    color: var(--text);
+    border-bottom: 1px solid var(--border-strong);
+    padding: 6px 10px;
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    overflow: hidden;
+}
+
+.CodeMirror-dialog input {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    color: var(--text);
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 4px 8px;
+    outline: none;
+    width: 20em;
+}
+
+.CodeMirror-dialog input:focus {
+    border-color: var(--accent);
+    box-shadow: var(--focus-ring);
+}
+
+.CodeMirror-dialog button {
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--text-2);
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 4px 10px;
+    margin-left: 4px;
+    cursor: pointer;
+    transition: all var(--tr-fast);
+}
+
+.CodeMirror-dialog button:hover {
+    color: var(--accent);
+    border-color: var(--accent-border);
+}
+
+.CodeMirror-dialog label {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+5. SYNTAX HIGHLIGHTING TOKENS
+═══════════════════════════════════════════════════════════════════════════
+Every CodeMirror mode (clike for C/C++/Java/Kotlin/C#, plus go, rust,
+swift, dart, lua, ruby, perl, python, shell, sql…) emits these standard
+token classes, so one palette covers ALL of them.                       */
+
+.cm-s-default .cm-keyword {
+    color: var(--syn-keyword);
+}
+
+.cm-s-default .cm-atom {
+    color: var(--syn-atom);
+}
+
+.cm-s-default .cm-number {
+    color: var(--syn-number);
+}
+
+.cm-s-default .cm-def {
+    color: var(--syn-def);
+}
+
+.cm-s-default .cm-variable {
+    color: var(--syn-variable);
+}
+
+.cm-s-default .cm-variable-2 {
+    color: var(--syn-variable-2);
+}
+
+.cm-s-default .cm-variable-3 {
+    color: var(--syn-variable-3);
+}
+
+/* ★ THE C/C++/JAVA FIX: clike modes emit built-in types as .cm-type;
+   previously this class had no rule, so int/void/String were colorless. */
+.cm-s-default .cm-type {
+    color: var(--syn-type);
+    font-weight: 600;
+}
+
+.cm-s-default .cm-property {
+    color: var(--syn-property);
+}
+
+.cm-s-default .cm-operator {
+    color: var(--syn-operator);
+}
+
+.cm-s-default .cm-comment {
+    color: var(--syn-comment);
+    font-style: italic;
+}
+
+.cm-s-default .cm-string {
+    color: var(--syn-string);
+}
+
+.cm-s-default .cm-string-2 {
+    color: var(--syn-string-2);
+}
+
+.cm-s-default .cm-meta {
+    color: var(--syn-meta);
+}
+
+.cm-s-default .cm-qualifier {
+    color: var(--syn-qualifier);
+}
+
+.cm-s-default .cm-builtin {
+    color: var(--syn-builtin);
+}
+
+.cm-s-default .cm-bracket {
+    color: var(--syn-bracket);
+}
+
+.cm-s-default .cm-tag {
+    color: var(--syn-tag);
+}
+
+.cm-s-default .cm-attribute {
+    color: var(--syn-attribute);
+}
+
+.cm-s-default .cm-header {
+    color: var(--syn-header);
+    font-weight: 700;
+}
+
+.cm-s-default .cm-quote {
+    color: var(--syn-quote);
+    font-style: italic;
+}
+
+.cm-s-default .cm-hr {
+    color: var(--syn-hr);
+}
+
+.cm-s-default .cm-link {
+    color: var(--syn-link);
+    text-decoration: underline;
+}
+
+.cm-s-default .cm-error {
+    color: var(--syn-error);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+6. PER-LANGUAGE PALETTES (via data-lang written by mobile-editor.js)
+═══════════════════════════════════════════════════════════════════════════
+CSS files used to reuse the HTML palette (purple "keywords" everywhere),
+which read badly. When a .css/.scss/.less file is open, the mount carries
+data-lang="css" and gets its own property/value/class/id colors.        */
+
+#m-editor-mount[data-lang="css"] .cm-s-default .cm-keyword,
+#m-editor-mount[data-lang="css"] .cm-s-default .cm-atom {
+    color: var(--syn-css-value);
+    /* value words + @rules */
+}
+
+#m-editor-mount[data-lang="css"] .cm-s-default .cm-property {
+    color: var(--syn-css-prop);
+}
+
+#m-editor-mount[data-lang="css"] .cm-s-default .cm-qualifier {
+    color: var(--syn-css-class);
+    /* .class selectors */
+}
+
+#m-editor-mount[data-lang="css"] .cm-s-default .cm-builtin {
+    color: var(--syn-css-id);
+    /* #id selectors */
+}
+
+#m-editor-mount[data-lang="css"] .cm-s-default .cm-variable-3 {
+    color: var(--syn-css-pseudo);
+    /* :hover / ::before */
+}
+
+#m-editor-mount[data-lang="css"] .cm-s-default .cm-tag {
+    color: var(--syn-tag);
+    /* element selectors */
+}
+
+#m-editor-mount[data-lang="css"] .cm-s-default .cm-number {
+    color: var(--syn-number);
+}
+
+#m-editor-mount[data-lang="css"] .cm-s-default .cm-string {
+    color: var(--syn-string);
+}
+
+/* Markdown gets a slightly warmer header color for readability */
+#m-editor-mount[data-lang="markdown"] .cm-s-default .cm-header {
+    color: var(--syn-header);
+    font-weight: 800;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   7. CODEMIRROR 6 SYNTAX PARITY (v17)
+   CM6 emits tok-* classes instead of CM5's .cm-* classes. Map them onto the
+   SAME design tokens so both engines look identical in dark AND light theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cm-editor .tok-comment {
+    color: var(--syn-comment);
+    font-style: italic;
+}
+
+.cm-editor .tok-string,
+.cm-editor .tok-string2 {
+    color: var(--syn-string);
+}
+
+.cm-editor .tok-regexp {
+    color: var(--syn-string-2);
+}
+
+.cm-editor .tok-keyword,
+.cm-editor .tok-modifier {
+    color: var(--syn-keyword);
+}
+
+.cm-editor .tok-atom,
+.cm-editor .tok-bool {
+    color: var(--syn-atom);
+}
+
+.cm-editor .tok-number,
+.cm-editor .tok-integer,
+.cm-editor .tok-float {
+    color: var(--syn-number);
+}
+
+.cm-editor .tok-variableName {
+    color: var(--syn-variable);
+}
+
+.cm-editor .tok-variableName.tok-definition,
+.cm-editor .tok-definition,
+.cm-editor .tok-function {
+    color: var(--syn-def);
+}
+
+.cm-editor .tok-typeName,
+.cm-editor .tok-className,
+.cm-editor .tok-namespace {
+    color: var(--syn-type);
+    font-weight: 600;
+}
+
+.cm-editor .tok-propertyName {
+    color: var(--syn-property);
+}
+
+.cm-editor .tok-operator {
+    color: var(--syn-operator);
+}
+
+.cm-editor .tok-punctuation,
+.cm-editor .tok-bracket,
+.cm-editor .tok-paren {
+    color: var(--syn-bracket);
+}
+
+.cm-editor .tok-meta,
+.cm-editor .tok-processing {
+    color: var(--syn-meta);
+}
+
+.cm-editor .tok-tag {
+    color: var(--syn-tag);
+}
+
+.cm-editor .tok-attributeName {
+    color: var(--syn-attribute);
+}
+
+.cm-editor .tok-heading {
+    color: var(--syn-header);
+    font-weight: 700;
+}
+
+.cm-editor .tok-quote {
+    color: var(--syn-quote);
+    font-style: italic;
+}
+
+.cm-editor .tok-link {
+    color: var(--syn-link);
+    text-decoration: underline;
+}
+
+.cm-editor .tok-emphasis {
+    font-style: italic;
+}
+
+.cm-editor .tok-strong {
+    font-weight: 700;
+}
+
+.cm-editor .tok-strikethrough {
+    text-decoration: line-through;
+}
+
+.cm-editor .tok-invalid {
+    color: var(--syn-error);
+}
+
+/* ── CSS-file-only palette for CM6 (mirrors the [data-lang="css"] block) ── */
+#m-editor-mount[data-lang="css"] .cm-editor .tok-propertyName {
+    color: var(--syn-css-prop);
+}
+
+#m-editor-mount[data-lang="css"] .cm-editor .tok-keyword,
+#m-editor-mount[data-lang="css"] .cm-editor .tok-atom {
+    color: var(--syn-css-value);
+}
+
+#m-editor-mount[data-lang="css"] .cm-editor .tok-className {
+    color: var(--syn-css-class);
+}
+
+#m-editor-mount[data-lang="css"] .cm-editor .tok-namespace {
+    color: var(--syn-css-id);
+}
+
+#m-editor-mount[data-lang="css"] .cm-editor .tok-variableName {
+    color: var(--syn-css-pseudo);
+}

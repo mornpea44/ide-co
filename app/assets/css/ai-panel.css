@@ -1,0 +1,1550 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   QUIRKY IDE — AI ASSISTANT PANEL (extracted from components.css · Phase 3)
+   ═══════════════════════════════════════════════════════════════════════════
+
+   Styles for the AI chat panel: message bubbles, streaming cursor, tool
+   progress indicators, approval cards, model/provider selectors, key
+   dialog, and message action bars (regenerate / delete / edit).
+
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Chat body & welcome ── */
+.ai-chat-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.7rem !important;
+}
+
+.ai-welcome {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.ai-welcome-icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.6rem;
+}
+
+.ai-welcome-hint {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--faint);
+  margin-top: 0.5rem;
+}
+
+/* ── Message bubbles ── */
+.ai-msg {
+  max-width: 92%;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--r-md);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  word-break: break-word;
+  animation: aiMsgIn 0.2s ease;
+}
+
+@keyframes aiMsgIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-msg-user {
+  align-self: flex-end;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  color: var(--text);
+}
+
+.ai-msg-ai {
+  align-self: flex-start;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.ai-msg-ai code {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  background: var(--bg-deep);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  color: var(--accent-2);
+}
+
+.ai-msg-error {
+  align-self: flex-start;
+  background: var(--danger-dim);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+}
+
+.ai-msg-thinking {
+  align-self: flex-start;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ── Thinking dots ── */
+.ai-dots span {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin: 0 1px;
+  animation: aiDot 1.2s ease-in-out infinite;
+}
+
+.ai-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.ai-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes aiDot {
+
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* ── Streaming cursor ── */
+.ai-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--accent);
+  border-radius: 1px;
+  animation: aiBlink 0.9s steps(1) infinite;
+}
+
+@keyframes aiBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ── Live tool progress line ── */
+.ai-tool-progress {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-2);
+  padding: 0.2rem 0.1rem;
+  animation: aiMsgIn 0.2s ease;
+}
+
+.ai-tool-progress .ai-tp-ico {
+  font-size: 0.85rem;
+  animation: aiPulseSoft 1.4s ease-in-out infinite;
+}
+
+.ai-tool-progress .ai-tp-name {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.ai-tool-progress .ai-tp-hint {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 30ch;
+}
+
+@keyframes aiPulseSoft {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ── Approval cards ── */
+.ai-tool-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.ai-tool-card {
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 0.6rem 0.75rem;
+  font-size: 0.76rem;
+  transition: border-color 0.2s;
+}
+
+.ai-tool-card.approved {
+  border-color: var(--success-border);
+}
+
+.ai-tool-card.denied {
+  border-color: var(--danger-border);
+  opacity: 0.6;
+}
+
+.ai-tool-head {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  margin-bottom: 0.35rem;
+  color: var(--text);
+}
+
+.ai-tool-args {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.ai-tool-arg {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-2);
+  word-break: break-all;
+}
+
+.ai-tool-arg b {
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
+.ai-tool-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ai-approve,
+.ai-deny {
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all var(--tr-fast);
+}
+
+.ai-approve {
+  background: var(--success-dim);
+  border-color: var(--success-border);
+  color: var(--success);
+}
+
+.ai-approve:hover {
+  background: var(--success);
+  color: #06210f;
+}
+
+.ai-deny {
+  background: var(--danger-dim);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.ai-deny:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+.ai-tool-status {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ai-tool-status.ok {
+  color: var(--success);
+}
+
+.ai-tool-status.no {
+  color: var(--danger);
+}
+
+/* ── Header controls ── */
+.ai-head-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: center;
+}
+
+#panel-ai .side-header {
+  align-items: center;
+}
+
+#panel-ai .side-title {
+  flex-shrink: 0;
+}
+
+/* ── Status dot ── */
+.ai-status-dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--muted);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.ai-status-dot::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+}
+
+.ai-status-dot.online {
+  background: var(--success);
+  box-shadow: 0 0 7px var(--success);
+  animation: aiPulseSoft 2.2s ease-in-out infinite;
+}
+
+.ai-status-dot.offline {
+  background: var(--danger);
+  box-shadow: 0 0 7px var(--danger);
+}
+
+.ai-status-dot.warn {
+  background: var(--warning);
+  box-shadow: 0 0 7px var(--warning);
+}
+
+.ai-status-dot.switching {
+  background: var(--accent);
+  box-shadow: 0 0 9px var(--accent);
+  animation: aiSwitch 0.6s ease-in-out infinite;
+}
+
+.ai-status-dot:hover {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 2px;
+}
+
+@keyframes aiSwitch {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.6);
+    opacity: 0.45;
+  }
+}
+
+/* ── Model selector ── */
+.ai-model-select {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 150px;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+  background-color: var(--bg-deep);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%237186a5' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.45rem center;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 0.28rem 1.25rem 0.28rem 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color var(--tr-fast), box-shadow var(--tr-fast), color var(--tr-fast);
+}
+
+.ai-model-select:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.ai-model-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+  color: var(--accent);
+}
+
+.ai-model-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ai-model-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* ── Provider selector ── */
+.ai-provider-select {
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+  background-color: var(--bg-deep);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%237186a5' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.4rem center;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 0.26rem 1.2rem 0.26rem 0.45rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--tr-fast), color var(--tr-fast);
+}
+
+.ai-provider-select:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.ai-provider-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── API Key button ── */
+.ai-key-btn {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.ai-key-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+}
+
+/* ── Key dialog ── */
+#ai-key-dialog input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--r-sm);
+}
+
+#ai-key-dialog input:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+/* ── Input area & footer ── */
+#ai-input-area {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 0.6rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+#ai-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  resize: none;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  max-height: 100px;
+}
+
+#ai-send {
+  flex-shrink: 0;
+  width: 36px;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r-sm);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+#ai-send:hover {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+#ai-send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+#ai-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface);
+}
+
+#ai-permission-mode {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+#ai-permission-mode:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* ── Message action bar (regenerate / delete / edit) ── */
+.ai-msg-actions {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.ai-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.22rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.ai-act:hover {
+  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+}
+
+.ai-msg-actions-user {
+  justify-content: flex-end;
+}
+
+.ai-act-del:hover {
+  color: var(--danger);
+  border-color: var(--danger-border);
+  background: var(--danger-dim);
+}
+
+.ai-msg-error .ai-msg-actions {
+  border-top-color: var(--danger-border);
+}
+
+.ai-msg-error .ai-act {
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.ai-msg-error .ai-act:hover {
+  background: var(--danger-dim);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v10 REDESIGN — workshop-style page · provider chip · manager/form sheets ·
+   streaming perf nodes · composer upgrade. Appended; overrides where needed.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Header: decluttered ── */
+.m-ai-header .m-ai-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Provider chip (emoji + label + status dot) */
+.ai-provider-chip {
+  flex-shrink: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+  min-height: 32px;
+  padding: 0.22rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-deep);
+  cursor: pointer;
+  transition: border-color var(--tr-fast), background var(--tr-fast), box-shadow var(--tr-fast);
+}
+
+.ai-provider-chip:active {
+  transform: scale(0.97);
+  border-color: var(--border-strong);
+}
+
+.ai-chip-ico {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.ai-chip-label {
+  min-width: 0;
+  max-width: 88px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+}
+
+.ai-chip-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.ai-chip-dot.on {
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+  animation: aiPulseSoft 2.2s ease-in-out infinite;
+}
+
+.ai-chip-dot.warn {
+  background: var(--warning);
+  box-shadow: 0 0 6px var(--warning);
+}
+
+.ai-chip-dot.testing {
+  background: var(--warning);
+  animation: aiSwitch 0.7s ease-in-out infinite;
+}
+
+.ai-chip-dot.err {
+  background: transparent;
+  border: 2px solid var(--danger);
+  box-shadow: 0 0 5px var(--danger-border);
+}
+
+/* Fresh-error red outline on the whole chip */
+.ai-provider-chip.err {
+  border-color: var(--danger-border);
+  box-shadow: 0 0 0 1px var(--danger-border), 0 0 7px var(--danger-dim);
+}
+
+.ai-settings-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.ai-settings-btn:hover,
+.ai-settings-btn:active {
+  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+}
+
+/* Model select gets a bit less room than before */
+.m-ai-overlay .ai-model-select {
+  max-width: 118px;
+}
+
+/* ── Composer (replaces #ai-input-area) ──
+   Two rows: full-width textarea on top, then a bar holding the
+   permission dropdown (left) and the round Send/Stop button (right). */
+.ai-composer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+  padding: 0.5rem 0.6rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+/* Bottom row inside the composer: permission dropdown + send button */
+.ai-composer-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* Comfortable touch height for the permission dropdown (raises the
+   older #ai-permission-mode rule further up in this file). */
+#ai-permission-mode {
+  min-height: 40px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.7rem;
+}
+
+#ai-input {
+  width: 100%;
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 42px;
+  /* 1 line (22px) + padding (18px) + border (2px) — never collapses */
+  max-height: 148px;
+  /* ≈ 6 rows */
+  resize: none;
+  padding: 0.55rem 0.65rem;
+  font-family: var(--font-body);
+  font-size: 16px;
+  /* Android WebView zoom guard */
+  line-height: 1.4;
+  color: var(--text);
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+#ai-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+#ai-send {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--accent-border);
+  border-radius: 50%;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+#ai-send:hover {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+#ai-send.stopping {
+  border-color: var(--danger-border);
+  background: var(--danger-dim);
+  color: var(--danger);
+}
+
+#ai-send.stopping:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* ── Streaming node structure (finished blocks vs live tail) ── */
+.ai-blk+.ai-blk {
+  margin-top: 0.35rem;
+}
+
+.ai-tail {
+  min-height: 1em;
+}
+
+/* ── Tool progress row + collapsed summary ── */
+.ai-tool-progress .ai-tp-count {
+  flex-shrink: 0;
+  margin-left: 0.15rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+
+.ai-tool-done {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--faint);
+  padding: 0.1rem 0;
+}
+
+/* Stopped-by-user divider (never styled as an error) */
+.ai-stopped {
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding: 0.15rem 0.75rem;
+  border: 1px dashed var(--border-subtle);
+  border-radius: 999px;
+  animation: aiMsgIn 0.2s ease;
+}
+
+/* ── Restored transcript tool cards (compact, non-interactive) ── */
+.ai-tool-log {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-width: 92%;
+  padding: 0.3rem 0.55rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--muted);
+}
+
+.ai-tool-log .ai-tl-line b {
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.ai-tool-log .ai-tl-args {
+  margin-left: 0.35rem;
+  color: var(--faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 44ch;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+/* ── Welcome quick-prompt chips ── */
+.ai-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+.ai-quick {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.ai-quick:active {
+  border-color: var(--accent-border);
+  color: var(--accent);
+  background: var(--accent-dim);
+  transform: scale(0.96);
+}
+
+/* ── First-run setup card ── */
+.ai-setup-card {
+  margin: 0.4rem 0.2rem 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r-md);
+  background: var(--accent-dim);
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: var(--text-2);
+  animation: aiMsgIn 0.25s ease;
+}
+
+.ai-setup-card p {
+  margin: 0.35rem 0 0.55rem;
+}
+
+.ai-setup-head {
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.ai-setup-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ai-setup-add {
+  flex: 1 1 auto;
+  padding: 0.5rem 0.7rem;
+  border: none;
+  border-radius: var(--r-sm);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.ai-setup-add:active {
+  transform: scale(0.97);
+}
+
+.ai-setup-x {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+/* ── Error card "Fix it" action ── */
+.ai-act-fix {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.ai-act-fix:hover {
+  background: rgba(245, 165, 36, 0.12);
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+/* ── Per-code-block action bar ── */
+.ai-code-wrap {
+  margin: 0.3rem 0;
+}
+
+.ai-code-bar {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: -1px;
+}
+
+.ai-cb-btn {
+  padding: 0.18rem 0.5rem;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  background: var(--bg-deep);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.ai-cb-btn:active {
+  color: var(--accent);
+  border-color: var(--accent-border);
+}
+
+.ai-code-wrap .ai-code-block {
+  margin: 0;
+  border-top-left-radius: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   v10 SHEETS — manager + add/edit form (JS-injected .m-sheet layers)
+   Base .m-sheet sits at z-100, BELOW the z-200 overlay, and mobile-sheets.css
+   loads LATER than this file — so these raises use compound selectors to win
+   the cascade regardless of bundle order. AI sheets are sub-overlays of the
+   AI panel and ride just under palette level.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.m-sheet-backdrop.ai-sheet-backdrop {
+  z-index: 205;
+}
+
+.m-sheet.ai-sheet {
+  z-index: 210;
+  max-height: 82vh;
+}
+
+/* ── Manager sheet ── */
+.ai-mgr {
+  padding: 0 0.4rem;
+}
+
+.ai-mgr-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-mgr-empty {
+  padding: 0.8rem 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.ai-prov-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ai-prov-row:first-child {
+  border-top: none;
+}
+
+.ai-prov-row:active {
+  background: var(--surface-2);
+}
+
+.ai-prov-row.active {
+  background: var(--accent-dim);
+}
+
+.ai-prov-ico {
+  flex-shrink: 0;
+  font-size: 1.05rem;
+}
+
+.ai-prov-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.ai-prov-name {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ai-badge-active {
+  margin-left: 0.3rem;
+  padding: 0.06rem 0.38rem;
+  border-radius: 999px;
+  background: var(--success-dim);
+  border: 1px solid var(--success-border);
+  color: var(--success);
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  vertical-align: middle;
+}
+
+.ai-prov-meta {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--muted);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Tested-at freshness dot: green ok / red bad / grey never */
+.ai-fresh {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--border-strong);
+}
+
+.ai-fresh.ok {
+  background: var(--success);
+  box-shadow: 0 0 4px var(--success-border);
+}
+
+.ai-fresh.bad {
+  background: transparent;
+  border: 2px solid var(--danger);
+}
+
+.ai-prov-more {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.ai-prov-more:active {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.ai-mgr-add {
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+
+.ai-mgr-add:active {
+  background: var(--accent-dim);
+}
+
+.ai-mgr-sub {
+  margin: 0.9rem 0.45rem 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+
+/* Segmented control (agent permissions) */
+.ai-seg {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  margin: 0 0.4rem;
+}
+
+.ai-seg button {
+  flex: 1 1 33.33%;
+  padding: 0.55rem 0.2rem;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ai-seg button+button {
+  border-left: 1px solid var(--border);
+}
+
+.ai-seg button.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.ai-mgr-clear {
+  width: calc(100% - 0.8rem);
+  margin: 0.7rem 0.4rem 0.3rem;
+  padding: 0.65rem;
+  border: 1px solid var(--danger-border);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.ai-mgr-clear:active {
+  background: var(--danger-dim);
+}
+
+/* ── Add/Edit form sheet ── */
+.ai-form-body {
+  padding: 0 1rem 0.4rem;
+}
+
+.ai-fl {
+  display: block;
+  margin: 0.65rem 0 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ai-fi {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  font-size: 16px;
+  /* Android zoom guard */
+  font-family: var(--font-mono);
+  color: var(--text);
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+.ai-fi:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+select.ai-fi {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%237186a5' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  padding-right: 1.8rem;
+}
+
+textarea.ai-fi {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.ai-f-note {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--faint);
+  line-height: 1.5;
+}
+
+.ai-f-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: stretch;
+}
+
+.ai-f-row .ai-fi {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ai-f-mini {
+  flex: 0 0 auto;
+  padding: 0 0.7rem;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r-sm);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.68rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ai-f-mini:disabled {
+  opacity: 0.5;
+}
+
+.ai-f-adv-toggle {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.45rem 0;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ai-f-status {
+  min-height: 1.2em;
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.ai-f-status.ok {
+  color: var(--success);
+}
+
+.ai-f-status.warn {
+  color: var(--warning);
+}
+
+.ai-f-status.err {
+  color: var(--danger);
+}
+
+.ai-f-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem calc(0.7rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface);
+}
+
+.ai-f-btn {
+  flex: 1 1 auto;
+  min-height: 42px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-2);
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all var(--tr-fast);
+}
+
+.ai-f-btn:disabled {
+  opacity: 0.5;
+}
+
+.ai-f-btn.primary {
+  border-color: var(--accent-border);
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.ai-f-btn.primary:active {
+  transform: scale(0.97);
+}
+
+.ai-f-btn.ghost {
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.ai-f-btn.danger {
+  flex: 0 0 auto;
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.ai-f-btn.danger:active {
+  background: var(--danger-dim);
+}
+
+/* ── Narrow screens: keep the header on one line ── */
+@media (max-width: 380px) {
+  .m-ai-header .m-ai-title {
+    display: none;
+  }
+
+  .ai-chip-label {
+    max-width: 70px;
+  }
+
+  .m-ai-overlay .ai-model-select {
+    max-width: 96px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AI COMPOSER REDESIGN (Footer Layout)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Wrapper for the whole bottom area */
+.ai-composer-wrap {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Row 1: Input + Send Button */
+.ai-input-row {
+  display: flex;
+  align-items: flex-end;
+  /* Align button to bottom of textarea */
+  gap: 0.5rem;
+  padding: 0.6rem;
+}
+
+/* Full width textarea adjustments */
+.ai-input-row #ai-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: auto;
+  max-height: 140px;
+  /* Approx 5-6 lines */
+  resize: none;
+  padding: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 16px;
+  /* Prevent iOS zoom */
+  line-height: 1.4;
+  color: var(--text);
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.ai-input-row #ai-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+/* Send button stays round */
+.ai-input-row #ai-send {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--accent-border);
+  border-radius: 50%;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-bottom: 2px;
+  /* Visual alignment tweak */
+}
+
+/* Row 2: Permission Dropdown/Segmented Control */
+.ai-permission-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.6rem 0.6rem 0.6rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.4rem;
+}
+
+.ai-perm-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Mini Segmented Control for Footer */
+.ai-seg-mini {
+  display: flex;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.ai-seg-mini button {
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.65rem;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ai-seg-mini button.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ai-seg-mini button+button {
+  border-left: 1px solid var(--border);
+}

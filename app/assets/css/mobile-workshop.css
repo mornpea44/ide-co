@@ -1,0 +1,906 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+QUIRKY IDE — MOBILE WORKSHOP STYLES (Phase 1)
+═══════════════════════════════════════════════════════════════════════════
+Full-screen Workshop overlay: extension cards, status badges,
+action buttons, loading/empty/error states.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Overlay container ── */
+.m-workshop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg, #0d1420);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.m-workshop-overlay.show {
+  transform: translateY(0);
+}
+
+.m-workshop-overlay.hidden {
+  display: none;
+}
+
+/* ── Header ── */
+.m-workshop-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+.m-workshop-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--text-2, #9db1cc);
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.m-workshop-close:active {
+  background: var(--surface-2, #1a2537);
+}
+
+.m-workshop-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted, #7186a5);
+  flex-shrink: 0;
+}
+
+.m-workshop-subtitle {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  color: var(--faint, #55688a);
+  margin-left: auto;
+}
+
+/* ── Body (scrollable) ── */
+.m-workshop-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.75rem;
+}
+
+/* ── Intro text ── */
+.m-workshop-intro {
+  padding: 0.5rem 0.25rem 1rem;
+  font-size: 0.78rem;
+  color: var(--text-2, #9db1cc);
+  line-height: 1.5;
+}
+
+/* ── Extension card ── */
+.m-workshop-ext-card {
+  background: var(--surface, #131c2b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.m-workshop-ext-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.m-workshop-ext-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.m-workshop-ext-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.m-workshop-ext-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text, #e8eef7);
+  margin-bottom: 0.25rem;
+}
+
+.m-workshop-ext-desc {
+  font-size: 0.75rem;
+  color: var(--muted, #7186a5);
+  line-height: 1.5;
+  margin-bottom: 0.6rem;
+}
+
+/* ── Status badge ── */
+.m-workshop-ext-status {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  letter-spacing: 0.02em;
+}
+
+.m-workshop-ext-status.not-installed {
+  background: var(--surface-3, #223049);
+  color: var(--muted, #7186a5);
+}
+
+.m-workshop-ext-status.installed {
+  background: var(--info-dim, rgba(96, 165, 250, 0.10));
+  color: var(--info, #60a5fa);
+  border: 1px solid var(--info-border, rgba(96, 165, 250, 0.30));
+}
+
+.m-workshop-ext-status.enabled {
+  background: var(--success-dim, rgba(74, 222, 128, 0.10));
+  color: var(--success, #4ade80);
+  border: 1px solid var(--success-border, rgba(74, 222, 128, 0.30));
+}
+
+/* ── Provides tags ── */
+.m-workshop-ext-provides {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.6rem;
+}
+
+.m-workshop-provide-tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.58rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+}
+
+/* ── Footer (size + action buttons) ── */
+.m-workshop-ext-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.m-workshop-ext-size {
+  font-size: 0.68rem;
+  color: var(--faint, #55688a);
+  flex-shrink: 0;
+}
+
+.m-workshop-ext-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+/* ── Action buttons ── */
+.m-workshop-ext-btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border, #263450);
+  background: var(--surface-2, #1a2537);
+  color: var(--text-2, #9db1cc);
+  font-weight: 700;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.m-workshop-ext-btn:active {
+  transform: scale(0.96);
+}
+
+.m-workshop-ext-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.m-workshop-ext-btn-primary {
+  border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+}
+
+.m-workshop-ext-btn-primary:active {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+}
+
+.m-workshop-ext-btn-danger {
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  color: var(--danger, #f87171);
+}
+
+.m-workshop-ext-btn-danger:active {
+  background: var(--danger, #f87171);
+  color: #fff;
+}
+
+/* ── Loading state ── */
+.m-workshop-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1rem;
+  color: var(--muted, #7186a5);
+  font-size: 0.82rem;
+}
+
+.m-workshop-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border, #263450);
+  border-top-color: var(--accent, #f5a524);
+  border-radius: 50%;
+  animation: workshopSpin 0.8s linear infinite;
+}
+
+@keyframes workshopSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Empty state ── */
+.m-workshop-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--muted, #7186a5);
+}
+
+.m-workshop-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.8rem;
+  opacity: 0.6;
+}
+
+.m-workshop-empty p {
+  font-size: 0.88rem;
+  color: var(--text-2, #9db1cc);
+  margin: 0;
+}
+
+.m-workshop-empty-sub {
+  font-size: 0.75rem !important;
+  color: var(--faint, #55688a) !important;
+  margin-top: 0.4rem !important;
+}
+
+/* ── Error state ── */
+.m-workshop-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--danger, #f87171);
+  gap: 0.75rem;
+}
+
+.m-workshop-error-icon {
+  font-size: 2rem;
+}
+
+.m-workshop-error p {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-2, #9db1cc);
+  max-width: 260px;
+  margin: 0;
+}
+
+.m-workshop-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.2rem;
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  border-radius: 8px;
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.m-workshop-retry-btn:active {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+  transform: scale(0.95);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .m-workshop-overlay {
+    transition: none;
+  }
+
+  .m-workshop-spinner {
+    animation: none;
+    border-top-color: var(--border, #263450);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+PHASE 2 — APACHE STATUS & CONTROLS
+═══════════════════════════════════════════════════════════════ */
+
+/* Running status badge */
+.m-workshop-ext-status.running {
+  background: var(--success-dim, rgba(74, 222, 128, 0.10));
+  color: var(--success, #4ade80);
+  border: 1px solid var(--success-border, rgba(74, 222, 128, 0.30));
+}
+
+/* Ghost button (uninstall icon) */
+.m-workshop-ext-btn-ghost {
+  border-color: var(--border, #263450);
+  background: transparent;
+  color: var(--muted, #7186a5);
+}
+
+.m-workshop-ext-btn-ghost:active {
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+  color: var(--danger, #f87171);
+}
+
+/* ── Install Progress Area ── */
+.m-workshop-install-progress {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle, #1d2940);
+  padding-top: 0.75rem;
+}
+
+.m-workshop-install-progress.hidden {
+  display: none;
+}
+
+.m-workshop-progress-log {
+  max-height: 180px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.m-workshop-log-line {
+  color: var(--text-2, #9db1cc);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.m-workshop-log-line.log-dim {
+  color: var(--faint, #55688a);
+}
+
+.m-workshop-log-line.log-error {
+  color: var(--danger, #f87171);
+}
+
+.m-workshop-log-line.log-success {
+  color: var(--success, #4ade80);
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+WORKSHOP LOGS VIEWER
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Overlay container ── */
+.m-workshop-logs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  background: var(--bg, #0d1420);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.m-workshop-logs-overlay.show {
+  transform: translateY(0);
+}
+
+.m-workshop-logs-overlay.hidden {
+  display: none;
+}
+
+/* ── Toolbar (Copy / Clear / Refresh buttons) ── */
+.m-workshop-logs-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--surface, #131c2b);
+  border-bottom: 1px solid var(--border, #263450);
+}
+
+/* ── Log body (scrollable, selectable text) ── */
+.m-workshop-logs-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.75rem;
+  /* ★ SELECTABLE — users can long-press to select specific text */
+  -webkit-user-select: text;
+  user-select: text;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  line-height: 1.7;
+}
+
+/* ── Individual log entry ── */
+.m-wslog-entry {
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* ── Level colours ── */
+.m-wslog-entry.log-info {
+  color: var(--text-2, #9db1cc);
+}
+
+.m-wslog-entry.log-error {
+  color: var(--danger, #f87171);
+  background: var(--danger-dim, rgba(248, 113, 113, 0.08));
+}
+
+.m-wslog-entry.log-warn {
+  color: var(--warning, #fbbf24);
+  background: var(--warning-dim, rgba(251, 191, 36, 0.08));
+}
+
+.m-wslog-entry.log-success {
+  color: var(--success, #4ade80);
+  background: var(--success-dim, rgba(74, 222, 128, 0.08));
+}
+
+/* ── Timestamp ── */
+.m-wslog-time {
+  color: var(--faint, #55688a);
+  font-size: 0.62rem;
+  margin-right: 0.4rem;
+}
+
+/* ── Source tag ── */
+.m-wslog-source {
+  display: inline-block;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  margin-right: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Message text ── */
+.m-wslog-msg {
+  color: inherit;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .m-workshop-logs-overlay {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+WORKSHOP DIAGNOSTICS VIEWER
+═══════════════════════════════════════════════════════════════ */
+.m-wsdiag-verdict {
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 0.6rem;
+  font-weight: 700;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.m-wsdiag-verdict.pass {
+  background: var(--success-dim, rgba(74, 222, 128, 0.08));
+  color: var(--success, #4ade80);
+  border: 1px solid var(--success-border, rgba(74, 222, 128, 0.30));
+}
+
+.m-wsdiag-verdict.fail {
+  background: var(--danger-dim, rgba(248, 113, 113, 0.08));
+  color: var(--danger, #f87171);
+  border: 1px solid var(--danger-border, rgba(248, 113, 113, 0.30));
+}
+
+.m-wsdiag-entry {
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 3px;
+  border-left: 3px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+  word-break: break-word;
+}
+
+.m-wsdiag-entry.pass {
+  border-left-color: var(--success, #4ade80);
+}
+
+.m-wsdiag-entry.fail {
+  border-left-color: var(--danger, #f87171);
+  background: var(--danger-dim, rgba(248, 113, 113, 0.08));
+}
+
+.m-wsdiag-name {
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: var(--text-2, #9db1cc);
+}
+
+.m-wsdiag-entry.pass .m-wsdiag-name {
+  color: var(--success, #4ade80);
+}
+
+.m-wsdiag-entry.fail .m-wsdiag-name {
+  color: var(--danger, #f87171);
+}
+
+.m-wsdiag-detail {
+  color: var(--muted, #7186a5);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  margin-top: 0.15rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+DYNAMIC WORKSHOP — COMMUNITY PACKAGES
+Cards / chips / badges / toggle switches / consent sheet.
+Follows the card + badge conventions above.
+═══════════════════════════════════════════════════════════ */
+
+/* ── Section head (title + add button) ── */
+.m-wspkg-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.1rem 0.7rem;
+}
+
+.m-wspkg-section-title {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--faint, #55688a);
+}
+
+.m-wspkg-add-btn {
+  flex-shrink: 0;
+  padding: 0.45rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent-border, rgba(245, 165, 36, 0.32));
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  font-weight: 700;
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.m-wspkg-add-btn:active {
+  background: var(--accent, #f5a524);
+  color: var(--accent-contrast, #0d1420);
+  transform: scale(0.97);
+}
+
+/* ── Safe mode row ── */
+.m-wspkg-safemode {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--surface-2, #1a2537);
+  border: 1px solid var(--border-subtle, #1d2940);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.m-wspkg-safemode-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.m-wspkg-safemode-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text, #e8eef7);
+}
+
+.m-wspkg-safemode-sub {
+  font-size: 0.64rem;
+  color: var(--muted, #7186a5);
+  margin-top: 0.1rem;
+}
+
+/* ── Empty state (small variant inside the section) ── */
+.m-wspkg-empty {
+  text-align: center;
+  font-size: 0.74rem;
+  line-height: 1.6;
+  color: var(--faint, #55688a);
+  border: 1px dashed var(--border, #263450);
+  border-radius: 10px;
+  padding: 1.25rem 1rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Package cards reuse .m-workshop-ext-card; extras below ── */
+.m-wspkg-version {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--info, #60a5fa);
+}
+
+.m-wspkg-type-theme {
+  background: var(--success-dim, rgba(74, 222, 128, 0.12));
+  color: var(--success, #4ade80);
+  border-color: var(--success-border, rgba(74, 222, 128, 0.30));
+}
+
+.m-wspkg-type-snippets {
+  background: rgba(96, 165, 250, 0.10);
+  color: var(--info, #60a5fa);
+  border-color: rgba(96, 165, 250, 0.30);
+}
+
+.m-wspkg-type-extension {
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  color: var(--danger, #f87171);
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+}
+
+.m-wspkg-type-toolchain {
+  background: rgba(167, 139, 250, 0.12);
+  color: #a78bfa;
+  border-color: rgba(167, 139, 250, 0.32);
+}
+
+/* Runtime application state (from package-host.js) */
+.m-wspkg-runstate {
+  display: inline-block;
+  font-size: 0.58rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--faint, #55688a);
+  margin-left: 0.35rem;
+}
+
+.m-wspkg-runstate.applied {
+  color: var(--success, #4ade80);
+}
+
+.m-wspkg-runstate.active {
+  color: var(--warning, #fbbf24);
+}
+
+.m-wspkg-icon-img {
+  width: 1.8rem;
+  height: 1.8rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ── Capability badges ── */
+.m-wspkg-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.m-wspkg-badge.css {
+  background: var(--success-dim, rgba(74, 222, 128, 0.10));
+  color: var(--success, #4ade80);
+  border-color: var(--success-border, rgba(74, 222, 128, 0.30));
+}
+
+.m-wspkg-badge.js {
+  background: var(--danger-dim, rgba(248, 113, 113, 0.10));
+  color: var(--danger, #f87171);
+  border-color: var(--danger-border, rgba(248, 113, 113, 0.30));
+}
+
+.m-wspkg-badge.store {
+  background: var(--accent-dim, rgba(245, 165, 36, 0.12));
+  color: var(--accent, #f5a524);
+  border-color: var(--accent-border, rgba(245, 165, 36, 0.32));
+}
+
+.m-wspkg-badge.net {
+  background: rgba(96, 165, 250, 0.10);
+  color: var(--info, #60a5fa);
+  border-color: rgba(96, 165, 250, 0.30);
+}
+
+/* ── Consent summary line ── */
+.m-wspkg-consent-summary {
+  font-size: 0.66rem;
+  color: var(--muted, #7186a5);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+  padding: 0.4rem 0.55rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ── Toggle switch (shared by safe mode + package rows) ── */
+.m-wspkg-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.m-wspkg-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.m-wspkg-slider {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background: var(--surface-3, #223049);
+  border: 1px solid var(--border, #263450);
+  transition: background 0.18s ease;
+  border-radius: 99px;
+}
+
+.m-wspkg-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
+  background: var(--text-2, #9db1cc);
+  border-radius: 50%;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.m-wspkg-switch input:checked + .m-wspkg-slider {
+  background: var(--success-dim, rgba(74, 222, 128, 0.35));
+  border-color: var(--success-border, rgba(74, 222, 128, 0.45));
+}
+
+.m-wspkg-switch input:checked + .m-wspkg-slider::before {
+  transform: translateX(18px);
+  background: var(--success, #4ade80);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-wspkg-slider,
+  .m-wspkg-slider::before {
+    transition: none;
+  }
+}
+
+/* ── Sheet error message variant (add-sheet validation) ── */
+.m-sheet-msg.error {
+  color: var(--danger, #f87171);
+}
+
+/* ── Install sheet progress area (reuses log-line styles) ── */
+.m-wspkg-progress {
+  max-height: 160px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg-deep, #0a101b);
+  border: 1px solid var(--border, #263450);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.m-wspkg-progress.hidden {
+  display: none;
+}
+
+/* ── Consent / trust sheet ── */
+.m-wspkg-consent-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.86rem;
+  color: var(--text, #e8eef7);
+  padding: 0.5rem 1rem 0.25rem;
+}
+
+.m-wspkg-consent-by {
+  font-size: 0.66rem;
+  color: var(--muted, #7186a5);
+}
+
+.m-wspkg-consent-list {
+  padding: 0.4rem 1rem 0.25rem;
+}
+
+.m-wspkg-consent-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.74rem;
+  color: var(--text-2, #9db1cc);
+  line-height: 1.5;
+  padding: 0.35rem 0;
+}
+
+.m-wspkg-consent-ico {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+.m-wspkg-consent-note {
+  margin: 0.4rem 1rem 0.5rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  background: var(--danger-dim, rgba(248, 113, 113, 0.08));
+  border: 1px solid var(--danger-border, rgba(248, 113, 113, 0.30));
+  color: var(--danger, #f87171);
+  font-size: 0.68rem;
+  line-height: 1.5;
+}

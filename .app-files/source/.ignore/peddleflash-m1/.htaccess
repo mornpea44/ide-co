@@ -1,0 +1,33 @@
+# ═══════════════════════════════════════════════════════════════
+# Peddleflash — Apache configuration
+# ═══════════════════════════════════════════════════════════════
+
+# Never show directory listings
+Options -Indexes
+
+# ── Routing ────────────────────────────────────────────────────
+# Pretty URLs:  /login  →  index.php?route=login
+# Only applied when the request is NOT a real file or directory,
+# so assets/ and index.php itself are untouched.
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_\-]+)/?$ index.php?route=$1 [L,QSA]
+
+# ── Security ────────────────────────────────────────────────────
+# View templates are included by the front controller — they must
+# never be served directly to the browser.
+RewriteRule ^views(/|$) - [F,L]
+
+# ── Hardening headers (only if the module is available) ─────────
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "same-origin"
+</IfModule>
+
+# ── Gentle caching for static assets ────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 hour"
+    ExpiresByType application/javascript "access plus 1 hour"
+</IfModule>
